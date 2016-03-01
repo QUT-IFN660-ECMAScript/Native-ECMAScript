@@ -127,6 +127,10 @@ enum yytokentype {
 
     // STRINGS
     DOUBLE_QUOTE,                       // "
-    SINGLE_QUOTE                        // '
+    SINGLE_QUOTE,                       // '
+
+    // VALUES
+    NUMBER_VALUE,
+    IDENTIFIER
 
 };
