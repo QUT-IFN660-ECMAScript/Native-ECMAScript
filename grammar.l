@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
-}%
+%}
 
 digit [0-9]
 character [a-zA-Z]
@@ -15,14 +15,14 @@ character [a-zA-Z]
 "while"|"for"|"if"|"new"            {printf("KEYWORD(%s)\n", yytext);}
 "true"|"false"                      {printf("BOOLEAN(%s)\n", yytext);}
 {digit}+                            {printf("INTEGER(%s)\n", yytext);}
-[ \t\n]                             // do nothing
+[ \t\n]                             /* do nothing */
 .                                   {printf("Error unknown character, %c", *yytext);}
 %%
 int yywrap() {
     return 1;
 }
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
     yylex();
 }
