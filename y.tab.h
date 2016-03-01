@@ -77,6 +77,12 @@ enum yytokentype {
     SIGNED_RIGHT_SHIFT,                 // >>
     UNSIGNED_RIGHT_SHIFT,               // >>>
 
+    // RELATIONAL OPERATORS
+    LESS_THAN,                          // <
+    GREATER_THAN,                       // >
+    LESS_THAN_OR_EQUAL,                 // <=
+    GREATER_THAN_OR_EQUAL,              // >=
+
     // BINARY LOGICAL OPERATORS
     QUESTION_MARK,                      // ?
     COLON,                              // :
@@ -97,10 +103,10 @@ enum yytokentype {
     SUBTRACTION_ASSIGNMENT,             // -=
     MULTIPLICATION_ASSIGNMENT,          // *=
     DIVISION_ASSIGNMENT,                // /=
-    REMAINDER_ASSIGNMENT,               // %=
+    MODULUS_ASSIGNMENT,                 // %=
     EXPONENTIATION_ASSIGNMENT,          // **=
     LEFT_SHIFT_ASSIGNMENT,              // <<=
-    RIGHT_SHIFT_ASSIGNMENT,             // >>=
+    SIGNED_RIGHT_SHIFT_ASSIGNMENT,      // >>=
     UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,    // >>>=
     BITWISE_AND_ASSIGNMENT,             // &=
     BITWISE_XOR_ASSIGNMENT,             // ^=
@@ -108,12 +114,12 @@ enum yytokentype {
 
 
     // GENERAL PUNCTUATORS
-    RIGHT_PAREN,                        // (
-    LEFT_PAREN,                         // )
-    RIGHT_BRACE,                        // {
-    LEFT_BRACE,                         // }
-    RIGHT_BRACKET,                      // [
-    LEFT_BRACKET,                       // ]
+    RIGHT_PAREN,                        // )
+    LEFT_PAREN,                         // (
+    RIGHT_BRACE,                        // }
+    LEFT_BRACE,                         // {
+    RIGHT_BRACKET,                      // ]
+    LEFT_BRACKET,                       // [
     COMMA,                              // ,
     FULL_STOP,                          // .
     ELLIPSIS,                           // ...
