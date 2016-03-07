@@ -1,2 +1,2 @@
 all:
-	flex grammar.l && gcc lex.yy.c -o lex
+	flex --c++ grammar.l && g++ lex.yy.cc -o scanner

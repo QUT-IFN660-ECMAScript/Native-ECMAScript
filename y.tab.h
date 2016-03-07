@@ -1,3 +1,11 @@
+struct YYLVAL {
+    union {
+        int ival;
+        float fval;
+    };
+    std::string sval;
+} yylval;
+
 enum yytokentype {
 
     // KEYWORDS
@@ -130,7 +138,13 @@ enum yytokentype {
     SINGLE_QUOTE,                       // '
 
     // VALUES
-    NUMBER_VALUE,
-    IDENTIFIER
+    VALUE_INTEGER,
+    VALUE_FLOAT,
+    VALUE_STRING,
+    IDENTIFIER,
+
+    // COMMENTS
+    SINGLE_LINE_COMMENT,
+    MULTI_LINE_COMMENT
 
 };

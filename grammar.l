@@ -1,6 +1,7 @@
 %{
-#include <stdlib.h>
-#include <stdio.h>
+using namespace std;
+
+#include <iostream>
 #include "y.tab.h"
 void yyerror (char const *s);
 %}
@@ -8,7 +9,10 @@ void yyerror (char const *s);
 DIGIT                               [0-9]
 CHAR                                [$_a-zA-Z]
 
+%option noyywrap
+
 %%
+
 break                               { return BREAK; }
 case                                { return CASE; }
 catch                               { return CATCH; }
@@ -113,8 +117,12 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-{DIGIT}                             { return NUMBER_VALUE; }
-{CHAR}({DIGIT}|{CHAR})*             { return IDENTIFIER; }
+{DIGIT}"."{DIGIT}                   { yylval.fval = atof(YYText()); return VALUE_FLOAT; }
+{DIGIT}                             { yylval.ival = atoi(YYText()); return VALUE_INTEGER; }
+\"([^\"].)*\"                       { yylval.sval = strdup(YYText()); return VALUE_STRING; }
+\'([^\'].)*\'                       { yylval.sval = strdup(YYText()); return VALUE_STRING; }
+
+{CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(YYText()); return IDENTIFIER; }
 
 [ \t\n]                             /* do nothing */
 .                                   { yyerror("Unknown character"); }
@@ -125,15 +133,11 @@ void yyerror (char const *s) {
     fprintf(stderr, "%s\n", s);
 }
 
-int yywrap() {
-    return 1;
-}
-
 int main(int argc, char **argv) {
-
+    FlexLexer* lexer = new yyFlexLexer;
     int token;
-    do {
-        token = yylex();
-        printf("%d\n", token);
-    } while(yyin);
+    while((token = lexer->yylex()) != 0) {
+        cout << token << endl;
+    }
+    return 0;
 }

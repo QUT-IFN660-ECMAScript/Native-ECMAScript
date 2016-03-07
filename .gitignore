@@ -1,3 +1,4 @@
-lex
+scanner
 lex.yy.c
+lex.yy.cc
 .idea/
