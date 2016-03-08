@@ -116,7 +116,7 @@ extern int yylex();
 %%
 
 VariableStatement:
-    'var' VariableDeclarationList;
+    "var" VariableDeclarationList;
 
 VariableDeclarationList:
     VariableDeclaration
