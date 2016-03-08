@@ -1,8 +1,6 @@
 %{
-using namespace std;
 
-#include <iostream>
-#include "y.tab.h"
+#include "grammar.tab.h"
 void yyerror (char const *s);
 %}
 
@@ -117,12 +115,12 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-{DIGIT}"."{DIGIT}                   { yylval.fval = atof(YYText()); return VALUE_FLOAT; }
-{DIGIT}                             { yylval.ival = atoi(YYText()); return VALUE_INTEGER; }
-\"([^\"].)*\"                       { yylval.sval = strdup(YYText()); return VALUE_STRING; }
-\'([^\'].)*\'                       { yylval.sval = strdup(YYText()); return VALUE_STRING; }
+{DIGIT}"."{DIGIT}                   { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+{DIGIT}                             { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
+\"([^\"].)*\"                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
+\'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
-{CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(YYText()); return IDENTIFIER; }
+{CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
 [ \t\n]                             /* do nothing */
 .                                   { yyerror("Unknown character"); }
@@ -131,13 +129,4 @@ extern FILE * yyin;
 
 void yyerror (char const *s) {
     fprintf(stderr, "%s\n", s);
-}
-
-int main(int argc, char **argv) {
-    FlexLexer* lexer = new yyFlexLexer;
-    int token;
-    while((token = lexer->yylex()) != 0) {
-        cout << token << endl;
-    }
-    return 0;
 }

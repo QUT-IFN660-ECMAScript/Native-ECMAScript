@@ -1,4 +1,5 @@
 scanner
-lex.yy.c
-lex.yy.cc
+*.tab.*
+*.yy.*
+*.js
 .idea/
