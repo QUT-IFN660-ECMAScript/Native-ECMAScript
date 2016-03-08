@@ -1,1 +1,6 @@
-install: make get-deps
+install:
+  make get-deps
+language:
+  cpp
+script:
+  make
