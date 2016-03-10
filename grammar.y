@@ -1,4 +1,6 @@
 %{
+#include <stdio.h>
+
 void yyerror(const char *s);
 
 extern int yylex();
@@ -109,30 +111,53 @@ extern int yylex();
 
 %union {
     int ival;
-    float fval;
+    double fval;
     char* sval;
 }
 
+%error-verbose
+
 %%
 
+Program:
+    SourceElements
+    ;
+
+SourceElements:
+    SourceElement
+    | SourceElement SourceElements
+    ;
+
+SourceElement:
+    Statement
+    ;
+
+Statement:
+    VariableStatement
+    ;
+
 VariableStatement:
-    "var" VariableDeclarationList;
+    VAR VariableDeclarationList
+    ;
 
 VariableDeclarationList:
     VariableDeclaration
-    | VariableDeclarationList COMMA VariableDeclaration
+    | VariableDeclaration COMMA VariableDeclaration
     ;
 
 VariableDeclaration:
-    IDENTIFIER
-    | IDENTIFIER Initialiser
+    IDENTIFIER Initialiser
     ;
 
 Initialiser:
-    EQUAL VALUE_INTEGER
-    ;
+  ASSIGNMENT VALUE_INTEGER
+  ;
 
 %%
+
+void yyerror(char const *s) {
+    fprintf(stderr, "Parse Error:\n%s\n", s);
+}
 
 int main(int argc, char** argv) {
     yyparse();

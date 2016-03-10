@@ -116,7 +116,7 @@ NaN                                 { return LITERAL_NAN; }
 "'"                                 { return SINGLE_QUOTE; }
 
 {DIGIT}"."{DIGIT}                   { yylval.fval = atof(yytext); return VALUE_FLOAT; }
-{DIGIT}                             { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
+{DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 \"([^\"].)*\"                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 \'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
@@ -126,7 +126,3 @@ NaN                                 { return LITERAL_NAN; }
 .                                   { yyerror("Unknown character"); }
 %%
 extern FILE * yyin;
-
-void yyerror (char const *s) {
-    fprintf(stderr, "%s\n", s);
-}
