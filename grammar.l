@@ -2,6 +2,7 @@
 
 #include "grammar.tab.h"
 void yyerror (char const *s);
+static void comment(void);
 %}
 
 DIGIT                               [0-9]
@@ -10,6 +11,8 @@ CHAR                                [$_a-zA-Z]
 %option noyywrap
 
 %%
+"/*"				    { comment(); }
+"//".*				    { /* multi-line comment //one-line one*/ } 
 
 break                               { return BREAK; }
 case                                { return CASE; }
@@ -125,6 +128,27 @@ NaN                                 { return LITERAL_NAN; }
 .                                   { yyerror("Unknown character"); }
 %%
 extern FILE * yyin;
+
+static void comment(void) 
+{
+    int character;
+    while ((character = input()) != 0)
+    {
+	if (character == '*')
+        {
+            while ((character = input()) == '*');
+            if (character == '/')
+            {
+                return;
+            }
+            if (character == 0)
+            {
+                break; 
+            }
+        }
+    }
+    yyerror("unterminated comment");
+}
 
 void yyerror (char const *s) {
     fprintf(stderr, "%s\n", s);
