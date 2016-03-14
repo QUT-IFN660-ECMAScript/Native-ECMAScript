@@ -115,7 +115,7 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-{DIGIT}"."{DIGIT}                   { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+{DIGIT}+\.{DIGIT}*	                { yylval.fval = atof(yytext); return VALUE_FLOAT; }
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 \"([^\"].)*\"                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 \'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }

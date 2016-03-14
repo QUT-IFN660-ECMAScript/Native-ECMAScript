@@ -1,6 +1,0 @@
-language:
-  cpp
-script:
-  make
-notifications:
-  slack: qut-ifn660-javascript:L91Jp7bz9fqP8fL4gudNYu1G
