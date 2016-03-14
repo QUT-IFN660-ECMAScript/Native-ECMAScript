@@ -1,8 +1,6 @@
 %{
 #include <stdio.h>
-
 void yyerror(const char *s);
-
 extern int yylex();
 %}
 
@@ -154,11 +152,9 @@ Initialiser:
   ;
 
 %%
-
 void yyerror(char const *s) {
     fprintf(stderr, "Parse Error:\n%s\n", s);
 }
-
 int main(int argc, char** argv) {
     yyparse();
 }
