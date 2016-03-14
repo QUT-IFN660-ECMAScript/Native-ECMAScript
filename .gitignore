@@ -3,3 +3,5 @@ scanner
 *.yy.*
 *.js
 .idea/
+.gitignore
+*.yml
