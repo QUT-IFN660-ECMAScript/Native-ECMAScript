@@ -4,4 +4,5 @@ scanner
 *.js
 .idea/
 .gitignore
-*.yml
+.travis.yml
+*.*~
