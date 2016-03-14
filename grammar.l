@@ -84,7 +84,6 @@ NaN                                 { return LITERAL_NAN; }
 "&"                                 { return BITWISE_AND; }
 "|"                                 { return BITWISE_OR; }
 "^"                                 { return BITWISE_XOR; }
-
 "~"                                 { return BITWISE_NOT; }
 
 "="                                 { return ASSIGNMENT; }
