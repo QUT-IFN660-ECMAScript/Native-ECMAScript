@@ -121,7 +121,7 @@ NaN                                 { return LITERAL_NAN; }
 \'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
-
+"//".*  							/* ignore comments */
 [ \t\n]                             /* do nothing */
 .                                   { yyerror("Unknown character"); }
 %%
