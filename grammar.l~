@@ -108,7 +108,7 @@ NaN                                 { return LITERAL_NAN; }
 "]"                                 { return RIGHT_BRACKET; }
 "["                                 { return LEFT_BRACKET; }
 ","                                 { return COMMA; }
-
+"."                                 { return FULL_STOP; }
 "..."                               { return ELLIPSIS; }
 ";"                                 { return SEMICOLON; }
 
@@ -121,7 +121,6 @@ NaN                                 { return LITERAL_NAN; }
 \'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
-"."                                 { return FULL_STOP; }
 "//".*  							/* ignore comments */
 [ \t\n]                             /* do nothing */
 .                                   { yyerror("Unknown character"); }

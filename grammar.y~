@@ -97,7 +97,7 @@ extern int yylex();
 %token RIGHT_BRACKET                      // ]
 %token LEFT_BRACKET                       // [
 %token COMMA                              // ,
-
+%token FULL_STOP                          // .
 %token ELLIPSIS                           // ...
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
@@ -106,7 +106,6 @@ extern int yylex();
 %token VALUE_FLOAT
 %token VALUE_STRING
 %token IDENTIFIER
-%token FULL_STOP                          // .
 
 %union {
     int ival;
