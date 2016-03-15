@@ -10,7 +10,7 @@ CHAR                                [$_a-zA-Z]
 %option noyywrap
 
 %%
-
+"/*"								{ comment(); }
 break                               { return BREAK; }
 case                                { return CASE; }
 catch                               { return CATCH; }
@@ -115,7 +115,7 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-{DIGIT}+\.{DIGIT}*	                { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+{DIGIT}+\.{DIGIT}+	                { yylval.fval = atof(yytext); return VALUE_FLOAT; }
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
@@ -126,4 +126,22 @@ L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE
 [ \t\n]                             /* do nothing */
 .                                   { yyerror("Unknown character"); }
 %%
+
+comment()
+{
+	char c, c1;
+
+loop:
+	while ((c = input()) != '*' && c != 0)
+		putchar(c);
+
+	if ((c1 = input()) != '/' && c != 0)
+	{
+		unput(c1);
+		goto loop;
+	}
+
+	if (c != 0)
+		putchar(c1);
+}
 extern FILE * yyin;
