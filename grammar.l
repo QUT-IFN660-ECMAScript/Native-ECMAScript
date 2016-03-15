@@ -127,21 +127,24 @@ L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE
 .                                   { yyerror("Unknown character"); }
 %%
 
-comment()
+comment(void) 
 {
-	char c, c1;
-
-loop:
-	while ((c = input()) != '*' && c != 0)
-		putchar(c);
-
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		unput(c1);
-		goto loop;
-	}
-
-	if (c != 0)
-		putchar(c1);
+    int character;
+    while ((character = input()) != 0)
+    {
+	if (character == '*')
+        {
+            while ((character = input()) == '*');
+            if (character == '/')
+            {
+                return;
+            }
+            if (character == 0)
+            {
+                break; 
+            }
+        }
+    }
+    yyerror("unterminated comment");
 }
 extern FILE * yyin;
