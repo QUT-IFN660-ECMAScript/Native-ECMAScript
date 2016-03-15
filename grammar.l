@@ -34,7 +34,9 @@ if                                  { return IF; }
 import                              { return IMPORT; }
 in                                  { return IN; }
 instanceof                          { return INSTANCEOF; }
+let                                 { return LET; }
 new                                 { return NEW; }
+of                                  { return OF; }
 return                              { return RETURN; }
 super                               { return SUPER; }
 switch                              { return SWITCH; }
@@ -47,6 +49,15 @@ void                                { return VOID; }
 while                               { return WHILE; }
 with                                { return WITH; }
 yield                               { return YIELD; }
+
+enum                                { return ENUM; }
+await                               { return AWAIT; }
+implements                          { return IMPLEMENTS; }
+interface                           { return INTERFACE; }
+package                             { return PACKAGE; }
+private                             { return PRIVATE; }
+protected                           { return PROTECTED; }
+public                              { return PUBLIC; }
 
 Null                                { return LITERAL_NULL; }
 true                                { return LITERAL_TRUE; }
@@ -102,6 +113,7 @@ NaN                                 { return LITERAL_NAN; }
 "&="                                { return BITWISE_AND_ASSIGNMENT; }
 "^="                                { return BITWISE_XOR_ASSIGNMENT; }
 "|="                                { return BITWISE_OR_ASSIGNMENT; }
+"=>"                                { return ARROW_FUNCTION; }
 
 ")"                                 { return RIGHT_PAREN; }
 "("                                 { return LEFT_PAREN; }
