@@ -26,7 +26,9 @@ extern int yylex();
 %token IMPORT
 %token IN
 %token INSTANCEOF
+%token LET
 %token NEW
+%token OF
 %token RETURN
 %token SUPER
 %token SWITCH
@@ -92,6 +94,7 @@ extern int yylex();
 %token BITWISE_AND_ASSIGNMENT             // &=
 %token BITWISE_XOR_ASSIGNMENT             // ^=
 %token BITWISE_OR_ASSIGNMENT              // |=
+%token ARROW_FUNCTION                     // =>
 %token RIGHT_PAREN                        // )
 %token LEFT_PAREN                         // (
 %token RIGHT_BRACE                        // }

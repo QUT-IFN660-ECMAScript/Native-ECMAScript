@@ -2,6 +2,7 @@
 
 #include "grammar.tab.h"
 void yyerror (char const *s);
+static void comment(void);
 %}
 
 DIGIT                               [0-9]
@@ -10,6 +11,8 @@ CHAR                                [$_a-zA-Z]
 %option noyywrap
 
 %%
+"/*"				                { comment(); }
+"//".*				                { /* multi-line comment //one-line one*/ }
 
 break                               { return BREAK; }
 case                                { return CASE; }
@@ -31,7 +34,9 @@ if                                  { return IF; }
 import                              { return IMPORT; }
 in                                  { return IN; }
 instanceof                          { return INSTANCEOF; }
+let                                 { return LET; }
 new                                 { return NEW; }
+of                                  { return OF; }
 return                              { return RETURN; }
 super                               { return SUPER; }
 switch                              { return SWITCH; }
@@ -44,6 +49,15 @@ void                                { return VOID; }
 while                               { return WHILE; }
 with                                { return WITH; }
 yield                               { return YIELD; }
+
+enum                                { return ENUM; }
+await                               { return AWAIT; }
+implements                          { return IMPLEMENTS; }
+interface                           { return INTERFACE; }
+package                             { return PACKAGE; }
+private                             { return PRIVATE; }
+protected                           { return PROTECTED; }
+public                              { return PUBLIC; }
 
 Null                                { return LITERAL_NULL; }
 true                                { return LITERAL_TRUE; }
@@ -84,7 +98,6 @@ NaN                                 { return LITERAL_NAN; }
 "&"                                 { return BITWISE_AND; }
 "|"                                 { return BITWISE_OR; }
 "^"                                 { return BITWISE_XOR; }
-
 "~"                                 { return BITWISE_NOT; }
 
 "="                                 { return ASSIGNMENT; }
@@ -100,6 +113,7 @@ NaN                                 { return LITERAL_NAN; }
 "&="                                { return BITWISE_AND_ASSIGNMENT; }
 "^="                                { return BITWISE_XOR_ASSIGNMENT; }
 "|="                                { return BITWISE_OR_ASSIGNMENT; }
+"=>"                                { return ARROW_FUNCTION; }
 
 ")"                                 { return RIGHT_PAREN; }
 "("                                 { return LEFT_PAREN; }
@@ -115,10 +129,10 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-{DIGIT}"."{DIGIT}                   { yylval.fval = atof(yytext); return VALUE_FLOAT; }
-{DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
-\"([^\"].)*\"                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
-\'([^\'].)*\'                       { yylval.sval = strdup(yytext); return VALUE_STRING; }
+{DIGIT}+\.{DIGIT}+                  { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+{DIGIT}                             { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
+L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
+L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
@@ -126,3 +140,28 @@ NaN                                 { return LITERAL_NAN; }
 .                                   { yyerror("Unknown character"); }
 %%
 extern FILE * yyin;
+
+static void comment(void) 
+{
+    int character;
+    while ((character = input()) != 0)
+    {
+	if (character == '*')
+        {
+            while ((character = input()) == '*');
+            if (character == '/')
+            {
+                return;
+            }
+            if (character == 0)
+            {
+                break; 
+            }
+        }
+    }
+    yyerror("unterminated comment");
+}
+
+void yyerror (char const *s) {
+    fprintf(stderr, "%s\n", s);
+}
