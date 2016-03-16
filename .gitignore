@@ -1,0 +1,5 @@
+scanner
+*.tab.*
+*.yy.*
+*.js
+.idea/
