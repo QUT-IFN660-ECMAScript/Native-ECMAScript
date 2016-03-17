@@ -149,7 +149,7 @@ VariableDeclaration:
     ;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
+  ASSIGNMENT VALUE_INTEGER									{$$ = $1}
   | ASSIGNMENT VALUE_STRING
   | ASSIGNMENT VALUE_FLOAT
   ;
