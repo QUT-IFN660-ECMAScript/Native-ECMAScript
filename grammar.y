@@ -1,5 +1,9 @@
 %{
 #include <stdio.h>
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
 void yyerror(const char *s);
 extern int yylex();
 %}
@@ -24,7 +28,9 @@ extern int yylex();
 %token IMPORT
 %token IN
 %token INSTANCEOF
+%token LET
 %token NEW
+%token OF
 %token RETURN
 %token SUPER
 %token SWITCH
@@ -90,6 +96,7 @@ extern int yylex();
 %token BITWISE_AND_ASSIGNMENT             // &=
 %token BITWISE_XOR_ASSIGNMENT             // ^=
 %token BITWISE_OR_ASSIGNMENT              // |=
+%token ARROW_FUNCTION                     // =>
 %token RIGHT_PAREN                        // )
 %token LEFT_PAREN                         // (
 %token RIGHT_BRACE                        // }
@@ -158,6 +165,9 @@ Initialiser:
 void yyerror(char const *s) {
     fprintf(stderr, "Parse Error:\n%s\n", s);
 }
+ 
+
+
 int main(int argc, char** argv) {
     yyparse();
 }
