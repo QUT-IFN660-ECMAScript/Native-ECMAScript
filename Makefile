@@ -1,12 +1,11 @@
-bison:
+.DEFAULT_GOAL := all
+
+.bison:
 	@bison -d grammar.y
-flex:
+.flex:
 	@flex grammar.l
-build:
+.build_all:
 	@gcc lex.yy.c grammar.tab.c main.c -o scanner -ll -ly
-
-all: bison flex build
-
+all: clean .bison .flex .build_all
 clean:
 	@rm -f grammar.tab.* && rm -f lex.yy.c && rm -f scanner
-
