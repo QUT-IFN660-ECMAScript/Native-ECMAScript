@@ -1,7 +1,8 @@
 %{
 
+#include "y.tab.h"
 #include "grammar.tab.h"
-void yyerror (char const *s);
+
 static void comment(void);
 %}
 
@@ -160,8 +161,4 @@ static void comment(void)
         }
     }
     yyerror("unterminated comment");
-}
-
-void yyerror (char const *s) {
-    fprintf(stderr, "%s\n", s);
 }
