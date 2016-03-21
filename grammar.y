@@ -5,6 +5,7 @@
 
 %}
 
+%token END_OF_FILE
 %token BREAK
 %token CASE
 %token CATCH
@@ -111,6 +112,7 @@
 %token VALUE_STRING
 %token IDENTIFIER
 
+
 %union {
     int ival;
     double fval;
@@ -156,4 +158,3 @@ Initialiser:
   ;
 
 %%
-
