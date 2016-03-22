@@ -1,9 +1,11 @@
 %{
-void yyerror(const char *s);
+#include <stdio.h>
+#include "y.tab.h"
+#include "lex.yy.h"
 
-extern int yylex();
 %}
 
+%token END_OF_FILE
 %token BREAK
 %token CASE
 %token CATCH
@@ -24,7 +26,9 @@ extern int yylex();
 %token IMPORT
 %token IN
 %token INSTANCEOF
+%token LET
 %token NEW
+%token OF
 %token RETURN
 %token SUPER
 %token SWITCH
@@ -90,6 +94,7 @@ extern int yylex();
 %token BITWISE_AND_ASSIGNMENT             // &=
 %token BITWISE_XOR_ASSIGNMENT             // ^=
 %token BITWISE_OR_ASSIGNMENT              // |=
+%token ARROW_FUNCTION                     // =>
 %token RIGHT_PAREN                        // )
 %token LEFT_PAREN                         // (
 %token RIGHT_BRACE                        // }
@@ -107,33 +112,49 @@ extern int yylex();
 %token VALUE_STRING
 %token IDENTIFIER
 
+
 %union {
     int ival;
-    float fval;
+    double fval;
     char* sval;
 }
 
+%error-verbose
+
 %%
 
+Program:
+    SourceElements
+    ;
+
+SourceElements:
+    SourceElement
+    | SourceElement SourceElements
+    ;
+
+SourceElement:
+    Statement
+    ;
+
+Statement:
+    VariableStatement
+    ;
+
 VariableStatement:
-    "var" VariableDeclarationList;
+    VAR VariableDeclarationList
+    ;
 
 VariableDeclarationList:
     VariableDeclaration
-    | VariableDeclarationList COMMA VariableDeclaration
+    | VariableDeclaration COMMA VariableDeclaration
     ;
 
 VariableDeclaration:
-    IDENTIFIER
-    | IDENTIFIER Initialiser
+    IDENTIFIER Initialiser
     ;
 
 Initialiser:
-    EQUAL VALUE_INTEGER
-    ;
+  ASSIGNMENT VALUE_INTEGER
+  ;
 
 %%
-
-int main(int argc, char** argv) {
-    yyparse();
-}

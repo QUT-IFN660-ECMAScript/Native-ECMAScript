@@ -1,5 +1,5 @@
 scanner
-*.tab.*
+grammar.tab.*
 *.yy.*
-*.js
 .idea/
+tests/test_*
