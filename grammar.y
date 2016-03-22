@@ -1,11 +1,11 @@
 %{
 #include <stdio.h>
+#include "y.tab.h"
+#include "lex.yy.h"
 
-void yyerror(const char *s);
-
-extern int yylex();
 %}
 
+%token END_OF_FILE
 %token BREAK
 %token CASE
 %token CATCH
@@ -112,6 +112,7 @@ extern int yylex();
 %token VALUE_STRING
 %token IDENTIFIER
 
+
 %union {
     int ival;
     double fval;
@@ -157,11 +158,3 @@ Initialiser:
   ;
 
 %%
-
-void yyerror(char const *s) {
-    fprintf(stderr, "Parse Error:\n%s\n", s);
-}
-
-int main(int argc, char** argv) {
-    yyparse();
-}
