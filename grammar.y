@@ -154,7 +154,9 @@ VariableDeclaration:
     ;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
+  ASSIGNMENT VALUE_INTEGER		
+  | ASSIGNMENT VALUE_FLOAT
+  | ASSIGNMENT VALUE_STRING						
   ;
 
 %%
