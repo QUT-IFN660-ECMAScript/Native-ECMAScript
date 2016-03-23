@@ -12,8 +12,9 @@ CHAR                                [$_a-zA-Z]
 %option noyywrap
 
 %%
-
+"/*"				                { comment(); }
 "//".*				                { /* multi-line comment //one-line one*/ }
+
 break                               { return BREAK; }
 case                                { return CASE; }
 catch                               { return CATCH; }
@@ -122,34 +123,27 @@ NaN                                 { return LITERAL_NAN; }
 "]"                                 { return RIGHT_BRACKET; }
 "["                                 { return LEFT_BRACKET; }
 ","                                 { return COMMA; }
-
+"."                                 { return FULL_STOP; }
 "..."                               { return ELLIPSIS; }
 ";"                                 { return SEMICOLON; }
 
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
-<<<<<<< HEAD
-
-{DIGIT}+\.{DIGIT}+	                { yylval.fval = atof(yytext); return VALUE_FLOAT; }
-=======
 {DIGIT}+\.{DIGIT}+                  { yylval.fval = atof(yytext); return VALUE_FLOAT; }
->>>>>>> develop
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
-"."                                 { return FULL_STOP; }
-"//".*  							/* ignore comments */
+
 [ \t\n]                             /* do nothing */
 <<EOF>>                             { return END_OF_FILE; }
 .                                   { yyerror("Unknown character"); }
 %%
-
+extern FILE * yyin;
 
 static void comment(void) 
-
 {
     int character;
     while ((character = input()) != 0)
@@ -169,14 +163,3 @@ static void comment(void)
     }
     yyerror("unterminated comment");
 }
-<<<<<<< HEAD
-
-extern FILE * yyin;
-
-
-void yyerror (char const *s) {
-    fprintf(stderr, "%s\n", s);
-}
-
-=======
->>>>>>> develop
