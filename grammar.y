@@ -1,17 +1,7 @@
 %{
 #include <stdio.h>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
-void yyerror(const char *s);
-extern int yylex();
-=======
 #include "y.tab.h"
 #include "lex.yy.h"
-
->>>>>>> develop
 %}
 
 %token END_OF_FILE
@@ -111,7 +101,7 @@ extern int yylex();
 %token RIGHT_BRACKET                      // ]
 %token LEFT_BRACKET                       // [
 %token COMMA                              // ,
-
+%token FULL_STOP                          // .
 %token ELLIPSIS                           // ...
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
@@ -120,7 +110,6 @@ extern int yylex();
 %token VALUE_FLOAT
 %token VALUE_STRING
 %token IDENTIFIER
-%token FULL_STOP                          // .
 
 
 %union {
@@ -164,21 +153,7 @@ VariableDeclaration:
     ;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER									{$$ = $1}
-  | ASSIGNMENT VALUE_STRING
-  | ASSIGNMENT VALUE_FLOAT
+  ASSIGNMENT VALUE_INTEGER
   ;
 
 %%
-<<<<<<< HEAD
-void yyerror(char const *s) {
-    fprintf(stderr, "Parse Error:\n%s\n", s);
-}
- 
-
-
-int main(int argc, char** argv) {
-    yyparse();
-}
-=======
->>>>>>> develop
