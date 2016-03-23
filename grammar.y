@@ -1,13 +1,20 @@
 %{
 #include <stdio.h>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> develop
 void yyerror(const char *s);
 extern int yylex();
+=======
+#include "y.tab.h"
+#include "lex.yy.h"
+
+>>>>>>> develop
 %}
 
+%token END_OF_FILE
 %token BREAK
 %token CASE
 %token CATCH
@@ -115,6 +122,7 @@ extern int yylex();
 %token IDENTIFIER
 %token FULL_STOP                          // .
 
+
 %union {
     int ival;
     double fval;
@@ -162,6 +170,7 @@ Initialiser:
   ;
 
 %%
+<<<<<<< HEAD
 void yyerror(char const *s) {
     fprintf(stderr, "Parse Error:\n%s\n", s);
 }
@@ -171,3 +180,5 @@ void yyerror(char const *s) {
 int main(int argc, char** argv) {
     yyparse();
 }
+=======
+>>>>>>> develop

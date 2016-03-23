@@ -1,7 +1,8 @@
 %{
 
+#include "y.tab.h"
 #include "grammar.tab.h"
-void yyerror (char const *s);
+
 static void comment(void);
 %}
 
@@ -128,8 +129,12 @@ NaN                                 { return LITERAL_NAN; }
 "\""                                { return DOUBLE_QUOTE; }
 "'"                                 { return SINGLE_QUOTE; }
 
+<<<<<<< HEAD
 
 {DIGIT}+\.{DIGIT}+	                { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+=======
+{DIGIT}+\.{DIGIT}+                  { yylval.fval = atof(yytext); return VALUE_FLOAT; }
+>>>>>>> develop
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
@@ -138,6 +143,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 "."                                 { return FULL_STOP; }
 "//".*  							/* ignore comments */
 [ \t\n]                             /* do nothing */
+<<EOF>>                             { return END_OF_FILE; }
 .                                   { yyerror("Unknown character"); }
 %%
 
@@ -163,6 +169,7 @@ static void comment(void)
     }
     yyerror("unterminated comment");
 }
+<<<<<<< HEAD
 
 extern FILE * yyin;
 
@@ -171,3 +178,5 @@ void yyerror (char const *s) {
     fprintf(stderr, "%s\n", s);
 }
 
+=======
+>>>>>>> develop

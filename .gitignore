@@ -1,8 +1,11 @@
 scanner
-*.tab.*
+grammar.tab.*
 *.yy.*
 *.js
 .idea/
 .gitignore
 .travis.yml
 *.*~
+.idea/
+tests/test_*
+
