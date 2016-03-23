@@ -123,16 +123,20 @@
 
 %%
 
-Program:
-    SourceElements
+Script:
+    ScriptBody
     ;
 
-SourceElements:
-    SourceElement
-    | SourceElement SourceElements
+ScriptBody:
+    StatementList
     ;
 
-SourceElement:
+StatementList:
+    StatementListItem
+    | StatementList StatementListItem
+    ;
+
+StatementListItem:
     Statement
     ;
 
