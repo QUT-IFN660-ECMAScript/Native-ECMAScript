@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
                 printf("VALUE_INTEGER (%d)\n", yylval.ival);
                 break;
             case VALUE_FLOAT:
-                printf("VALUE_FLOAT (%f)\n", yylval.fval);
+                printf("VALUE_FLOAT (%.1f)\n", yylval.fval);
                 break;
             case VALUE_STRING:
                 printf("VALUE_STRING (%s)\n", yylval.sval);
