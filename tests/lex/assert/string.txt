@@ -1,6 +1,6 @@
 VAR
 IDENTIFIER (str)
 =
-VALUE_STRING ("Test string")
+VALUE_STRING ("string_literal")
 ;
 END_OF_FILE
