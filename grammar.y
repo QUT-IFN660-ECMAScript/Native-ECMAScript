@@ -162,6 +162,7 @@ Initialiser:
  
  Expression:
  	| Initialiser ADD VALUE_INTEGER
+ 	| Initialiser ADD VALUE_FLOAT
 	;
  
 

@@ -1,0 +1,8 @@
+VAR
+IDENTIFIER (str)
+=
+VALUE_STRING ("string")
++
+VALUE_STRING ("literal")
+;
+END_OF_FILE
