@@ -34,6 +34,9 @@ int main(int argc, char* argv[])
             case ASSIGNMENT:
                 printf("=\n");
                 break;
+            case ADD:
+            	printf("+\n");
+            	break;
             case SEMICOLON:
                 printf(";\n");
                 break;
