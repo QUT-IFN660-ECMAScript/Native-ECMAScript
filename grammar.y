@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include "lex.yy.h"
-
 %}
 
 %token END_OF_FILE
@@ -160,3 +159,4 @@ Initialiser:
   ;
 
 %%
+
