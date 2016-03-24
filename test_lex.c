@@ -22,6 +22,9 @@ int main(int argc, char* argv[])
             case VALUE_INTEGER:
                 printf("VALUE_INTEGER (%d)\n", yylval.ival);
                 break;
+            case VALUE_STRING:
+                printf("VALUE_STRING (%s)\n", yylval.sval);
+                break;
             case IDENTIFIER:
                 printf("IDENTIFIER (%s)\n", yylval.sval);
                 break;
@@ -30,6 +33,15 @@ int main(int argc, char* argv[])
                 break;
             case SEMICOLON:
                 printf(";\n");
+                break;
+            case LEFT_BRACKET:
+                printf("[\n");
+                break;
+            case RIGHT_BRACKET:
+               printf("]\n");
+               break;
+            case COMMA:
+                printf(",\n");
                 break;
             case END_OF_FILE:
                 printf("END_OF_FILE");
