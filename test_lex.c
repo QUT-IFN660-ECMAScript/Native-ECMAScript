@@ -37,6 +37,15 @@ int main(int argc, char* argv[])
             case ADD:
             	printf("+\n");
             	break;
+            case LEFT_BRACKET:
+            	printf("[\n");
+            	break;
+            case RIGHT_BRACKET:
+            	printf("]\n");
+            	break;
+            case COMMA:
+            	printf(",\n");
+            	break;
             case SEMICOLON:
                 printf(";\n");
                 break;

@@ -154,16 +154,20 @@ VariableDeclaration:
     ;
 
 Initialiser:
-	ASSIGNMENT VALUE_INTEGER
+	ASSIGNMENT Expression
 	| ASSIGNMENT VALUE_FLOAT
 	| ASSIGNMENT VALUE_STRING
-	| ASSIGNMENT Expression
+	| ASSIGNMENT VALUE_INTEGER
 	;
  
  Expression:
- 	| Initialiser ADD VALUE_INTEGER
+ 	Initialiser ADD VALUE_INTEGER
  	| Initialiser ADD VALUE_FLOAT
+ 	| Initialiser ADD VALUE_STRING
 	;
+	
+
+	
  
 
 %%
