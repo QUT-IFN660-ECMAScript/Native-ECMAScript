@@ -37,6 +37,15 @@ int main(int argc, char* argv[])
             case ADD:
             	printf("+\n");
             	break;
+            case MULTIPLY:
+            	printf("*\n");
+            	break;
+            case SUBTRACT:
+            	printf("-\n");
+            	break;
+            case DIVIDE:
+            	printf("/\n");
+            	break;
             case LEFT_BRACKET:
             	printf("[\n");
             	break;

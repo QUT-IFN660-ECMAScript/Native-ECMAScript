@@ -164,6 +164,12 @@ Initialiser:
  	Initialiser ADD VALUE_INTEGER
  	| Initialiser ADD VALUE_FLOAT
  	| Initialiser ADD VALUE_STRING
+ 	| Initialiser SUBTRACT VALUE_INTEGER
+ 	| Initialiser SUBTRACT VALUE_FLOAT
+ 	| Initialiser DIVIDE VALUE_INTEGER
+ 	| Initialiser DIVIDE VALUE_FLOAT
+ 	| Initialiser MULTIPLY VALUE_INTEGER
+ 	| Initialiser MULTIPLY VALUE_FLOAT
 	;
 	
 
