@@ -1,5 +1,0 @@
-IDENTIFIER (x)
-=
-VALUE_STRING ("string_literal")
-;
-END_OF_FILE
