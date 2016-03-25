@@ -3,3 +3,4 @@ grammar.tab.*
 *.yy.*
 .idea/
 tests/test_*
+*.*~
