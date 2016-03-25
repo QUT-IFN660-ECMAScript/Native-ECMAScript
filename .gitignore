@@ -2,4 +2,9 @@ scanner
 grammar.tab.*
 *.yy.*
 .idea/
-tests/test_*
+.gitignore
+.travis.yml
+*.*~
+.idea/
+tests/test_lex
+VAR
