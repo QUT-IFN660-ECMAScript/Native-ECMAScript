@@ -31,6 +31,24 @@ int main(int argc, char* argv[])
             case SEMICOLON:
                 printf(";\n");
                 break;
+            case IF:
+                printf("IF\n");
+                break;
+            case EQUAL:
+                printf("==\n");
+                break;
+            case LEFT_PAREN:
+                printf("(\n");
+                break;
+            case RIGHT_PAREN:
+                printf(")\n");
+                break;
+            case LITERAL_TRUE:
+                printf("true\n");
+                break;
+            case LITERAL_FALSE:
+                printf("false\n");
+                break;
             case END_OF_FILE:
                 printf("END_OF_FILE");
                 break;
