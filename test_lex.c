@@ -34,8 +34,47 @@ int main(int argc, char* argv[])
             case ASSIGNMENT:
                 printf("=\n");
                 break;
+            case ADD:
+            	printf("+\n");
+            	break;
+            case MULTIPLY:
+            	printf("*\n");
+            	break;
+            case SUBTRACT:
+            	printf("-\n");
+            	break;
+            case DIVIDE:
+            	printf("/\n");
+            	break;
+            case LEFT_BRACKET:
+            	printf("[\n");
+            	break;
+            case RIGHT_BRACKET:
+            	printf("]\n");
+            	break;
+            case COMMA:
+            	printf(",\n");
+            	break;
             case SEMICOLON:
                 printf(";\n");
+                break;
+            case IF:
+                printf("IF\n");
+                break;
+            case EQUAL:
+                printf("==\n");
+                break;
+            case LEFT_PAREN:
+                printf("(\n");
+                break;
+            case RIGHT_PAREN:
+                printf(")\n");
+                break;
+            case LITERAL_TRUE:
+                printf("true\n");
+                break;
+            case LITERAL_FALSE:
+                printf("false\n");
                 break;
             case END_OF_FILE:
                 printf("END_OF_FILE");
