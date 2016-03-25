@@ -121,27 +121,43 @@
 
 %error-verbose
 
+%nonassoc ORDER_ELSE
+%nonassoc ELSE
+
+%nonassoc EQUAL
+%nonassoc NOT_EQUAL
+%nonassoc EXACTLY_EQUAL
+%nonassoc NOT_EXACTLY_EQUAL
+
 %%
 
-Program:
-    SourceElements
+Script:
+    ScriptBody
     ;
 
-SourceElements:
-    SourceElement
-    | SourceElement SourceElements
+ScriptBody:
+    StatementList
     ;
 
-SourceElement:
+StatementList:
     Statement
+    | Statement SEMICOLON StatementList
+    | Statement SEMICOLON
     ;
 
 Statement:
     VariableStatement
+    | IfStatement
+    ;
+
+IfStatement:
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
     ;
 
 VariableStatement:
     VAR VariableDeclarationList
+    | VariableDeclarationList
     ;
 
 VariableDeclarationList:
@@ -154,27 +170,141 @@ VariableDeclaration:
     ;
 
 Initialiser:
-	ASSIGNMENT Expression
-	| ASSIGNMENT VALUE_FLOAT
-	| ASSIGNMENT VALUE_STRING
-	| ASSIGNMENT VALUE_INTEGER
-	| Initialiser SEMICOLON
-	;
- 
- Expression:
- 	Initialiser ADD VALUE_INTEGER
- 	| Initialiser ADD VALUE_FLOAT
- 	| Initialiser ADD VALUE_STRING
- 	| Initialiser SUBTRACT VALUE_INTEGER
- 	| Initialiser SUBTRACT VALUE_FLOAT
- 	| Initialiser DIVIDE VALUE_INTEGER
- 	| Initialiser DIVIDE VALUE_FLOAT
- 	| Initialiser MULTIPLY VALUE_INTEGER
- 	| Initialiser MULTIPLY VALUE_FLOAT
-	;
-	
+  ASSIGNMENT VALUE_INTEGER
+  ;
 
-	
- 
+Expression:
+    AssignmentExpression
+    | PrimaryExpression
+    | EqualityExpression
+    ;
+
+PrimaryExpression:
+    THIS
+    | IdentifierReference
+    | Literal
+    ;
+
+EqualityExpression:
+    Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    ;
+
+Literal:
+    NullLiteral
+    | BooleanLiteral
+    | NumericLiteral
+    | StringLiteral
+    ;
+
+NullLiteral:
+    LITERAL_NULL
+    ;
+
+BooleanLiteral:
+    LITERAL_TRUE
+    | LITERAL_FALSE
+    ;
+
+NumericLiteral:
+    VALUE_INTEGER
+    | VALUE_FLOAT
+    ;
+
+StringLiteral:
+    VALUE_STRING
+    ;
+
+AssignmentExpression:
+    YieldExpression
+    | ArrowFunction
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+
+AssignmentOperator:
+    MULTIPLICATION_ASSIGNMENT
+    | DIVISION_ASSIGNMENT
+    | MODULUS_ASSIGNMENT
+    | ADDITION_ASSIGNMENT
+    | SUBTRACTION_ASSIGNMENT
+    | LEFT_SHIFT_ASSIGNMENT
+    | SIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | UNSIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | BITWISE_AND_ASSIGNMENT
+    | BITWISE_XOR_ASSIGNMENT
+    | BITWISE_OR_ASSIGNMENT
+    ;
+
+LeftHandSideExpression:
+    CallExpression
+    ;
+
+CallExpression:
+    SuperCall
+    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
+    | CallExpression FULL_STOP IdentifierName
+    ;
+
+IdentifierReference:
+    IDENTIFIER
+    ;
+
+IdentifierName:
+    IdentifierStart
+    | IdentifierName IdentifierPart
+    ;
+
+IdentifierStart:
+    "$"
+    | "_"
+    | IDENTIFIER
+    ;
+
+IdentifierPart:
+    "$"
+    | "_"
+    | IDENTIFIER
+    ;
+
+SuperCall:
+    SUPER Arguments
+    ;
+
+Arguments:
+    LEFT_PAREN RIGHT_PAREN
+    ;
+
+YieldExpression:
+    YIELD
+    | YIELD AssignmentExpression
+    ;
+
+ArrowFunction:
+    ArrowParameters ARROW_FUNCTION ConciseBody
+    ;
+
+ArrowParameters:
+    CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+CoverParenthesizedExpressionAndArrowParameterList:
+    LEFT_PAREN Expression RIGHT_PAREN
+    ;
+
+ConciseBody:
+    AssignmentExpression
+    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+    ;
+
+FunctionBody:
+    FunctionStatementList
+    ;
+
+FunctionStatementList:
+    StatementList
+    ;
 
 %%
