@@ -3,8 +3,6 @@ grammar.tab.*
 *.yy.*
 .idea/
 .gitignore
-.travis.yml
 *.*~
 .idea/
 tests/test_lex
-VAR
