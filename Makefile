@@ -22,14 +22,19 @@ TMP_DIR := tmp
 .build_lex_test: .bison .flex
 	@gcc lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
 
-# this seems a little crazy
-.run_lex_test: .build_lex_test
-	$(foreach t, $(LEX_TESTS), \
-	$(shell \
-		diff $(subst $(LEX_TESTS_DIR), $(LEX_ASSERTS_DIR), $(patsubst %.js, %.txt, $(t))) \
-		<(./tests/test_lex < $(t)); \
-	))
+
 
 all: clean .build_prod
 clean: .clean_prod .clean_test
 test: clean .run_lex_test
+
+# this seems a little crazy
+.run_lex_test: .build_lex_test
+	@touch log.txt;
+	$(foreach t, $(LEX_TESTS), \
+	$(shell \
+	 	diff $(subst $(LEX_TESTS_DIR), $(LEX_ASSERTS_DIR), $(patsubst %.js, %.txt, $(t))) \
+		<(./tests/test_lex < $(t)) >> log.txt;\
+	))
+	$(if $(shell if [ -s "./log.txt" ]; then echo ok; fi), $(error $(shell cat log.txt; rm -f log.txt)), $(info All Tests Passed))
+	@rm -f log.txt
