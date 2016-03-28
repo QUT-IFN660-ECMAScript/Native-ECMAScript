@@ -1,0 +1,20 @@
+TRY
+{
+VAR
+IDENTIFIER (x)
+=
+VALUE_INTEGER (7)
+/
+VALUE_INTEGER (0)
+;
+}
+CATCH
+(
+IDENTIFIER (exception)
+)
+{
+}
+FINALLY
+{
+}
+END_OF_FILE

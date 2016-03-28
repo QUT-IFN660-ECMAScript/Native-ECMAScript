@@ -79,6 +79,21 @@ int main(int argc, char* argv[])
             case END_OF_FILE:
                 printf("END_OF_FILE");
                 break;
+            case LEFT_BRACE:
+                printf("{\n");
+                break;
+            case RIGHT_BRACE:
+                printf("}\n");
+                break;
+            case TRY:
+                printf("TRY\n");
+                break;
+            case CATCH:
+                printf("CATCH\n");
+                break;
+            case FINALLY:
+                printf("FINALLY\n");
+                break;
             default:
                 printf("Unexpected token %d\n", token);
         }
