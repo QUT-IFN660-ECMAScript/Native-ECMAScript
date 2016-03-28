@@ -146,8 +146,10 @@ StatementList:
     ;
 
 Statement:
-    VariableStatement
+    Block
+    | VariableStatement
     | IfStatement
+    | TryStatement
     ;
 
 IfStatement:
@@ -307,6 +309,25 @@ FunctionBody:
 
 FunctionStatementList:
     StatementList
+    ;
+
+Block:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE StatementList RIGHT_BRACE
+    ;
+
+TryStatement:
+    TRY Block Catch
+    | TRY Block Finally
+    | TRY Block Catch Finally
+    ;
+
+Catch:
+    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    ;
+
+Finally:
+    FINALLY Block
     ;
 
 %%
