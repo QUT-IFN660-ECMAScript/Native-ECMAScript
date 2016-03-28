@@ -17,8 +17,8 @@ CHAR                                [$_a-zA-Z]
 %x MULTILINE_STRING
 
 %%
-"/*"				                        { comment(); }
-"//".*				                      { /* multi-line comment //one-line one*/ }
+"/*"                                { comment(); }
+"//".*                              { /* multi-line comment //one-line one*/ }
 
 break                               { return BREAK; }
 case                                { return CASE; }
