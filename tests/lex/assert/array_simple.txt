@@ -1,15 +1,11 @@
 IDENTIFIER (x)
 =
 [
-[
 VALUE_INTEGER (1)
-]
 ,
 VALUE_INTEGER (2)
 ,
-[
 VALUE_INTEGER (3)
-]
 ]
 ;
 END_OF_FILE
