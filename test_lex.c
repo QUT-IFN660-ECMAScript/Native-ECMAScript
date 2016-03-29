@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
                 printf("false\n");
                 break;
             case END_OF_FILE:
-                printf("END_OF_FILE");
+                printf("END_OF_FILE\n");
                 break;
             default:
                 printf("Unexpected token %d\n", token);

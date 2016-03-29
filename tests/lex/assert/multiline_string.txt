@@ -1,0 +1,15 @@
+VALUE_STRING ()
+VALUE_STRING (this is valid)
+;
+VALUE_STRING (this is a valid string)
+;
+IDENTIFIER (x)
+=
+VALUE_STRING (this also is a valid string)
+;
+VAR
+IDENTIFIER (y)
+=
+VALUE_STRING (this still is a valid string)
+;
+END_OF_FILE
