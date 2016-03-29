@@ -31,51 +31,121 @@ int main(int argc, char* argv[])
             case IDENTIFIER:
                 printf("IDENTIFIER (%s)\n", yylval.sval);
                 break;
+// assignment
             case ASSIGNMENT:
                 printf("=\n");
                 break;
+// operators
             case ADD:
-            	printf("+\n");
-            	break;
+              	printf("+\n");
+              	break;
             case MULTIPLY:
-            	printf("*\n");
-            	break;
+              	printf("*\n");
+              	break;
             case SUBTRACT:
-            	printf("-\n");
-            	break;
+              	printf("-\n");
+              	break;
             case DIVIDE:
-            	printf("/\n");
-            	break;
-            case LEFT_BRACKET:
-            	printf("[\n");
-            	break;
-            case RIGHT_BRACKET:
-            	printf("]\n");
-            	break;
-            case COMMA:
-            	printf(",\n");
-            	break;
-            case SEMICOLON:
-                printf(";\n");
+              	printf("/\n");
+              	break;
+            case MODULO:
+                printf("%%\n");
                 break;
-            case IF:
-                printf("IF\n");
+            case UNARY_ADD:
+                printf("++\n");
                 break;
+            case UNARY_SUBTRACT:
+                printf("--\n");
+                break;
+// compare
             case EQUAL:
                 printf("==\n");
                 break;
+            case NOT_EQUAL:
+                printf("!=\n");
+                break;
+            case EXACTLY_EQUAL:
+                printf("===\n");
+                break;
+            case NOT_EXACTLY_EQUAL:
+                printf("!==\n");
+                break;
+            case LESS_THAN:
+                printf("<\n");
+                break;
+            case GREATER_THAN:
+                printf(">\n");
+                break;
+            case LESS_THAN_OR_EQUAL:
+                printf("<=\n");
+                break;
+            case GREATER_THAN_OR_EQUAL:
+                printf(">=\n");
+                break;
+// bitwise operators
+            case LEFT_SHIFT:
+                printf("<<\n");
+                break;
+            case SIGNED_RIGHT_SHIFT:
+                printf(">>\n");
+                break;
+            case UNSIGNED_RIGHT_SHIFT:
+                printf(">>>\n");
+                break;
+// brackets
+            case LEFT_BRACKET:
+              	printf("[\n");
+              	break;
+            case RIGHT_BRACKET:
+              	printf("]\n");
+              	break;
             case LEFT_PAREN:
                 printf("(\n");
                 break;
             case RIGHT_PAREN:
                 printf(")\n");
                 break;
+            case LEFT_BRACE:
+                printf("{\n");
+                break;
+            case RIGHT_BRACE:
+                printf("}\n");
+                break;
+// punctuation
+            case FULL_STOP:
+                printf(".\n");
+                break;
+            case COMMA:
+                printf(",\n");
+                break;
+            case SEMICOLON:
+                printf(";\n");
+                break;
+// logical
+            case IF:
+                printf("IF\n");
+                break;
+
+
             case LITERAL_TRUE:
                 printf("true\n");
                 break;
             case LITERAL_FALSE:
                 printf("false\n");
                 break;
+// loops
+            case FOR:
+                printf("FOR\n");
+                break;
+            case DO:
+                printf("DO\n");
+                break;
+            case WHILE:
+                printf("WHILE\n");
+                break;
+
+
+// end of file
             case END_OF_FILE:
                 printf("END_OF_FILE\n");
                 break;
