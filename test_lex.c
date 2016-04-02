@@ -37,6 +37,9 @@ int main(int argc, char* argv[])
             case FUNCTION:
                 printf("FUNCTION\n");
                 break;
+            case ARROW_FUNCTION:
+                printf("ARROW_FUNCTION\n");
+                break;
 // assignment
             case ASSIGNMENT:
                 printf("=\n");

@@ -1,0 +1,18 @@
+VAR
+IDENTIFIER (arrowSimple)
+=
+(
+IDENTIFIER (someVariable)
+,
+IDENTIFIER (anotherVariable)
+)
+ARROW_FUNCTION
+{
+RETURN
+IDENTIFIER (someVariable)
++
+IDENTIFIER (anotherVariable)
+;
+}
+;
+END_OF_FILE
