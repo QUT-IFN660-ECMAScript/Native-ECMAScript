@@ -31,6 +31,12 @@ int main(int argc, char* argv[])
             case IDENTIFIER:
                 printf("IDENTIFIER (%s)\n", yylval.sval);
                 break;
+            case RETURN:
+                printf("RETURN\n");
+                break;
+            case FUNCTION:
+                printf("FUNCTION\n");
+                break;
 // assignment
             case ASSIGNMENT:
                 printf("=\n");
@@ -125,13 +131,14 @@ int main(int argc, char* argv[])
             case IF:
                 printf("IF\n");
                 break;
-
-
             case LITERAL_TRUE:
                 printf("true\n");
                 break;
             case LITERAL_FALSE:
                 printf("false\n");
+                break;
+            case LITERAL_NULL:
+                printf("null\n");
                 break;
 // loops
             case FOR:

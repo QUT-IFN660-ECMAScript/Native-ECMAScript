@@ -1,0 +1,14 @@
+(
+FUNCTION
+(
+)
+{
+RETURN
+null
+;
+}
+)
+(
+)
+;
+END_OF_FILE
