@@ -139,14 +139,75 @@ ScriptBody:
     ;
 
 StatementList:
-    Statement
-    | Statement SEMICOLON StatementList
-    | Statement SEMICOLON
+    StatementListItem
+    | StatementList StatementListItem
+    ;
+    
+StatementListOptional:
+    StatementList
+    | 
     ;
 
+StatementListItem:
+    Statement
+    | Declaration
+    ;
+
+Declaration:
+    "temp"
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    HoistableDeclaration
+    | ClassDeclaration
+    | LexicalDeclaration
+    */
+    ;
+
+
 Statement:
-    VariableStatement
+    BlockStatement
+    | VariableStatement
+    | EmptyStatement
     | IfStatement
+    | BreakableStatement
+    ;
+
+BlockStatement:
+    Block
+    ;
+    
+Block:
+    LEFT_BRACE StatementList RIGHT_BRACE
+    | LEFT_BRACE RIGHT_BRACE
+    ;
+
+VariableStatement:
+    VAR VariableDeclarationList
+    ;
+
+VariableDeclarationList:
+    VariableDeclaration
+    | VariableDeclarationList COMMA VariableDeclaration
+    ;
+
+VariableDeclaration:
+    IDENTIFIER Initialiser
+    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
+    BindingIdentifier InitialiserOptional
+    | BindingPattern Initialiser
+    */
+    ;
+
+Initialiser:
+  ASSIGNMENT VALUE_INTEGER
+  | ASSIGNMENT VALUE_FLOAT
+  | ASSIGNMENT VALUE_STRING
+  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
+  ASSIGNMENT AssignmentExpression
+  */
+  ;
+
+EmptyStatement:
+    SEMICOLON
     ;
 
 IfStatement:
@@ -154,25 +215,80 @@ IfStatement:
     | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
     ;
 
-VariableStatement:
-    VAR VariableDeclarationList
-    | VariableDeclarationList
+BreakableStatement:
+    IterationStatement
+    | SwitchStatement
+    ;
+    
+IterationStatement:
+    // TODO Missing look-ahead checks, see 13.7 for more details
+    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
     ;
 
-VariableDeclarationList:
-    VariableDeclaration
-    | VariableDeclaration COMMA VariableDeclaration
+ExpressionOptional:
+    Expression
+    | 
+    ;
+    
+LexicalDeclaration:
+    LetOrConst 
+    // TODO not implemented yet | BindingList
+    ;
+    
+ForDeclaration:
+    LetOrConst 
+    | ForBinding
+    ;
+    
+ForBinding:
+    IDENTIFIER
+    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
+    BindingIdentifier
+    | BindingPattern
+    */
     ;
 
-VariableDeclaration:
-    IDENTIFIER Initialiser
+LetOrConst:
+    LET
+    | CONST
     ;
 
-Initialiser:
-  ASSIGNMENT VALUE_INTEGER
-  | ASSIGNMENT VALUE_FLOAT
-  | ASSIGNMENT VALUE_STRING
-  ;
+SwitchStatement:
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+    ;
+    
+CaseBlock:
+    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
+    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    ;
+
+CaseClauses:
+    CaseClause
+    | CaseClauses CaseClause
+    ;
+
+CaseClausesOptional:
+    CaseClauses
+    | 
+    ;
+    
+CaseClause:
+    CASE Expression COLON StatementListOptional
+    ;
+    
+DefaultClause:
+    DEFAULT COLON StatementListOptional
+    ;
 
 Expression:
     AssignmentExpression
