@@ -1,5 +1,8 @@
+IF
+(
 IDENTIFIER (x)
+)
+IDENTIFIER (y)
 =
-VALUE_INTEGER (42)
-;
+true
 END_OF_FILE

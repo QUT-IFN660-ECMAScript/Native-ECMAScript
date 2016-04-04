@@ -1,0 +1,11 @@
+FUNCTION
+IDENTIFIER (empty)
+(
+)
+{
+}
+IDENTIFIER (empty)
+(
+)
+;
+END_OF_FILE

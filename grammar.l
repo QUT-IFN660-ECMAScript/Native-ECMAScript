@@ -2,18 +2,23 @@
 
 #include "y.tab.h"
 #include "grammar.tab.h"
+#include <stdbool.h>
 
 static void comment(void);
+
+char* stringbuffer;
+
 %}
 
 DIGIT                               [0-9]
 CHAR                                [$_a-zA-Z]
 
 %option noyywrap
+%x MULTILINE_STRING
 
 %%
-"/*"				                { comment(); }
-"//".*				                { /* multi-line comment //one-line one*/ }
+"/*"                                { comment(); }
+"//".*                              { /* multi-line comment //one-line one*/ }
 
 break                               { return BREAK; }
 case                                { return CASE; }
@@ -60,7 +65,7 @@ private                             { return PRIVATE; }
 protected                           { return PROTECTED; }
 public                              { return PUBLIC; }
 
-Null                                { return LITERAL_NULL; }
+null                                { return LITERAL_NULL; }
 true                                { return LITERAL_TRUE; }
 false                               { return LITERAL_FALSE; }
 undefined                           { return LITERAL_UNDEFINED; }
@@ -134,6 +139,19 @@ NaN                                 { return LITERAL_NAN; }
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
+\`                                  {
+                                      BEGIN(MULTILINE_STRING);
+                                      stringbuffer = dynamic_strcat(NULL, "");
+                                    }
+<MULTILINE_STRING>\`                {
+                                      BEGIN(INITIAL);
+                                      yylval.sval = strdup(stringbuffer); return VALUE_STRING;
+                                      free(stringbuffer);
+                                    }
+<MULTILINE_STRING>\n                ;
+<MULTILINE_STRING>.                 {
+                                      stringbuffer = dynamic_strcat(stringbuffer, yytext);
+                                    }
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
@@ -143,7 +161,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 %%
 extern FILE * yyin;
 
-static void comment(void) 
+static void comment(void)
 {
     int character;
     while ((character = input()) != 0)
@@ -157,7 +175,7 @@ static void comment(void)
             }
             if (character == 0)
             {
-                break; 
+                break;
             }
         }
     }

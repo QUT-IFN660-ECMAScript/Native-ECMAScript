@@ -1,5 +1,6 @@
 IDENTIFIER (x)
 =
-VALUE_INTEGER (42)
+[
+]
 ;
 END_OF_FILE

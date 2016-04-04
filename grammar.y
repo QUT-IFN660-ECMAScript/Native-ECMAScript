@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include "lex.yy.h"
-
 %}
 
 %token END_OF_FILE
@@ -121,23 +120,64 @@
 
 %error-verbose
 
+%nonassoc ORDER_ELSE
+%nonassoc ELSE
+
+%nonassoc EQUAL
+%nonassoc NOT_EQUAL
+%nonassoc EXACTLY_EQUAL
+%nonassoc NOT_EXACTLY_EQUAL
+
 %%
 
-Program:
-    SourceElements
+Script:
+    ScriptBody
     ;
 
-SourceElements:
-    SourceElement
-    | SourceElement SourceElements
+ScriptBody:
+    StatementList
     ;
 
-SourceElement:
+StatementList:
+    StatementListItem
+    | StatementList StatementListItem
+    ;
+    
+StatementListOptional:
+    StatementList
+    | 
+    ;
+
+StatementListItem:
     Statement
+    | Declaration
     ;
+
+Declaration:
+    "temp"
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    HoistableDeclaration
+    | ClassDeclaration
+    | LexicalDeclaration
+    */
+    ;
+
 
 Statement:
-    VariableStatement
+    BlockStatement
+    | VariableStatement
+    | EmptyStatement
+    | IfStatement
+    | BreakableStatement
+    ;
+
+BlockStatement:
+    Block
+    ;
+    
+Block:
+    LEFT_BRACE StatementList RIGHT_BRACE
+    | LEFT_BRACE RIGHT_BRACE
     ;
 
 VariableStatement:
@@ -146,17 +186,242 @@ VariableStatement:
 
 VariableDeclarationList:
     VariableDeclaration
-    | VariableDeclaration COMMA VariableDeclaration
+    | VariableDeclarationList COMMA VariableDeclaration
     ;
 
 VariableDeclaration:
     IDENTIFIER Initialiser
+    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
+    BindingIdentifier InitialiserOptional
+    | BindingPattern Initialiser
+    */
     ;
 
 Initialiser:
   ASSIGNMENT VALUE_INTEGER
   | ASSIGNMENT VALUE_FLOAT
   | ASSIGNMENT VALUE_STRING
+  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
+  ASSIGNMENT AssignmentExpression
+  */
   ;
+
+EmptyStatement:
+    SEMICOLON
+    ;
+
+IfStatement:
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+    ;
+
+BreakableStatement:
+    IterationStatement
+    | SwitchStatement
+    ;
+    
+IterationStatement:
+    // TODO Missing look-ahead checks, see 13.7 for more details
+    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
+    ;
+
+ExpressionOptional:
+    Expression
+    | 
+    ;
+    
+LexicalDeclaration:
+    LetOrConst 
+    // TODO not implemented yet | BindingList
+    ;
+    
+ForDeclaration:
+    LetOrConst 
+    | ForBinding
+    ;
+    
+ForBinding:
+    IDENTIFIER
+    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
+    BindingIdentifier
+    | BindingPattern
+    */
+    ;
+
+LetOrConst:
+    LET
+    | CONST
+    ;
+
+SwitchStatement:
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+    ;
+    
+CaseBlock:
+    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
+    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    ;
+
+CaseClauses:
+    CaseClause
+    | CaseClauses CaseClause
+    ;
+
+CaseClausesOptional:
+    CaseClauses
+    | 
+    ;
+    
+CaseClause:
+    CASE Expression COLON StatementListOptional
+    ;
+    
+DefaultClause:
+    DEFAULT COLON StatementListOptional
+    ;
+
+Expression:
+    AssignmentExpression
+    | PrimaryExpression
+    | EqualityExpression
+    ;
+
+PrimaryExpression:
+    THIS
+    | IdentifierReference
+    | Literal
+    ;
+
+EqualityExpression:
+    Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    ;
+
+Literal:
+    NullLiteral
+    | BooleanLiteral
+    | NumericLiteral
+    | StringLiteral
+    ;
+
+NullLiteral:
+    LITERAL_NULL
+    ;
+
+BooleanLiteral:
+    LITERAL_TRUE
+    | LITERAL_FALSE
+    ;
+
+NumericLiteral:
+    VALUE_INTEGER
+    | VALUE_FLOAT
+    ;
+
+StringLiteral:
+    VALUE_STRING
+    ;
+
+AssignmentExpression:
+    YieldExpression
+    | ArrowFunction
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+
+AssignmentOperator:
+    MULTIPLICATION_ASSIGNMENT
+    | DIVISION_ASSIGNMENT
+    | MODULUS_ASSIGNMENT
+    | ADDITION_ASSIGNMENT
+    | SUBTRACTION_ASSIGNMENT
+    | LEFT_SHIFT_ASSIGNMENT
+    | SIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | UNSIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | BITWISE_AND_ASSIGNMENT
+    | BITWISE_XOR_ASSIGNMENT
+    | BITWISE_OR_ASSIGNMENT
+    ;
+
+LeftHandSideExpression:
+    CallExpression
+    ;
+
+CallExpression:
+    SuperCall
+    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
+    | CallExpression FULL_STOP IdentifierName
+    ;
+
+IdentifierReference:
+    IDENTIFIER
+    ;
+
+IdentifierName:
+    IdentifierStart
+    | IdentifierName IdentifierPart
+    ;
+
+IdentifierStart:
+    "$"
+    | "_"
+    | IDENTIFIER
+    ;
+
+IdentifierPart:
+    "$"
+    | "_"
+    | IDENTIFIER
+    ;
+
+SuperCall:
+    SUPER Arguments
+    ;
+
+Arguments:
+    LEFT_PAREN RIGHT_PAREN
+    ;
+
+YieldExpression:
+    YIELD
+    | YIELD AssignmentExpression
+    ;
+
+ArrowFunction:
+    ArrowParameters ARROW_FUNCTION ConciseBody
+    ;
+
+ArrowParameters:
+    CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+CoverParenthesizedExpressionAndArrowParameterList:
+    LEFT_PAREN Expression RIGHT_PAREN
+    ;
+
+ConciseBody:
+    AssignmentExpression
+    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+    ;
+
+FunctionBody:
+    FunctionStatementList
+    ;
+
+FunctionStatementList:
+    StatementList
+    ;
 
 %%
