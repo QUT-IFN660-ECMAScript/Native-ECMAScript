@@ -1,0 +1,1 @@
+var arrowNoParams = () => null;
