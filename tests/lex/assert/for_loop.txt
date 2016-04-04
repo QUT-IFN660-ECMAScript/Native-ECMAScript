@@ -1,0 +1,45 @@
+VAR
+IDENTIFIER (c)
+=
+VALUE_INTEGER (1)
+;
+FOR
+(
+VAR
+IDENTIFIER (i)
+=
+VALUE_INTEGER (1)
+;
+IDENTIFIER (i)
+<=
+VALUE_INTEGER (20)
+;
+IDENTIFIER (i)
+++
+)
+{
+IDENTIFIER (console)
+.
+IDENTIFIER (log)
+(
+VALUE_STRING ("c = ")
++
+IDENTIFIER (c)
+)
+;
+IDENTIFIER (c)
+=
+IDENTIFIER (c)
+*
+(
+VALUE_INTEGER (50)
+-
+VALUE_INTEGER (20)
++
+IDENTIFIER (i)
+)
+/
+IDENTIFIER (i)
+;
+}
+END_OF_FILE

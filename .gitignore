@@ -4,3 +4,8 @@ grammar.tab.*
 .idea/
 tests/test_*
 *.*~
+.gitignore
+*.*~
+.idea/
+tests/test_lex
+log.txt
