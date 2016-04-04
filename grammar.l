@@ -65,7 +65,7 @@ private                             { return PRIVATE; }
 protected                           { return PROTECTED; }
 public                              { return PUBLIC; }
 
-Null                                { return LITERAL_NULL; }
+null                                { return LITERAL_NULL; }
 true                                { return LITERAL_TRUE; }
 false                               { return LITERAL_FALSE; }
 undefined                           { return LITERAL_UNDEFINED; }

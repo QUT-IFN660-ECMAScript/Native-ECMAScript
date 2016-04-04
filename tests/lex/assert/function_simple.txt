@@ -1,0 +1,16 @@
+FUNCTION
+IDENTIFIER (simple)
+(
+IDENTIFIER (someVariable)
+)
+{
+RETURN
+IDENTIFIER (someVariable)
+;
+}
+IDENTIFIER (simple)
+(
+VALUE_INTEGER (0)
+)
+;
+END_OF_FILE

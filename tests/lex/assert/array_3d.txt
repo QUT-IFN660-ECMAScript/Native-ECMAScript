@@ -1,0 +1,24 @@
+VAR
+IDENTIFIER (x)
+=
+[
+[
+VALUE_INTEGER (1)
+]
+,
+VALUE_INTEGER (2)
+,
+[
+VALUE_INTEGER (3)
+]
+,
+[
+VALUE_INTEGER (4)
+,
+[
+VALUE_INTEGER (5)
+]
+]
+]
+;
+END_OF_FILE
