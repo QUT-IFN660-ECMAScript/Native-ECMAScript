@@ -23,7 +23,7 @@ TMP_DIR := tmp
 .clean_test: .clean_prod
 	@rm -f tests/test_lex
 .build_lex_test: .bison .flex
-	@gcc lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
+	@gcc-4.9 lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
 	$(info Build Success)
 
 
