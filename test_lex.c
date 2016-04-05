@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
               	printf("/\n");
               	break;
             case MODULO:
-                printf("%%\n");
+                printf("MODULO\n");
                 break;
             case UNARY_ADD:
                 printf("++\n");
@@ -168,7 +168,16 @@ int main(int argc, char* argv[])
             case WHILE:
                 printf("WHILE\n");
                 break;
-
+// try catch finally
+            case TRY:
+                printf("TRY\n");
+                break;
+            case CATCH:
+                printf("CATCH\n");
+                break;
+            case FINALLY:
+                printf("FINALLY\n");
+                break;
 
 // end of file
             case END_OF_FILE:
