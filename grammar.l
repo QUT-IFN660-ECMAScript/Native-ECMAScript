@@ -139,6 +139,7 @@ NaN                                 { return LITERAL_NAN; }
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
+
 \`                                  {
                                       BEGIN(MULTILINE_STRING);
                                       stringbuffer = dynamic_strcat(NULL, "");
@@ -149,7 +150,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
                                       free(stringbuffer);
                                     }
 <MULTILINE_STRING>\n                ;
-<MULTILINE_STRING>.                 {
+<MULTILINE_STRING>.?                {
                                       stringbuffer = dynamic_strcat(stringbuffer, yytext);
                                     }
 
