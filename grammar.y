@@ -169,7 +169,13 @@ Statement:
     | EmptyStatement
     | IfStatement
     | BreakableStatement
+    | ReturnStatement
     ;
+
+ReturnStatement:
+    RETURN
+    | RETURN Expression
+    ; 
 
 BlockStatement:
     Block
