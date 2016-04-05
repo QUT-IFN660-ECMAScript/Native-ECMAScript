@@ -146,8 +146,7 @@ StatementList:
     ;
 
 Statement:
-    Block
-    | VariableStatement
+    VariableStatement
     | IfStatement
     | TryStatement
     ;
