@@ -169,6 +169,7 @@ Statement:
     | EmptyStatement
     | IfStatement
     | BreakableStatement
+    | TryStatement
     ;
 
 BlockStatement:
@@ -422,6 +423,20 @@ FunctionBody:
 
 FunctionStatementList:
     StatementList
+    ;
+
+TryStatement:
+    TRY Block Catch
+    | TRY Block Finally
+    | TRY Block Catch Finally
+    ;
+
+Catch:
+    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    ;
+
+Finally:
+    FINALLY Block
     ;
 
 %%
