@@ -1,0 +1,60 @@
+VAR
+IDENTIFIER (x)
+=
+VALUE_INTEGER (0)
+;
+TRY
+{
+IDENTIFIER (x)
+=
+VALUE_INTEGER (5)
+/
+VALUE_INTEGER (0)
+;
+}
+CATCH
+(
+IDENTIFIER (exception)
+)
+{
+}
+TRY
+{
+IDENTIFIER (x)
+=
+VALUE_FLOAT (5.5)
+;
+IDENTIFIER (allert)
+(
+IDENTIFIER (x)
+)
+;
+}
+CATCH
+(
+IDENTIFIER (exception)
+)
+{
+IDENTIFIER (x)
+=
+IDENTIFIER (x)
++
+VALUE_INTEGER (20)
+;
+}
+FINALLY
+{
+IDENTIFIER (x)
+=
+IDENTIFIER (x)
+-
+VALUE_FLOAT (15.5)
+;
+}
+TRY
+{
+}
+FINALLY
+{
+}
+END_OF_FILE
