@@ -150,7 +150,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
                                       free(stringbuffer);
                                     }
 <MULTILINE_STRING>\n                ;
-<MULTILINE_STRING>.?                {
+<MULTILINE_STRING>.                 {
                                       stringbuffer = dynamic_strcat(stringbuffer, yytext);
                                     }
 
