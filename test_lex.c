@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
               	printf("/\n");
               	break;
             case MODULO:
-                printf("%%\n");
+                printf("MODULO\n");
                 break;
             case UNARY_ADD:
                 printf("++\n");
