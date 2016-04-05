@@ -130,9 +130,24 @@ int main(int argc, char* argv[])
             case SEMICOLON:
                 printf(";\n");
                 break;
+            case COLON:
+                printf(":\n");
+                break;
 // logical
             case IF:
                 printf("IF\n");
+                break;
+            case SWITCH:
+                printf("SWITCH\n");
+                break;
+            case CASE:
+                printf("CASE\n");
+                break;
+            case DEFAULT:
+                printf("DEFAULT\n");
+                break;
+            case BREAK:
+                printf("BREAK\n");
                 break;
             case LITERAL_TRUE:
                 printf("true\n");

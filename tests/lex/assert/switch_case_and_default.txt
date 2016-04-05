@@ -1,0 +1,35 @@
+VAR
+IDENTIFIER (num)
+=
+VALUE_INTEGER (10)
+;
+SWITCH
+(
+IDENTIFIER (num)
+)
+{
+CASE
+VALUE_INTEGER (7)
+:
+IDENTIFIER (num)
+++
+;
+BREAK
+;
+CASE
+VALUE_INTEGER (8)
+:
+IDENTIFIER (num)
+++
+;
+BREAK
+;
+DEFAULT
+:
+IDENTIFIER (num)
+++
+;
+BREAK
+;
+}
+END_OF_FILE
