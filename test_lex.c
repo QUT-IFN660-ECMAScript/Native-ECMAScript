@@ -168,7 +168,16 @@ int main(int argc, char* argv[])
             case WHILE:
                 printf("WHILE\n");
                 break;
-
+// try catch finally
+            case TRY:
+                printf("TRY\n");
+                break;
+            case CATCH:
+                printf("CATCH\n");
+                break;
+            case FINALLY:
+                printf("FINALLY\n");
+                break;
 
 // end of file
             case END_OF_FILE:
