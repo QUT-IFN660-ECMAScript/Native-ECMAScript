@@ -1,0 +1,68 @@
+EXPORT
+CONST
+IDENTIFIER (sqrt)
+=
+IDENTIFIER (Math)
+.
+IDENTIFIER (sqrt)
+;
+EXPORT
+FUNCTION
+IDENTIFIER (squareroot)
+(
+IDENTIFIER (x)
+)
+{
+RETURN
+IDENTIFIER (x)
+*
+IDENTIFIER (x)
+;
+}
+EXPORT
+FUNCTION
+IDENTIFIER (parameters)
+(
+IDENTIFIER (x)
+,
+IDENTIFIER (y)
+)
+{
+RETURN
+IDENTIFIER (sqrt)
+(
+IDENTIFIER (square)
+(
+IDENTIFIER (x)
+)
++
+IDENTIFIER (square)
+(
+IDENTIFIER (y)
+)
+)
+;
+}
+IDENTIFIER (console)
+.
+IDENTIFIER (log)
+(
+IDENTIFIER (squareroot)
+(
+VALUE_INTEGER (19)
+)
+)
+;
+IDENTIFIER (console)
+.
+IDENTIFIER (log)
+(
+IDENTIFIER (parameters)
+(
+VALUE_INTEGER (8)
+,
+VALUE_INTEGER (9)
+)
+)
+;
+END_OF_FILE
