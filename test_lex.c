@@ -34,6 +34,12 @@ int main(int argc, char* argv[])
             case RETURN:
                 printf("RETURN\n");
                 break;
+            case EXPORT:
+                printf("EXPORT\n");
+                break;
+            case CONST:
+                printf("CONST\n");
+                break;
             case FUNCTION:
                 printf("FUNCTION\n");
                 break;
