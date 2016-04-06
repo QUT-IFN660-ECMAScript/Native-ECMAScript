@@ -253,31 +253,34 @@ Grammar
 
   123 SuperCall: SUPER Arguments
 
-  124 Arguments: LEFT_PAREN RIGHT_PAREN
+  124 Arguments: LEFT_PAREN RIGHT_PAREN LEFT_PAREN ArgumentList RIGHT_PAREN
 
-  125 YieldExpression: YIELD
-  126                | YIELD AssignmentExpression
+  125 ArgumentList: AssignmentExpression
+  126             | ArgumentList COMMA AssignmentExpression
 
-  127 ArrowFunction: ArrowParameters ARROW_FUNCTION ConciseBody
+  127 YieldExpression: YIELD
+  128                | YIELD AssignmentExpression
 
-  128 ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList
+  129 ArrowFunction: ArrowParameters ARROW_FUNCTION ConciseBody
 
-  129 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression RIGHT_PAREN
+  130 ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList
 
-  130 ConciseBody: AssignmentExpression
-  131            | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+  131 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression RIGHT_PAREN
 
-  132 FunctionBody: FunctionStatementList
+  132 ConciseBody: AssignmentExpression
+  133            | RIGHT_BRACKET FunctionBody LEFT_BRACKET
 
-  133 FunctionStatementList: StatementList
+  134 FunctionBody: FunctionStatementList
 
-  134 TryStatement: TRY Block Catch
-  135             | TRY Block Finally
-  136             | TRY Block Catch Finally
+  135 FunctionStatementList: StatementList
 
-  137 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+  136 TryStatement: TRY Block Catch
+  137             | TRY Block Finally
+  138             | TRY Block Catch Finally
 
-  138 Finally: FINALLY Block
+  139 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+
+  140 Finally: FINALLY Block
 
 
 Terminals, with rules where they appear
@@ -287,7 +290,7 @@ error (256)
 END_OF_FILE (258)
 BREAK (259)
 CASE (260) 59
-CATCH (261) 137
+CATCH (261) 139
 CLASS (262)
 CONST (263) 51
 CONTINUE (264)
@@ -298,7 +301,7 @@ DO (268) 33
 ELSE (269) 30
 EXPORT (270)
 EXTENDS (271)
-FINALLY (272) 138
+FINALLY (272) 140
 FOR (273) 35 36 37 38 39 40 41 42 43
 FUNCTION (274)
 IF (275) 29 30
@@ -313,13 +316,13 @@ SUPER (283) 123
 SWITCH (284) 52
 THIS (285) 95
 THROW (286)
-TRY (287) 134 135 136
+TRY (287) 136 137 138
 TYPEOF (288)
 VAR (289) 20 36 39 42
 VOID (290)
 WHILE (291) 33 34
 WITH (292)
-YIELD (293) 125 126
+YIELD (293) 127 128
 ENUM (294)
 AWAIT (295)
 IMPLEMENTS (296)
@@ -373,16 +376,16 @@ UNSIGNED_RIGHT_SHIFT_ASSIGNMENT (343) 105
 BITWISE_AND_ASSIGNMENT (344) 106
 BITWISE_XOR_ASSIGNMENT (345) 107
 BITWISE_OR_ASSIGNMENT (346) 108
-ARROW_FUNCTION (347) 127
-RIGHT_PAREN (348) 29 30 33 34 35 36 37 38 39 40 41 42 43 52 124 129
-    137
-LEFT_PAREN (349) 29 30 33 34 35 36 37 38 39 40 41 42 43 52 124 129
-    137
+ARROW_FUNCTION (347) 129
+RIGHT_PAREN (348) 29 30 33 34 35 36 37 38 39 40 41 42 43 52 124 131
+    139
+LEFT_PAREN (349) 29 30 33 34 35 36 37 38 39 40 41 42 43 52 124 131
+    139
 RIGHT_BRACE (350) 18 19 53 54 112
 LEFT_BRACE (351) 18 19 53 54 112
-RIGHT_BRACKET (352) 131
-LEFT_BRACKET (353) 131
-COMMA (354) 22
+RIGHT_BRACKET (352) 133
+LEFT_BRACKET (353) 133
+COMMA (354) 22 126
 FULL_STOP (355) 113
 ELLIPSIS (356)
 SEMICOLON (357) 27 28 33 35 36 37
@@ -391,7 +394,7 @@ SINGLE_QUOTE (359)
 VALUE_INTEGER (360) 24 73
 VALUE_FLOAT (361) 25
 VALUE_STRING (362) 26 74
-IDENTIFIER (363) 23 49 114 119 122 137
+IDENTIFIER (363) 23 49 114 119 122 139
 ORDER_ELSE (364)
 "temp" (365) 9
 "$" (366) 117 120
@@ -407,7 +410,7 @@ Script (114)
 ScriptBody (115)
     on left: 2, on right: 1
 StatementList (116)
-    on left: 3 4, on right: 2 4 5 18 133
+    on left: 3 4, on right: 2 4 5 18 135
 StatementListOptional (117)
     on left: 5 6, on right: 59 60
 StatementListItem (118)
@@ -420,7 +423,7 @@ Statement (120)
 BlockStatement (121)
     on left: 17, on right: 10
 Block (122)
-    on left: 18 19, on right: 17 134 135 136 137 138
+    on left: 18 19, on right: 17 136 137 138 139 140
 VariableStatement (123)
     on left: 20, on right: 11
 VariableDeclarationList (124)
@@ -463,7 +466,7 @@ DefaultClause (142)
     on left: 60, on right: 54
 Expression (143)
     on left: 61 62 63, on right: 28 29 30 33 34 38 39 40 44 52 59 112
-    129
+    131
 Literal (144)
     on left: 64 65 66 67, on right: 97
 NullLiteral (145)
@@ -479,7 +482,8 @@ DecimalIntegerLiteral (149)
 StringLiteral (150)
     on left: 74, on right: 67
 AssignmentExpression (151)
-    on left: 75 76 77 78 79, on right: 41 42 43 61 78 79 126 130
+    on left: 75 76 77 78 79, on right: 41 42 43 61 78 79 125 126 128
+    132
 ConditionalExpression (152)
     on left: 80, on right: 75
 LogicalORExpression (153)
@@ -530,26 +534,28 @@ SuperCall (175)
     on left: 123, on right: 111
 Arguments (176)
     on left: 124, on right: 123
-YieldExpression (177)
-    on left: 125 126, on right: 76
-ArrowFunction (178)
-    on left: 127, on right: 77
-ArrowParameters (179)
-    on left: 128, on right: 127
-CoverParenthesizedExpressionAndArrowParameterList (180)
-    on left: 129, on right: 128
-ConciseBody (181)
-    on left: 130 131, on right: 127
-FunctionBody (182)
-    on left: 132, on right: 131
-FunctionStatementList (183)
-    on left: 133, on right: 132
-TryStatement (184)
-    on left: 134 135 136, on right: 16
-Catch (185)
-    on left: 137, on right: 134 136
-Finally (186)
-    on left: 138, on right: 135 136
+ArgumentList (177)
+    on left: 125 126, on right: 124 126
+YieldExpression (178)
+    on left: 127 128, on right: 76
+ArrowFunction (179)
+    on left: 129, on right: 77
+ArrowParameters (180)
+    on left: 130, on right: 129
+CoverParenthesizedExpressionAndArrowParameterList (181)
+    on left: 131, on right: 130
+ConciseBody (182)
+    on left: 132 133, on right: 129
+FunctionBody (183)
+    on left: 134, on right: 133
+FunctionStatementList (184)
+    on left: 135, on right: 134
+TryStatement (185)
+    on left: 136 137 138, on right: 16
+Catch (186)
+    on left: 139, on right: 136 138
+Finally (187)
+    on left: 140, on right: 137 138
 
 
 State 0
@@ -746,9 +752,9 @@ State 6
 
 State 7
 
-  134 TryStatement: TRY . Block Catch
-  135             | TRY . Block Finally
-  136             | TRY . Block Catch Finally
+  136 TryStatement: TRY . Block Catch
+  137             | TRY . Block Finally
+  138             | TRY . Block Catch Finally
 
     LEFT_BRACE  shift, and go to state 15
 
@@ -774,8 +780,8 @@ State 9
 
 State 10
 
-  125 YieldExpression: YIELD .
-  126                | YIELD . AssignmentExpression
+  127 YieldExpression: YIELD .
+  128                | YIELD . AssignmentExpression
 
     SUPER          shift, and go to state 4
     THIS           shift, and go to state 6
@@ -788,7 +794,7 @@ State 10
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    $default  reduce using rule 125 (YieldExpression)
+    $default  reduce using rule 127 (YieldExpression)
 
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
@@ -847,7 +853,7 @@ State 13
 
 State 14
 
-  129 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN . Expression RIGHT_PAREN
+  131 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN . Expression RIGHT_PAREN
 
     SUPER          shift, and go to state 4
     THIS           shift, and go to state 6
@@ -1439,16 +1445,16 @@ State 66
 
 State 67
 
-  127 ArrowFunction: ArrowParameters . ARROW_FUNCTION ConciseBody
+  129 ArrowFunction: ArrowParameters . ARROW_FUNCTION ConciseBody
 
     ARROW_FUNCTION  shift, and go to state 105
 
 
 State 68
 
-  128 ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList .
+  130 ArrowParameters: CoverParenthesizedExpressionAndArrowParameterList .
 
-    $default  reduce using rule 128 (ArrowParameters)
+    $default  reduce using rule 130 (ArrowParameters)
 
 
 State 69
@@ -1586,7 +1592,7 @@ State 72
 
 State 73
 
-  124 Arguments: LEFT_PAREN . RIGHT_PAREN
+  124 Arguments: LEFT_PAREN . RIGHT_PAREN LEFT_PAREN ArgumentList RIGHT_PAREN
 
     RIGHT_PAREN  shift, and go to state 119
 
@@ -1650,9 +1656,9 @@ State 75
 
 State 76
 
-  134 TryStatement: TRY Block . Catch
-  135             | TRY Block . Finally
-  136             | TRY Block . Catch Finally
+  136 TryStatement: TRY Block . Catch
+  137             | TRY Block . Finally
+  138             | TRY Block . Catch Finally
 
     CATCH    shift, and go to state 121
     FINALLY  shift, and go to state 122
@@ -1739,9 +1745,9 @@ State 80
 
 State 81
 
-  126 YieldExpression: YIELD AssignmentExpression .
+  128 YieldExpression: YIELD AssignmentExpression .
 
-    $default  reduce using rule 126 (YieldExpression)
+    $default  reduce using rule 128 (YieldExpression)
 
 
 State 82
@@ -1760,7 +1766,7 @@ State 83
 
 State 84
 
-  129 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression . RIGHT_PAREN
+  131 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression . RIGHT_PAREN
 
     RIGHT_PAREN  shift, and go to state 129
 
@@ -2107,7 +2113,7 @@ State 104
 
 State 105
 
-  127 ArrowFunction: ArrowParameters ARROW_FUNCTION . ConciseBody
+  129 ArrowFunction: ArrowParameters ARROW_FUNCTION . ConciseBody
 
     SUPER          shift, and go to state 4
     THIS           shift, and go to state 6
@@ -2333,51 +2339,51 @@ State 118
 
 State 119
 
-  124 Arguments: LEFT_PAREN RIGHT_PAREN .
+  124 Arguments: LEFT_PAREN RIGHT_PAREN . LEFT_PAREN ArgumentList RIGHT_PAREN
 
-    $default  reduce using rule 124 (Arguments)
+    LEFT_PAREN  shift, and go to state 153
 
 
 State 120
 
    52 SwitchStatement: SWITCH LEFT_PAREN Expression . RIGHT_PAREN CaseBlock
 
-    RIGHT_PAREN  shift, and go to state 153
+    RIGHT_PAREN  shift, and go to state 154
 
 
 State 121
 
-  137 Catch: CATCH . LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+  139 Catch: CATCH . LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
 
-    LEFT_PAREN  shift, and go to state 154
+    LEFT_PAREN  shift, and go to state 155
 
 
 State 122
 
-  138 Finally: FINALLY . Block
+  140 Finally: FINALLY . Block
 
     LEFT_BRACE  shift, and go to state 15
 
-    Block  go to state 155
+    Block  go to state 156
 
 
 State 123
 
-  134 TryStatement: TRY Block Catch .
-  136             | TRY Block Catch . Finally
+  136 TryStatement: TRY Block Catch .
+  138             | TRY Block Catch . Finally
 
     FINALLY  shift, and go to state 122
 
-    $default  reduce using rule 134 (TryStatement)
+    $default  reduce using rule 136 (TryStatement)
 
-    Finally  go to state 156
+    Finally  go to state 157
 
 
 State 124
 
-  135 TryStatement: TRY Block Finally .
+  137 TryStatement: TRY Block Finally .
 
-    $default  reduce using rule 135 (TryStatement)
+    $default  reduce using rule 137 (TryStatement)
 
 
 State 125
@@ -2386,9 +2392,9 @@ State 125
    25            | ASSIGNMENT . VALUE_FLOAT
    26            | ASSIGNMENT . VALUE_STRING
 
-    VALUE_INTEGER  shift, and go to state 157
-    VALUE_FLOAT    shift, and go to state 158
-    VALUE_STRING   shift, and go to state 159
+    VALUE_INTEGER  shift, and go to state 158
+    VALUE_FLOAT    shift, and go to state 159
+    VALUE_STRING   shift, and go to state 160
 
 
 State 126
@@ -2404,21 +2410,21 @@ State 127
 
     IDENTIFIER  shift, and go to state 77
 
-    VariableDeclaration  go to state 160
+    VariableDeclaration  go to state 161
 
 
 State 128
 
    34 IterationStatement: WHILE LEFT_PAREN Expression . RIGHT_PAREN Statement
 
-    RIGHT_PAREN  shift, and go to state 161
+    RIGHT_PAREN  shift, and go to state 162
 
 
 State 129
 
-  129 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression RIGHT_PAREN .
+  131 CoverParenthesizedExpressionAndArrowParameterList: LEFT_PAREN Expression RIGHT_PAREN .
 
-    $default  reduce using rule 129 (CoverParenthesizedExpressionAndArrowParameterList)
+    $default  reduce using rule 131 (CoverParenthesizedExpressionAndArrowParameterList)
 
 
 State 130
@@ -2446,7 +2452,7 @@ State 133
 
   112 CallExpression: CallExpression RIGHT_BRACE Expression . LEFT_BRACE
 
-    LEFT_BRACE  shift, and go to state 162
+    LEFT_BRACE  shift, and go to state 163
 
 
 State 134
@@ -2475,13 +2481,13 @@ State 137
   113 CallExpression: CallExpression FULL_STOP IdentifierName .
   116 IdentifierName: IdentifierName . IdentifierPart
 
-    IDENTIFIER  shift, and go to state 163
-    "$"         shift, and go to state 164
-    "_"         shift, and go to state 165
+    IDENTIFIER  shift, and go to state 164
+    "$"         shift, and go to state 165
+    "_"         shift, and go to state 166
 
     $default  reduce using rule 113 (CallExpression)
 
-    IdentifierPart  go to state 166
+    IdentifierPart  go to state 167
 
 
 State 138
@@ -2493,7 +2499,7 @@ State 138
 
 State 139
 
-  131 ConciseBody: RIGHT_BRACKET . FunctionBody LEFT_BRACKET
+  133 ConciseBody: RIGHT_BRACKET . FunctionBody LEFT_BRACKET
 
     DO             shift, and go to state 1
     FOR            shift, and go to state 2
@@ -2516,7 +2522,7 @@ State 139
     IDENTIFIER     shift, and go to state 19
     "temp"         shift, and go to state 20
 
-    StatementList                                      go to state 167
+    StatementList                                      go to state 168
     StatementListItem                                  go to state 24
     Declaration                                        go to state 25
     Statement                                          go to state 26
@@ -2562,23 +2568,23 @@ State 139
     ArrowFunction                                      go to state 66
     ArrowParameters                                    go to state 67
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
-    FunctionBody                                       go to state 168
-    FunctionStatementList                              go to state 169
+    FunctionBody                                       go to state 169
+    FunctionStatementList                              go to state 170
     TryStatement                                       go to state 69
 
 
 State 140
 
-  130 ConciseBody: AssignmentExpression .
+  132 ConciseBody: AssignmentExpression .
 
-    $default  reduce using rule 130 (ConciseBody)
+    $default  reduce using rule 132 (ConciseBody)
 
 
 State 141
 
-  127 ArrowFunction: ArrowParameters ARROW_FUNCTION ConciseBody .
+  129 ArrowFunction: ArrowParameters ARROW_FUNCTION ConciseBody .
 
-    $default  reduce using rule 127 (ArrowFunction)
+    $default  reduce using rule 129 (ArrowFunction)
 
 
 State 142
@@ -2596,7 +2602,7 @@ State 142
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Expression                                         go to state 170
+    Expression                                         go to state 171
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
     BooleanLiteral                                     go to state 39
@@ -2649,7 +2655,7 @@ State 144
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList . SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
 
     COMMA      shift, and go to state 127
-    SEMICOLON  shift, and go to state 171
+    SEMICOLON  shift, and go to state 172
 
 
 State 145
@@ -2657,8 +2663,8 @@ State 145
    39 IterationStatement: FOR LEFT_PAREN VAR ForBinding . IN Expression RIGHT_PAREN Statement
    42                   | FOR LEFT_PAREN VAR ForBinding . OF AssignmentExpression RIGHT_PAREN Statement
 
-    IN  shift, and go to state 172
-    OF  shift, and go to state 173
+    IN  shift, and go to state 173
+    OF  shift, and go to state 174
 
 
 State 146
@@ -2678,7 +2684,7 @@ State 146
 
     $default  reduce using rule 45 (ExpressionOptional)
 
-    ExpressionOptional                                 go to state 174
+    ExpressionOptional                                 go to state 175
     Expression                                         go to state 116
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
@@ -2718,7 +2724,7 @@ State 147
 
    37 IterationStatement: FOR LEFT_PAREN LexicalDeclaration ExpressionOptional . SEMICOLON ExpressionOptional RIGHT_PAREN Statement
 
-    SEMICOLON  shift, and go to state 175
+    SEMICOLON  shift, and go to state 176
 
 
 State 148
@@ -2736,7 +2742,7 @@ State 148
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Expression                                         go to state 176
+    Expression                                         go to state 177
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
     BooleanLiteral                                     go to state 39
@@ -2793,7 +2799,7 @@ State 149
     DecimalLiteral                                     go to state 41
     DecimalIntegerLiteral                              go to state 42
     StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 177
+    AssignmentExpression                               go to state 178
     ConditionalExpression                              go to state 45
     LogicalORExpression                                go to state 46
     LogicalANDExpression                               go to state 47
@@ -2835,7 +2841,7 @@ State 150
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Expression                                         go to state 178
+    Expression                                         go to state 179
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
     BooleanLiteral                                     go to state 39
@@ -2892,7 +2898,7 @@ State 151
     DecimalLiteral                                     go to state 41
     DecimalIntegerLiteral                              go to state 42
     StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 179
+    AssignmentExpression                               go to state 180
     ConditionalExpression                              go to state 45
     LogicalORExpression                                go to state 46
     LogicalANDExpression                               go to state 47
@@ -2944,7 +2950,7 @@ State 152
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 180
+    Statement                                          go to state 181
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -2992,63 +2998,113 @@ State 152
 
 State 153
 
-   52 SwitchStatement: SWITCH LEFT_PAREN Expression RIGHT_PAREN . CaseBlock
+  124 Arguments: LEFT_PAREN RIGHT_PAREN LEFT_PAREN . ArgumentList RIGHT_PAREN
 
-    LEFT_BRACE  shift, and go to state 181
+    SUPER          shift, and go to state 4
+    THIS           shift, and go to state 6
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
 
-    CaseBlock  go to state 182
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 182
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 82
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 83
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    ArgumentList                                       go to state 183
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
 State 154
 
-  137 Catch: CATCH LEFT_PAREN . IDENTIFIER RIGHT_PAREN Block
+   52 SwitchStatement: SWITCH LEFT_PAREN Expression RIGHT_PAREN . CaseBlock
 
-    IDENTIFIER  shift, and go to state 183
+    LEFT_BRACE  shift, and go to state 184
+
+    CaseBlock  go to state 185
 
 
 State 155
 
-  138 Finally: FINALLY Block .
+  139 Catch: CATCH LEFT_PAREN . IDENTIFIER RIGHT_PAREN Block
 
-    $default  reduce using rule 138 (Finally)
+    IDENTIFIER  shift, and go to state 186
 
 
 State 156
 
-  136 TryStatement: TRY Block Catch Finally .
+  140 Finally: FINALLY Block .
 
-    $default  reduce using rule 136 (TryStatement)
+    $default  reduce using rule 140 (Finally)
 
 
 State 157
+
+  138 TryStatement: TRY Block Catch Finally .
+
+    $default  reduce using rule 138 (TryStatement)
+
+
+State 158
 
    24 Initialiser: ASSIGNMENT VALUE_INTEGER .
 
     $default  reduce using rule 24 (Initialiser)
 
 
-State 158
+State 159
 
    25 Initialiser: ASSIGNMENT VALUE_FLOAT .
 
     $default  reduce using rule 25 (Initialiser)
 
 
-State 159
+State 160
 
    26 Initialiser: ASSIGNMENT VALUE_STRING .
 
     $default  reduce using rule 26 (Initialiser)
 
 
-State 160
+State 161
 
    22 VariableDeclarationList: VariableDeclarationList COMMA VariableDeclaration .
 
     $default  reduce using rule 22 (VariableDeclarationList)
 
 
-State 161
+State 162
 
    34 IterationStatement: WHILE LEFT_PAREN Expression RIGHT_PAREN . Statement
 
@@ -3072,7 +3128,7 @@ State 161
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 184
+    Statement                                          go to state 187
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -3118,45 +3174,45 @@ State 161
     TryStatement                                       go to state 69
 
 
-State 162
+State 163
 
   112 CallExpression: CallExpression RIGHT_BRACE Expression LEFT_BRACE .
 
     $default  reduce using rule 112 (CallExpression)
 
 
-State 163
+State 164
 
   122 IdentifierPart: IDENTIFIER .
 
     $default  reduce using rule 122 (IdentifierPart)
 
 
-State 164
+State 165
 
   120 IdentifierPart: "$" .
 
     $default  reduce using rule 120 (IdentifierPart)
 
 
-State 165
+State 166
 
   121 IdentifierPart: "_" .
 
     $default  reduce using rule 121 (IdentifierPart)
 
 
-State 166
+State 167
 
   116 IdentifierName: IdentifierName IdentifierPart .
 
     $default  reduce using rule 116 (IdentifierName)
 
 
-State 167
+State 168
 
     4 StatementList: StatementList . StatementListItem
-  133 FunctionStatementList: StatementList .
+  135 FunctionStatementList: StatementList .
 
     DO             shift, and go to state 1
     FOR            shift, and go to state 2
@@ -3179,7 +3235,7 @@ State 167
     IDENTIFIER     shift, and go to state 19
     "temp"         shift, and go to state 20
 
-    $default  reduce using rule 133 (FunctionStatementList)
+    $default  reduce using rule 135 (FunctionStatementList)
 
     StatementListItem                                  go to state 88
     Declaration                                        go to state 25
@@ -3229,28 +3285,28 @@ State 167
     TryStatement                                       go to state 69
 
 
-State 168
-
-  131 ConciseBody: RIGHT_BRACKET FunctionBody . LEFT_BRACKET
-
-    LEFT_BRACKET  shift, and go to state 185
-
-
 State 169
 
-  132 FunctionBody: FunctionStatementList .
+  133 ConciseBody: RIGHT_BRACKET FunctionBody . LEFT_BRACKET
 
-    $default  reduce using rule 132 (FunctionBody)
+    LEFT_BRACKET  shift, and go to state 188
 
 
 State 170
 
-   33 IterationStatement: DO Statement WHILE LEFT_PAREN Expression . RIGHT_PAREN SEMICOLON
+  134 FunctionBody: FunctionStatementList .
 
-    RIGHT_PAREN  shift, and go to state 186
+    $default  reduce using rule 134 (FunctionBody)
 
 
 State 171
+
+   33 IterationStatement: DO Statement WHILE LEFT_PAREN Expression . RIGHT_PAREN SEMICOLON
+
+    RIGHT_PAREN  shift, and go to state 189
+
+
+State 172
 
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON . ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
 
@@ -3267,58 +3323,8 @@ State 171
 
     $default  reduce using rule 45 (ExpressionOptional)
 
-    ExpressionOptional                                 go to state 187
+    ExpressionOptional                                 go to state 190
     Expression                                         go to state 116
-    Literal                                            go to state 37
-    NullLiteral                                        go to state 38
-    BooleanLiteral                                     go to state 39
-    NumericLiteral                                     go to state 40
-    DecimalLiteral                                     go to state 41
-    DecimalIntegerLiteral                              go to state 42
-    StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 44
-    ConditionalExpression                              go to state 45
-    LogicalORExpression                                go to state 46
-    LogicalANDExpression                               go to state 47
-    BitwiseORExpression                                go to state 48
-    BitwiseXORExpression                               go to state 49
-    BitwiseANDExpression                               go to state 50
-    EqualityExpression                                 go to state 51
-    RelationalExpression                               go to state 52
-    ShiftExpression                                    go to state 53
-    AdditiveExpression                                 go to state 54
-    MultiplicativeExpression                           go to state 55
-    UnaryExpression                                    go to state 56
-    PostfixExpression                                  go to state 57
-    NewExpression                                      go to state 58
-    MemberExpression                                   go to state 59
-    PrimaryExpression                                  go to state 60
-    LeftHandSideExpression                             go to state 61
-    CallExpression                                     go to state 62
-    IdentifierReference                                go to state 63
-    SuperCall                                          go to state 64
-    YieldExpression                                    go to state 65
-    ArrowFunction                                      go to state 66
-    ArrowParameters                                    go to state 67
-    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
-
-
-State 172
-
-   39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN . Expression RIGHT_PAREN Statement
-
-    SUPER          shift, and go to state 4
-    THIS           shift, and go to state 6
-    YIELD          shift, and go to state 10
-    LITERAL_NULL   shift, and go to state 11
-    LITERAL_TRUE   shift, and go to state 12
-    LITERAL_FALSE  shift, and go to state 13
-    LEFT_PAREN     shift, and go to state 14
-    VALUE_INTEGER  shift, and go to state 17
-    VALUE_STRING   shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-
-    Expression                                         go to state 188
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
     BooleanLiteral                                     go to state 39
@@ -3355,6 +3361,56 @@ State 172
 
 State 173
 
+   39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN . Expression RIGHT_PAREN Statement
+
+    SUPER          shift, and go to state 4
+    THIS           shift, and go to state 6
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
+
+    Expression                                         go to state 191
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 44
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 51
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 60
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
+
+
+State 174
+
    42 IterationStatement: FOR LEFT_PAREN VAR ForBinding OF . AssignmentExpression RIGHT_PAREN Statement
 
     SUPER          shift, and go to state 4
@@ -3375,7 +3431,7 @@ State 173
     DecimalLiteral                                     go to state 41
     DecimalIntegerLiteral                              go to state 42
     StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 189
+    AssignmentExpression                               go to state 192
     ConditionalExpression                              go to state 45
     LogicalORExpression                                go to state 46
     LogicalANDExpression                               go to state 47
@@ -3402,14 +3458,14 @@ State 173
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
-State 174
+State 175
 
    35 IterationStatement: FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional . SEMICOLON ExpressionOptional RIGHT_PAREN Statement
 
-    SEMICOLON  shift, and go to state 190
+    SEMICOLON  shift, and go to state 193
 
 
-State 175
+State 176
 
    37 IterationStatement: FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON . ExpressionOptional RIGHT_PAREN Statement
 
@@ -3426,7 +3482,7 @@ State 175
 
     $default  reduce using rule 45 (ExpressionOptional)
 
-    ExpressionOptional                                 go to state 191
+    ExpressionOptional                                 go to state 194
     Expression                                         go to state 116
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
@@ -3462,115 +3518,131 @@ State 175
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
-State 176
-
-   40 IterationStatement: FOR LEFT_PAREN ForDeclaration IN Expression . RIGHT_PAREN Statement
-
-    RIGHT_PAREN  shift, and go to state 192
-
-
 State 177
 
-   43 IterationStatement: FOR LEFT_PAREN ForDeclaration OF AssignmentExpression . RIGHT_PAREN Statement
-
-    RIGHT_PAREN  shift, and go to state 193
-
-
-State 178
-
-   38 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression IN Expression . RIGHT_PAREN Statement
-
-    RIGHT_PAREN  shift, and go to state 194
-
-
-State 179
-
-   41 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression . RIGHT_PAREN Statement
+   40 IterationStatement: FOR LEFT_PAREN ForDeclaration IN Expression . RIGHT_PAREN Statement
 
     RIGHT_PAREN  shift, and go to state 195
 
 
+State 178
+
+   43 IterationStatement: FOR LEFT_PAREN ForDeclaration OF AssignmentExpression . RIGHT_PAREN Statement
+
+    RIGHT_PAREN  shift, and go to state 196
+
+
+State 179
+
+   38 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression IN Expression . RIGHT_PAREN Statement
+
+    RIGHT_PAREN  shift, and go to state 197
+
+
 State 180
 
-   29 IfStatement: IF LEFT_PAREN Expression RIGHT_PAREN Statement .
-   30            | IF LEFT_PAREN Expression RIGHT_PAREN Statement . ELSE Statement
+   41 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression . RIGHT_PAREN Statement
 
-    ELSE  shift, and go to state 196
-
-    $default  reduce using rule 29 (IfStatement)
+    RIGHT_PAREN  shift, and go to state 198
 
 
 State 181
 
-   53 CaseBlock: LEFT_BRACE . CaseClausesOptional RIGHT_BRACE
-   54          | LEFT_BRACE . CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+   29 IfStatement: IF LEFT_PAREN Expression RIGHT_PAREN Statement .
+   30            | IF LEFT_PAREN Expression RIGHT_PAREN Statement . ELSE Statement
 
-    CASE  shift, and go to state 197
+    ELSE  shift, and go to state 199
 
-    $default  reduce using rule 58 (CaseClausesOptional)
-
-    CaseClauses          go to state 198
-    CaseClausesOptional  go to state 199
-    CaseClause           go to state 200
+    $default  reduce using rule 29 (IfStatement)
 
 
 State 182
+
+  125 ArgumentList: AssignmentExpression .
+
+    $default  reduce using rule 125 (ArgumentList)
+
+
+State 183
+
+  124 Arguments: LEFT_PAREN RIGHT_PAREN LEFT_PAREN ArgumentList . RIGHT_PAREN
+  126 ArgumentList: ArgumentList . COMMA AssignmentExpression
+
+    RIGHT_PAREN  shift, and go to state 200
+    COMMA        shift, and go to state 201
+
+
+State 184
+
+   53 CaseBlock: LEFT_BRACE . CaseClausesOptional RIGHT_BRACE
+   54          | LEFT_BRACE . CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+
+    CASE  shift, and go to state 202
+
+    $default  reduce using rule 58 (CaseClausesOptional)
+
+    CaseClauses          go to state 203
+    CaseClausesOptional  go to state 204
+    CaseClause           go to state 205
+
+
+State 185
 
    52 SwitchStatement: SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock .
 
     $default  reduce using rule 52 (SwitchStatement)
 
 
-State 183
+State 186
 
-  137 Catch: CATCH LEFT_PAREN IDENTIFIER . RIGHT_PAREN Block
+  139 Catch: CATCH LEFT_PAREN IDENTIFIER . RIGHT_PAREN Block
 
-    RIGHT_PAREN  shift, and go to state 201
+    RIGHT_PAREN  shift, and go to state 206
 
 
-State 184
+State 187
 
    34 IterationStatement: WHILE LEFT_PAREN Expression RIGHT_PAREN Statement .
 
     $default  reduce using rule 34 (IterationStatement)
 
 
-State 185
-
-  131 ConciseBody: RIGHT_BRACKET FunctionBody LEFT_BRACKET .
-
-    $default  reduce using rule 131 (ConciseBody)
-
-
-State 186
-
-   33 IterationStatement: DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN . SEMICOLON
-
-    SEMICOLON  shift, and go to state 202
-
-
-State 187
-
-   36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional . SEMICOLON ExpressionOptional RIGHT_PAREN Statement
-
-    SEMICOLON  shift, and go to state 203
-
-
 State 188
 
-   39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN Expression . RIGHT_PAREN Statement
+  133 ConciseBody: RIGHT_BRACKET FunctionBody LEFT_BRACKET .
 
-    RIGHT_PAREN  shift, and go to state 204
+    $default  reduce using rule 133 (ConciseBody)
 
 
 State 189
 
-   42 IterationStatement: FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression . RIGHT_PAREN Statement
+   33 IterationStatement: DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN . SEMICOLON
 
-    RIGHT_PAREN  shift, and go to state 205
+    SEMICOLON  shift, and go to state 207
 
 
 State 190
+
+   36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional . SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+
+    SEMICOLON  shift, and go to state 208
+
+
+State 191
+
+   39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN Expression . RIGHT_PAREN Statement
+
+    RIGHT_PAREN  shift, and go to state 209
+
+
+State 192
+
+   42 IterationStatement: FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression . RIGHT_PAREN Statement
+
+    RIGHT_PAREN  shift, and go to state 210
+
+
+State 193
 
    35 IterationStatement: FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON . ExpressionOptional RIGHT_PAREN Statement
 
@@ -3587,7 +3659,7 @@ State 190
 
     $default  reduce using rule 45 (ExpressionOptional)
 
-    ExpressionOptional                                 go to state 206
+    ExpressionOptional                                 go to state 211
     Expression                                         go to state 116
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
@@ -3623,14 +3695,14 @@ State 190
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
-State 191
+State 194
 
    37 IterationStatement: FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional . RIGHT_PAREN Statement
 
-    RIGHT_PAREN  shift, and go to state 207
+    RIGHT_PAREN  shift, and go to state 212
 
 
-State 192
+State 195
 
    40 IterationStatement: FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN . Statement
 
@@ -3654,217 +3726,7 @@ State 192
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 208
-    BlockStatement                                     go to state 27
-    Block                                              go to state 28
-    VariableStatement                                  go to state 29
-    EmptyStatement                                     go to state 30
-    ExpressionStatement                                go to state 31
-    IfStatement                                        go to state 32
-    BreakableStatement                                 go to state 33
-    IterationStatement                                 go to state 34
-    SwitchStatement                                    go to state 35
-    Expression                                         go to state 36
-    Literal                                            go to state 37
-    NullLiteral                                        go to state 38
-    BooleanLiteral                                     go to state 39
-    NumericLiteral                                     go to state 40
-    DecimalLiteral                                     go to state 41
-    DecimalIntegerLiteral                              go to state 42
-    StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 44
-    ConditionalExpression                              go to state 45
-    LogicalORExpression                                go to state 46
-    LogicalANDExpression                               go to state 47
-    BitwiseORExpression                                go to state 48
-    BitwiseXORExpression                               go to state 49
-    BitwiseANDExpression                               go to state 50
-    EqualityExpression                                 go to state 51
-    RelationalExpression                               go to state 52
-    ShiftExpression                                    go to state 53
-    AdditiveExpression                                 go to state 54
-    MultiplicativeExpression                           go to state 55
-    UnaryExpression                                    go to state 56
-    PostfixExpression                                  go to state 57
-    NewExpression                                      go to state 58
-    MemberExpression                                   go to state 59
-    PrimaryExpression                                  go to state 60
-    LeftHandSideExpression                             go to state 61
-    CallExpression                                     go to state 62
-    IdentifierReference                                go to state 63
-    SuperCall                                          go to state 64
-    YieldExpression                                    go to state 65
-    ArrowFunction                                      go to state 66
-    ArrowParameters                                    go to state 67
-    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
-    TryStatement                                       go to state 69
-
-
-State 193
-
-   43 IterationStatement: FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN . Statement
-
-    DO             shift, and go to state 1
-    FOR            shift, and go to state 2
-    IF             shift, and go to state 3
-    SUPER          shift, and go to state 4
-    SWITCH         shift, and go to state 5
-    THIS           shift, and go to state 6
-    TRY            shift, and go to state 7
-    VAR            shift, and go to state 8
-    WHILE          shift, and go to state 9
-    YIELD          shift, and go to state 10
-    LITERAL_NULL   shift, and go to state 11
-    LITERAL_TRUE   shift, and go to state 12
-    LITERAL_FALSE  shift, and go to state 13
-    LEFT_PAREN     shift, and go to state 14
-    LEFT_BRACE     shift, and go to state 15
-    SEMICOLON      shift, and go to state 16
-    VALUE_INTEGER  shift, and go to state 17
-    VALUE_STRING   shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-
-    Statement                                          go to state 209
-    BlockStatement                                     go to state 27
-    Block                                              go to state 28
-    VariableStatement                                  go to state 29
-    EmptyStatement                                     go to state 30
-    ExpressionStatement                                go to state 31
-    IfStatement                                        go to state 32
-    BreakableStatement                                 go to state 33
-    IterationStatement                                 go to state 34
-    SwitchStatement                                    go to state 35
-    Expression                                         go to state 36
-    Literal                                            go to state 37
-    NullLiteral                                        go to state 38
-    BooleanLiteral                                     go to state 39
-    NumericLiteral                                     go to state 40
-    DecimalLiteral                                     go to state 41
-    DecimalIntegerLiteral                              go to state 42
-    StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 44
-    ConditionalExpression                              go to state 45
-    LogicalORExpression                                go to state 46
-    LogicalANDExpression                               go to state 47
-    BitwiseORExpression                                go to state 48
-    BitwiseXORExpression                               go to state 49
-    BitwiseANDExpression                               go to state 50
-    EqualityExpression                                 go to state 51
-    RelationalExpression                               go to state 52
-    ShiftExpression                                    go to state 53
-    AdditiveExpression                                 go to state 54
-    MultiplicativeExpression                           go to state 55
-    UnaryExpression                                    go to state 56
-    PostfixExpression                                  go to state 57
-    NewExpression                                      go to state 58
-    MemberExpression                                   go to state 59
-    PrimaryExpression                                  go to state 60
-    LeftHandSideExpression                             go to state 61
-    CallExpression                                     go to state 62
-    IdentifierReference                                go to state 63
-    SuperCall                                          go to state 64
-    YieldExpression                                    go to state 65
-    ArrowFunction                                      go to state 66
-    ArrowParameters                                    go to state 67
-    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
-    TryStatement                                       go to state 69
-
-
-State 194
-
-   38 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN . Statement
-
-    DO             shift, and go to state 1
-    FOR            shift, and go to state 2
-    IF             shift, and go to state 3
-    SUPER          shift, and go to state 4
-    SWITCH         shift, and go to state 5
-    THIS           shift, and go to state 6
-    TRY            shift, and go to state 7
-    VAR            shift, and go to state 8
-    WHILE          shift, and go to state 9
-    YIELD          shift, and go to state 10
-    LITERAL_NULL   shift, and go to state 11
-    LITERAL_TRUE   shift, and go to state 12
-    LITERAL_FALSE  shift, and go to state 13
-    LEFT_PAREN     shift, and go to state 14
-    LEFT_BRACE     shift, and go to state 15
-    SEMICOLON      shift, and go to state 16
-    VALUE_INTEGER  shift, and go to state 17
-    VALUE_STRING   shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-
-    Statement                                          go to state 210
-    BlockStatement                                     go to state 27
-    Block                                              go to state 28
-    VariableStatement                                  go to state 29
-    EmptyStatement                                     go to state 30
-    ExpressionStatement                                go to state 31
-    IfStatement                                        go to state 32
-    BreakableStatement                                 go to state 33
-    IterationStatement                                 go to state 34
-    SwitchStatement                                    go to state 35
-    Expression                                         go to state 36
-    Literal                                            go to state 37
-    NullLiteral                                        go to state 38
-    BooleanLiteral                                     go to state 39
-    NumericLiteral                                     go to state 40
-    DecimalLiteral                                     go to state 41
-    DecimalIntegerLiteral                              go to state 42
-    StringLiteral                                      go to state 43
-    AssignmentExpression                               go to state 44
-    ConditionalExpression                              go to state 45
-    LogicalORExpression                                go to state 46
-    LogicalANDExpression                               go to state 47
-    BitwiseORExpression                                go to state 48
-    BitwiseXORExpression                               go to state 49
-    BitwiseANDExpression                               go to state 50
-    EqualityExpression                                 go to state 51
-    RelationalExpression                               go to state 52
-    ShiftExpression                                    go to state 53
-    AdditiveExpression                                 go to state 54
-    MultiplicativeExpression                           go to state 55
-    UnaryExpression                                    go to state 56
-    PostfixExpression                                  go to state 57
-    NewExpression                                      go to state 58
-    MemberExpression                                   go to state 59
-    PrimaryExpression                                  go to state 60
-    LeftHandSideExpression                             go to state 61
-    CallExpression                                     go to state 62
-    IdentifierReference                                go to state 63
-    SuperCall                                          go to state 64
-    YieldExpression                                    go to state 65
-    ArrowFunction                                      go to state 66
-    ArrowParameters                                    go to state 67
-    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
-    TryStatement                                       go to state 69
-
-
-State 195
-
-   41 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN . Statement
-
-    DO             shift, and go to state 1
-    FOR            shift, and go to state 2
-    IF             shift, and go to state 3
-    SUPER          shift, and go to state 4
-    SWITCH         shift, and go to state 5
-    THIS           shift, and go to state 6
-    TRY            shift, and go to state 7
-    VAR            shift, and go to state 8
-    WHILE          shift, and go to state 9
-    YIELD          shift, and go to state 10
-    LITERAL_NULL   shift, and go to state 11
-    LITERAL_TRUE   shift, and go to state 12
-    LITERAL_FALSE  shift, and go to state 13
-    LEFT_PAREN     shift, and go to state 14
-    LEFT_BRACE     shift, and go to state 15
-    SEMICOLON      shift, and go to state 16
-    VALUE_INTEGER  shift, and go to state 17
-    VALUE_STRING   shift, and go to state 18
-    IDENTIFIER     shift, and go to state 19
-
-    Statement                                          go to state 211
+    Statement                                          go to state 213
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -3912,7 +3774,7 @@ State 195
 
 State 196
 
-   30 IfStatement: IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE . Statement
+   43 IterationStatement: FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN . Statement
 
     DO             shift, and go to state 1
     FOR            shift, and go to state 2
@@ -3934,7 +3796,7 @@ State 196
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 212
+    Statement                                          go to state 214
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -3982,6 +3844,272 @@ State 196
 
 State 197
 
+   38 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN . Statement
+
+    DO             shift, and go to state 1
+    FOR            shift, and go to state 2
+    IF             shift, and go to state 3
+    SUPER          shift, and go to state 4
+    SWITCH         shift, and go to state 5
+    THIS           shift, and go to state 6
+    TRY            shift, and go to state 7
+    VAR            shift, and go to state 8
+    WHILE          shift, and go to state 9
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    LEFT_BRACE     shift, and go to state 15
+    SEMICOLON      shift, and go to state 16
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
+
+    Statement                                          go to state 215
+    BlockStatement                                     go to state 27
+    Block                                              go to state 28
+    VariableStatement                                  go to state 29
+    EmptyStatement                                     go to state 30
+    ExpressionStatement                                go to state 31
+    IfStatement                                        go to state 32
+    BreakableStatement                                 go to state 33
+    IterationStatement                                 go to state 34
+    SwitchStatement                                    go to state 35
+    Expression                                         go to state 36
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 44
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 51
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 60
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
+    TryStatement                                       go to state 69
+
+
+State 198
+
+   41 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN . Statement
+
+    DO             shift, and go to state 1
+    FOR            shift, and go to state 2
+    IF             shift, and go to state 3
+    SUPER          shift, and go to state 4
+    SWITCH         shift, and go to state 5
+    THIS           shift, and go to state 6
+    TRY            shift, and go to state 7
+    VAR            shift, and go to state 8
+    WHILE          shift, and go to state 9
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    LEFT_BRACE     shift, and go to state 15
+    SEMICOLON      shift, and go to state 16
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
+
+    Statement                                          go to state 216
+    BlockStatement                                     go to state 27
+    Block                                              go to state 28
+    VariableStatement                                  go to state 29
+    EmptyStatement                                     go to state 30
+    ExpressionStatement                                go to state 31
+    IfStatement                                        go to state 32
+    BreakableStatement                                 go to state 33
+    IterationStatement                                 go to state 34
+    SwitchStatement                                    go to state 35
+    Expression                                         go to state 36
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 44
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 51
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 60
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
+    TryStatement                                       go to state 69
+
+
+State 199
+
+   30 IfStatement: IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE . Statement
+
+    DO             shift, and go to state 1
+    FOR            shift, and go to state 2
+    IF             shift, and go to state 3
+    SUPER          shift, and go to state 4
+    SWITCH         shift, and go to state 5
+    THIS           shift, and go to state 6
+    TRY            shift, and go to state 7
+    VAR            shift, and go to state 8
+    WHILE          shift, and go to state 9
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    LEFT_BRACE     shift, and go to state 15
+    SEMICOLON      shift, and go to state 16
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
+
+    Statement                                          go to state 217
+    BlockStatement                                     go to state 27
+    Block                                              go to state 28
+    VariableStatement                                  go to state 29
+    EmptyStatement                                     go to state 30
+    ExpressionStatement                                go to state 31
+    IfStatement                                        go to state 32
+    BreakableStatement                                 go to state 33
+    IterationStatement                                 go to state 34
+    SwitchStatement                                    go to state 35
+    Expression                                         go to state 36
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 44
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 51
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 60
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
+    TryStatement                                       go to state 69
+
+
+State 200
+
+  124 Arguments: LEFT_PAREN RIGHT_PAREN LEFT_PAREN ArgumentList RIGHT_PAREN .
+
+    $default  reduce using rule 124 (Arguments)
+
+
+State 201
+
+  126 ArgumentList: ArgumentList COMMA . AssignmentExpression
+
+    SUPER          shift, and go to state 4
+    THIS           shift, and go to state 6
+    YIELD          shift, and go to state 10
+    LITERAL_NULL   shift, and go to state 11
+    LITERAL_TRUE   shift, and go to state 12
+    LITERAL_FALSE  shift, and go to state 13
+    LEFT_PAREN     shift, and go to state 14
+    VALUE_INTEGER  shift, and go to state 17
+    VALUE_STRING   shift, and go to state 18
+    IDENTIFIER     shift, and go to state 19
+
+    Literal                                            go to state 37
+    NullLiteral                                        go to state 38
+    BooleanLiteral                                     go to state 39
+    NumericLiteral                                     go to state 40
+    DecimalLiteral                                     go to state 41
+    DecimalIntegerLiteral                              go to state 42
+    StringLiteral                                      go to state 43
+    AssignmentExpression                               go to state 218
+    ConditionalExpression                              go to state 45
+    LogicalORExpression                                go to state 46
+    LogicalANDExpression                               go to state 47
+    BitwiseORExpression                                go to state 48
+    BitwiseXORExpression                               go to state 49
+    BitwiseANDExpression                               go to state 50
+    EqualityExpression                                 go to state 82
+    RelationalExpression                               go to state 52
+    ShiftExpression                                    go to state 53
+    AdditiveExpression                                 go to state 54
+    MultiplicativeExpression                           go to state 55
+    UnaryExpression                                    go to state 56
+    PostfixExpression                                  go to state 57
+    NewExpression                                      go to state 58
+    MemberExpression                                   go to state 59
+    PrimaryExpression                                  go to state 83
+    LeftHandSideExpression                             go to state 61
+    CallExpression                                     go to state 62
+    IdentifierReference                                go to state 63
+    SuperCall                                          go to state 64
+    YieldExpression                                    go to state 65
+    ArrowFunction                                      go to state 66
+    ArrowParameters                                    go to state 67
+    CoverParenthesizedExpressionAndArrowParameterList  go to state 68
+
+
+State 202
+
    59 CaseClause: CASE . Expression COLON StatementListOptional
 
     SUPER          shift, and go to state 4
@@ -3995,7 +4123,7 @@ State 197
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Expression                                         go to state 213
+    Expression                                         go to state 219
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
     BooleanLiteral                                     go to state 39
@@ -4030,53 +4158,53 @@ State 197
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
-State 198
+State 203
 
    56 CaseClauses: CaseClauses . CaseClause
    57 CaseClausesOptional: CaseClauses .
 
-    CASE  shift, and go to state 197
+    CASE  shift, and go to state 202
 
     $default  reduce using rule 57 (CaseClausesOptional)
 
-    CaseClause  go to state 214
+    CaseClause  go to state 220
 
 
-State 199
+State 204
 
    53 CaseBlock: LEFT_BRACE CaseClausesOptional . RIGHT_BRACE
    54          | LEFT_BRACE CaseClausesOptional . DefaultClause CaseClausesOptional RIGHT_BRACE
 
-    DEFAULT      shift, and go to state 215
-    RIGHT_BRACE  shift, and go to state 216
+    DEFAULT      shift, and go to state 221
+    RIGHT_BRACE  shift, and go to state 222
 
-    DefaultClause  go to state 217
+    DefaultClause  go to state 223
 
 
-State 200
+State 205
 
    55 CaseClauses: CaseClause .
 
     $default  reduce using rule 55 (CaseClauses)
 
 
-State 201
+State 206
 
-  137 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN . Block
+  139 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN . Block
 
     LEFT_BRACE  shift, and go to state 15
 
-    Block  go to state 218
+    Block  go to state 224
 
 
-State 202
+State 207
 
    33 IterationStatement: DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON .
 
     $default  reduce using rule 33 (IterationStatement)
 
 
-State 203
+State 208
 
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON . ExpressionOptional RIGHT_PAREN Statement
 
@@ -4093,7 +4221,7 @@ State 203
 
     $default  reduce using rule 45 (ExpressionOptional)
 
-    ExpressionOptional                                 go to state 219
+    ExpressionOptional                                 go to state 225
     Expression                                         go to state 116
     Literal                                            go to state 37
     NullLiteral                                        go to state 38
@@ -4129,7 +4257,7 @@ State 203
     CoverParenthesizedExpressionAndArrowParameterList  go to state 68
 
 
-State 204
+State 209
 
    39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN . Statement
 
@@ -4153,7 +4281,7 @@ State 204
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 220
+    Statement                                          go to state 226
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -4199,7 +4327,7 @@ State 204
     TryStatement                                       go to state 69
 
 
-State 205
+State 210
 
    42 IterationStatement: FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN . Statement
 
@@ -4223,7 +4351,7 @@ State 205
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 221
+    Statement                                          go to state 227
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -4269,14 +4397,14 @@ State 205
     TryStatement                                       go to state 69
 
 
-State 206
+State 211
 
    35 IterationStatement: FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional . RIGHT_PAREN Statement
 
-    RIGHT_PAREN  shift, and go to state 222
+    RIGHT_PAREN  shift, and go to state 228
 
 
-State 207
+State 212
 
    37 IterationStatement: FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN . Statement
 
@@ -4300,7 +4428,7 @@ State 207
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 223
+    Statement                                          go to state 229
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -4346,111 +4474,118 @@ State 207
     TryStatement                                       go to state 69
 
 
-State 208
+State 213
 
    40 IterationStatement: FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN Statement .
 
     $default  reduce using rule 40 (IterationStatement)
 
 
-State 209
+State 214
 
    43 IterationStatement: FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement .
 
     $default  reduce using rule 43 (IterationStatement)
 
 
-State 210
+State 215
 
    38 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement .
 
     $default  reduce using rule 38 (IterationStatement)
 
 
-State 211
+State 216
 
    41 IterationStatement: FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement .
 
     $default  reduce using rule 41 (IterationStatement)
 
 
-State 212
+State 217
 
    30 IfStatement: IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement .
 
     $default  reduce using rule 30 (IfStatement)
 
 
-State 213
+State 218
+
+  126 ArgumentList: ArgumentList COMMA AssignmentExpression .
+
+    $default  reduce using rule 126 (ArgumentList)
+
+
+State 219
 
    59 CaseClause: CASE Expression . COLON StatementListOptional
 
-    COLON  shift, and go to state 224
+    COLON  shift, and go to state 230
 
 
-State 214
+State 220
 
    56 CaseClauses: CaseClauses CaseClause .
 
     $default  reduce using rule 56 (CaseClauses)
 
 
-State 215
+State 221
 
    60 DefaultClause: DEFAULT . COLON StatementListOptional
 
-    COLON  shift, and go to state 225
+    COLON  shift, and go to state 231
 
 
-State 216
+State 222
 
    53 CaseBlock: LEFT_BRACE CaseClausesOptional RIGHT_BRACE .
 
     $default  reduce using rule 53 (CaseBlock)
 
 
-State 217
+State 223
 
    54 CaseBlock: LEFT_BRACE CaseClausesOptional DefaultClause . CaseClausesOptional RIGHT_BRACE
 
-    CASE  shift, and go to state 197
+    CASE  shift, and go to state 202
 
     $default  reduce using rule 58 (CaseClausesOptional)
 
-    CaseClauses          go to state 198
-    CaseClausesOptional  go to state 226
-    CaseClause           go to state 200
+    CaseClauses          go to state 203
+    CaseClausesOptional  go to state 232
+    CaseClause           go to state 205
 
 
-State 218
+State 224
 
-  137 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block .
+  139 Catch: CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block .
 
-    $default  reduce using rule 137 (Catch)
+    $default  reduce using rule 139 (Catch)
 
 
-State 219
+State 225
 
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional . RIGHT_PAREN Statement
 
-    RIGHT_PAREN  shift, and go to state 227
+    RIGHT_PAREN  shift, and go to state 233
 
 
-State 220
+State 226
 
    39 IterationStatement: FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN Statement .
 
     $default  reduce using rule 39 (IterationStatement)
 
 
-State 221
+State 227
 
    42 IterationStatement: FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement .
 
     $default  reduce using rule 42 (IterationStatement)
 
 
-State 222
+State 228
 
    35 IterationStatement: FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN . Statement
 
@@ -4474,7 +4609,7 @@ State 222
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 228
+    Statement                                          go to state 234
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -4520,14 +4655,14 @@ State 222
     TryStatement                                       go to state 69
 
 
-State 223
+State 229
 
    37 IterationStatement: FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement .
 
     $default  reduce using rule 37 (IterationStatement)
 
 
-State 224
+State 230
 
    59 CaseClause: CASE Expression COLON . StatementListOptional
 
@@ -4554,8 +4689,8 @@ State 224
 
     $default  reduce using rule 6 (StatementListOptional)
 
-    StatementList                                      go to state 229
-    StatementListOptional                              go to state 230
+    StatementList                                      go to state 235
+    StatementListOptional                              go to state 236
     StatementListItem                                  go to state 24
     Declaration                                        go to state 25
     Statement                                          go to state 26
@@ -4604,7 +4739,7 @@ State 224
     TryStatement                                       go to state 69
 
 
-State 225
+State 231
 
    60 DefaultClause: DEFAULT COLON . StatementListOptional
 
@@ -4631,8 +4766,8 @@ State 225
 
     $default  reduce using rule 6 (StatementListOptional)
 
-    StatementList                                      go to state 229
-    StatementListOptional                              go to state 231
+    StatementList                                      go to state 235
+    StatementListOptional                              go to state 237
     StatementListItem                                  go to state 24
     Declaration                                        go to state 25
     Statement                                          go to state 26
@@ -4681,14 +4816,14 @@ State 225
     TryStatement                                       go to state 69
 
 
-State 226
+State 232
 
    54 CaseBlock: LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional . RIGHT_BRACE
 
-    RIGHT_BRACE  shift, and go to state 232
+    RIGHT_BRACE  shift, and go to state 238
 
 
-State 227
+State 233
 
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN . Statement
 
@@ -4712,7 +4847,7 @@ State 227
     VALUE_STRING   shift, and go to state 18
     IDENTIFIER     shift, and go to state 19
 
-    Statement                                          go to state 233
+    Statement                                          go to state 239
     BlockStatement                                     go to state 27
     Block                                              go to state 28
     VariableStatement                                  go to state 29
@@ -4758,14 +4893,14 @@ State 227
     TryStatement                                       go to state 69
 
 
-State 228
+State 234
 
    35 IterationStatement: FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement .
 
     $default  reduce using rule 35 (IterationStatement)
 
 
-State 229
+State 235
 
     4 StatementList: StatementList . StatementListItem
     5 StatementListOptional: StatementList .
@@ -4841,28 +4976,28 @@ State 229
     TryStatement                                       go to state 69
 
 
-State 230
+State 236
 
    59 CaseClause: CASE Expression COLON StatementListOptional .
 
     $default  reduce using rule 59 (CaseClause)
 
 
-State 231
+State 237
 
    60 DefaultClause: DEFAULT COLON StatementListOptional .
 
     $default  reduce using rule 60 (DefaultClause)
 
 
-State 232
+State 238
 
    54 CaseBlock: LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE .
 
     $default  reduce using rule 54 (CaseBlock)
 
 
-State 233
+State 239
 
    36 IterationStatement: FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement .
 

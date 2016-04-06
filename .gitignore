@@ -9,4 +9,4 @@ tests/test_*
 .idea/
 tests/test_lex
 log.txt
-grammar.output
+*.output
