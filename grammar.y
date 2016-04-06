@@ -359,9 +359,12 @@ BitwiseORExpression:
     ;
    
 BitwiseXORExpression:
-    EqualityExpression
+    BitwiseANDExpression
     ;
     
+BitwiseANDExpression:
+    EqualityExpression
+    ;
 
 EqualityExpression:
     RelationalExpression
