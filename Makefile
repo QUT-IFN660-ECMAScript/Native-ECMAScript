@@ -8,22 +8,22 @@ LEX_TESTS := $(wildcard $(LEX_TESTS_DIR)/*.js)
 TMP_DIR := tmp
 
 .bison:
-	@bison -d grammar.y
+	@bison -d grammar.yy
 	$(info Parser Generated)
 .flex:
-	@flex --header-file=lex.yy.h grammar.l
+	@flex grammar.ll
 	$(info Scanner Generated)
 
 .clean_prod:
-	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f scanner
+	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f scanner && rm -f position.hh stack.hh location.hh
 .build_prod: .bison .flex
-	@gcc lex.yy.c grammar.tab.c utils.c main.c -o scanner -ll -ly
+	@g++ lex.yy.cc grammar.tab.cc utils.cpp main.cpp -o scanner -ll -ly
 	$(info Build Success)
 
 .clean_test: .clean_prod
 	@rm -f tests/test_lex
 .build_lex_test: .bison .flex
-	@gcc lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
+	@g++ lex.yy.cpp grammar.tab.cc utils.cpp test_lex.cpp -o tests/test_lex
 	$(info Build Success)
 
 
@@ -31,6 +31,8 @@ TMP_DIR := tmp
 all: clean .build_prod
 clean: .clean_prod .clean_test
 test: clean .run_lex_test
+flex: .flex
+bison: .bison
 
 # this seems a little crazy
 .run_lex_test: .build_lex_test

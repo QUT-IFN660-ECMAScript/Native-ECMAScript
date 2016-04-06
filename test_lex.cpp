@@ -3,7 +3,7 @@
 //
 
 #include <stdio.h>
-#include "y.tab.h"
+#include "y.tab.hh"
 #include "grammar.tab.h"
 #include "lex.yy.h"
 

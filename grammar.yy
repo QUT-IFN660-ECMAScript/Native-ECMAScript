@@ -1,8 +1,35 @@
-%{
-#include <stdio.h>
-#include "y.tab.h"
-#include "lex.yy.h"
-%}
+%skeleton "lalr1.cc"
+%require  "3.0"
+%debug
+%defines
+%define api.namespace {ECMA}
+%define parser_class_name {ECMA_Parser}
+
+%code requires{
+   namespace ECMA {
+      class ECMA_Driver;
+      class ECMA_Scanner;
+   }
+}
+
+
+%lex-param   { ECMA_Scanner  &scanner  }
+%parse-param { ECMA_Scanner  &scanner  }
+
+%lex-param   { ECMA_Driver  &driver  }
+%parse-param { ECMA_Driver  &driver  }
+
+%code{
+   #include <iostream>
+   #include <cstdlib>
+   #include <fstream>
+
+   #include "ECMA_Driver.hpp"
+
+   static int yylex(ECMA::ECMA_Parser::semantic_type *yylval, ECMA::ECMA_Scanner &scanner, ECMA::ECMA_Driver &driver);
+}
+
+
 
 %token END_OF_FILE
 %token BREAK
@@ -111,11 +138,12 @@
 %token VALUE_STRING
 %token IDENTIFIER
 
-
 %union {
-    int ival;
-    double fval;
-    char* sval;
+    struct {
+        int ival;
+        double fval;
+    };
+    std::string* sval;
 }
 
 %error-verbose
@@ -425,3 +453,14 @@ FunctionStatementList:
     ;
 
 %%
+
+void ECMA::ECMA_Parser::error( const std::string &err_message )
+{
+   std::cerr << "Error: " << err_message << "\n";
+}
+
+#include "ECMA_Scanner.hpp"
+static int yylex( ECMA::ECMA_Parser::semantic_type *yylval, ECMA::ECMA_Scanner &scanner, ECMA::ECMA_Driver &driver )
+{
+   return( scanner.yylex(yylval) );
+}
