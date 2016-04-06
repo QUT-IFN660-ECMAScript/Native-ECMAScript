@@ -247,9 +247,44 @@ ExpressionOptional:
     ;
     
 LexicalDeclaration:
-    LetOrConst 
-    // TODO not implemented yet | BindingList
+    LetOrConst BindingList
     ;
+    
+LetOrConst:
+	LET
+	| CONST
+	;
+
+BindingList:
+	LexicalBinding
+	| BindingList COMMA LexicalBinding
+	;
+	
+LexicalBinding:
+	BindingIdentifier 
+	| BindingIdentifier Initialiser
+	| BindingPattern 
+	| BindingPattern Initialiser
+	;
+	
+BindingIdentifier:
+	Identifier
+	| YIELD
+	;
+	
+Identifier:
+	IdentifierName
+	;
+	
+IdentifierName:
+	"temp"
+	/* to do */
+	;
+	
+BindingPattern:
+	"todo"
+	/* to do */
+	;
     
 ForDeclaration:
     LetOrConst 
@@ -264,10 +299,6 @@ ForBinding:
     */
     ;
 
-LetOrConst:
-    LET
-    | CONST
-    ;
 
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
