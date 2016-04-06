@@ -466,7 +466,13 @@ SuperCall:
 
 Arguments:
     LEFT_PAREN RIGHT_PAREN
+    LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
+
+ArgumentList:
+	AssignmentExpression
+	| ArgumentList COMMA AssignmentExpression
+	;
 
 YieldExpression:
     YIELD
