@@ -192,20 +192,20 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-    IDENTIFIER Initialiser
-    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
-    BindingIdentifier InitialiserOptional
-    | BindingPattern Initialiser
-    */
+    BindingIdentifier Initialiser
     ;
+    
+BindingIdentifier:
+	Identifier
+	| YIELD
+	;
+	
+Identifier:
+	IdentifierName 
+	;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
-  | ASSIGNMENT VALUE_FLOAT
-  | ASSIGNMENT VALUE_STRING
-  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
   ASSIGNMENT AssignmentExpression
-  */
   ;
 
 EmptyStatement:
@@ -248,43 +248,8 @@ ExpressionOptional:
     
 LexicalDeclaration:
     LetOrConst BindingList
+    // TODO not implemented yet | BindingList
     ;
-    
-LetOrConst:
-	LET
-	| CONST
-	;
-
-BindingList:
-	LexicalBinding
-	| BindingList COMMA LexicalBinding
-	;
-	
-LexicalBinding:
-	BindingIdentifier 
-	| BindingIdentifier Initialiser
-	| BindingPattern 
-	| BindingPattern Initialiser
-	;
-	
-BindingIdentifier:
-	Identifier
-	| YIELD
-	;
-	
-Identifier:
-	IdentifierName
-	;
-	
-IdentifierName:
-	"temp"
-	/* to do */
-	;
-	
-BindingPattern:
-	"todo"
-	/* to do */
-	;
     
 ForDeclaration:
     LetOrConst 
@@ -299,6 +264,35 @@ ForBinding:
     */
     ;
 
+LetOrConst:
+    LET
+    | CONST
+    ;
+    
+BindingList:
+	LexicalBinding
+	| BindingList COMMA LexicalBinding
+	;
+	
+LexicalBinding:
+	BindingIdentifier 
+	| BindingIdentifier Initialiser
+	| BindingPattern 
+	| BindingPattern Initialiser
+	;
+	
+	
+IdentifierName:
+	"temp"
+	/* to do */
+	;
+	
+BindingPattern:
+	"todo"
+	/* to do */
+	;
+    
+    
 
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
@@ -497,13 +491,13 @@ SuperCall:
 
 Arguments:
     LEFT_PAREN RIGHT_PAREN
-    LEFT_PAREN ArgumentList RIGHT_PAREN
+    | LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
-
+    
 ArgumentList:
-	AssignmentExpression
-	| ArgumentList COMMA AssignmentExpression
-	;
+ 	AssignmentExpression
+ 	| ArgumentList COMMA AssignmentExpression
+ 	;
 
 YieldExpression:
     YIELD
