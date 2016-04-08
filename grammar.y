@@ -344,26 +344,32 @@ AssignmentExpression:
     
 ConditionalExpression:
     LogicalORExpression
+    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
     ;
     
 LogicalORExpression:
     LogicalANDExpression
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
     ;
     
 LogicalANDExpression:
     BitwiseORExpression
+    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
     ;
     
 BitwiseORExpression:
     BitwiseXORExpression
+    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
     ;
    
 BitwiseXORExpression:
     BitwiseANDExpression
+    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
     ;
     
 BitwiseANDExpression:
     EqualityExpression
+    | BitwiseANDExpression BITWISE_AND EqualityExpression
     ;
 
 EqualityExpression:
