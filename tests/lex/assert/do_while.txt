@@ -1,0 +1,19 @@
+VAR
+IDENTIFIER (x)
+=
+VALUE_INTEGER (1)
+;
+DO
+{
+IDENTIFIER (x)
+++
+;
+}
+WHILE
+(
+IDENTIFIER (x)
+<
+VALUE_INTEGER (3)
+)
+;
+END_OF_FILE
