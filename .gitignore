@@ -10,3 +10,5 @@ tests/test_*
 tests/test_lex
 log.txt
 grammar.output
+grammar.dot
+*.ps

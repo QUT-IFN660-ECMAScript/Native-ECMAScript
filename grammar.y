@@ -154,14 +154,17 @@ StatementListItem:
     ;
 
 Declaration:
-    "temp"
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
-    | ClassDeclaration
+ /* | ClassDeclaration
     | LexicalDeclaration
     */
     ;
 
+HoistableDeclaration:
+	FunctionDeclaration
+/*	| GeneratorDeclaration */
+	;	
 
 Statement:
     BlockStatement
@@ -192,7 +195,8 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-    BindingIdentifier Initialiser
+	BindingIdentifier
+	| BindingIdentifier Initialiser
     ;
     
 BindingIdentifier:
@@ -493,7 +497,7 @@ Arguments:
     LEFT_PAREN RIGHT_PAREN
     | LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
-    
+   
 ArgumentList:
  	AssignmentExpression
  	| ArgumentList COMMA AssignmentExpression
@@ -520,6 +524,49 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
+    
+/* Function Definitions ECMA 14.1 */
+
+/* Second function declaration anonymous function */
+FunctionDeclaration:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| IDENTIFIER LEFT_PAREN FUNCTION LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE RIGHT_PAREN
+	;
+	
+FunctionExpression:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+	
+	
+StrictFormalParameters:
+	FormalParameters
+	;
+
+FormalParameters:
+	FormalParameterList
+	;
+	
+FormalParameterList:
+	/* incomplete */
+	FormalsList
+	;
+	
+FormalsList:
+	FormalParameter
+	| FormalsList COMMA FormalParameter
+	;
+	
+FormalParameter:
+	BindingElement
+	;
+/* Addition Productions required for Function Definitions */
+
+BindingElement:
+	BindingPattern
+	| BindingPattern Initialiser
+	;
+
 
 FunctionBody:
     FunctionStatementList
