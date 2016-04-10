@@ -166,10 +166,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval->build<std::string>(yytext); return
                                       //TODO stringbuffer += new std::string(yytext);
                                     }
 
-{CHAR}({DIGIT}|{CHAR})*             {
-                                      // TODO yylval->sval = new std::string(yytext);
-                                      return token::IDENTIFIER;
-                                    }
+{CHAR}({DIGIT}|{CHAR})*             { yylval->build<std::string>(yytext); return token::IDENTIFIER; }
 
 [ \t\n]                             /* do nothing */
 <<EOF>>                             { return token::END_OF_FILE; }
