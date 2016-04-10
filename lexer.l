@@ -10,7 +10,7 @@ typedef ECMA::ECMA_Parser::token token;
 
 #define YY_NO_UNISTD_H
 
-#define YY_USER_ACTION loc->step(); loc->columns(yyleng);
+
 
 std::string* stringbuffer = new std::string;
 
@@ -148,10 +148,10 @@ NaN                                 { return token::LITERAL_NAN; }
 "\""                                { return token::DOUBLE_QUOTE; }
 "'"                                 { return token::SINGLE_QUOTE; }
 
-{DIGIT}+\.{DIGIT}+                  { yylval->build(yytext); return token::VALUE_FLOAT; }
-{DIGIT}+                            { yylval->build(yytext); return token::VALUE_INTEGER; }
-L?\"(\\.|[^\\"])*\"                 { yylval->build<std::string>(yytext); return token::VALUE_STRING; }
-L?\'(\\.|[^\\"])*\'                 { yylval->build<std::string>(yytext); return token::VALUE_STRING; }
+{DIGIT}+\.{DIGIT}+                  { yylval->fval = atof(yytext); return token::VALUE_FLOAT; }
+{DIGIT}+                            { yylval->ival = atoi(yytext); return token::VALUE_INTEGER; }
+L?\"(\\.|[^\\"])*\"                 { yylval->sval = new std::string(yytext); return token::VALUE_STRING; }
+L?\'(\\.|[^\\"])*\'                 { yylval->sval = new std::string(yytext); return token::VALUE_STRING; }
 \`                                  {
                                       BEGIN(MULTILINE_STRING);
                                       stringbuffer = new std::string("");
@@ -166,9 +166,9 @@ L?\'(\\.|[^\\"])*\'                 { yylval->build<std::string>(yytext); return
                                       //TODO stringbuffer += new std::string(yytext);
                                     }
 
-{CHAR}({DIGIT}|{CHAR})*             { yylval->build<std::string>(yytext); return token::IDENTIFIER; }
+{CHAR}({DIGIT}|{CHAR})*             { yylval->sval = new std::string(yytext); return token::IDENTIFIER; }
 
-[ \t\n]                             /* do nothing */
+[ \t\n]                             { loc->lines(); }
 <<EOF>>                             { return token::END_OF_FILE; }
 .                                   { cout << "Unknown character" << endl; }
 %%

@@ -24,6 +24,7 @@ namespace ECMA{
         using yyFlexLexer::yylex;
         int yylex(ECMA::ECMA_Parser::semantic_type *lval, ECMA::ECMA_Parser::location_type *location);
 
+        void error(const ECMA::ECMA_Parser::location_type &l, const std::string &err_message);
 
     private:
         /* yyval ptr */

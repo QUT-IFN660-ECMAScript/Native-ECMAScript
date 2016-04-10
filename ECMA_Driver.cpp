@@ -31,6 +31,8 @@ void ECMA::ECMA_Driver::parse( const char *filename ) {
         exit( EXIT_FAILURE );
     }
 
+
+
     delete(parser);
     try {
         parser = new ECMA::ECMA_Parser( (*scanner) /* scanner */,

@@ -34,10 +34,9 @@
 
 }
 
-%define api.value.type variant
 %define parse.assert
 
-%token END_OF_FILE
+%token END_OF_FILE 0 "end of file"
 %token BREAK
 %token CASE
 %token CATCH
@@ -143,6 +142,15 @@
 %token <int> VALUE_INTEGER
 %token <float> VALUE_FLOAT
 %token <std::string> VALUE_STRING
+
+%union {
+    struct {
+        int ival;
+        double fval;
+    };
+    std::string* sval;
+}
+
 
 %locations
 
@@ -453,7 +461,6 @@ FunctionStatementList:
     ;
 
 %%
-void ECMA::ECMA_Parser::error( const location_type &l, const std::string &err_message )
-{
-    std::cerr << "Error: " << err_message << " at " << l << "\n";
+void ECMA::ECMA_Parser::error( const location_type &l, const std::string &err_message ) {
+    std::cerr << "Error: " << err_message << " at " << l << std::endl;
 }
