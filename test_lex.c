@@ -97,6 +97,13 @@ int main(int argc, char* argv[])
             case GREATER_THAN_OR_EQUAL:
                 printf(">=\n");
                 break;
+// logical operators
+            case LOGICAL_AND:
+                printf("&&\n");
+                break;
+            case LOGICAL_OR:
+                printf("||\n");
+                break;
 // bitwise operators
             case LEFT_SHIFT:
                 printf("<<\n");
@@ -106,6 +113,15 @@ int main(int argc, char* argv[])
                 break;
             case UNSIGNED_RIGHT_SHIFT:
                 printf(">>>\n");
+                break;
+            case BITWISE_AND:
+                printf("&\n");
+                break;
+            case BITWISE_OR:
+                printf("|\n");
+                break;
+            case BITWISE_XOR:
+                printf("^\n");
                 break;
 // brackets
             case LEFT_BRACKET:
@@ -138,6 +154,9 @@ int main(int argc, char* argv[])
                 break;
             case COLON:
                 printf(":\n");
+                break;
+            case QUESTION_MARK:
+                printf("?\n");
                 break;
 // logical
             case IF:
