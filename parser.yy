@@ -10,26 +10,32 @@
       class ECMA_Driver;
       class ECMA_Scanner;
    }
+# ifndef YY_NULLPTR
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULLPTR nullptr
+#  else
+#   define YY_NULLPTR 0
+#  endif
+# endif
 }
 
-
-%lex-param   { ECMA_Scanner  &scanner  }
 %parse-param { ECMA_Scanner  &scanner  }
-
-%lex-param   { ECMA_Driver  &driver  }
 %parse-param { ECMA_Driver  &driver  }
 
 %code{
-   #include <iostream>
-   #include <cstdlib>
-   #include <fstream>
+    #include <iostream>
+    #include <cstdlib>
+    #include <fstream>
 
-   #include "ECMA_Driver.hpp"
+    #include "ECMA_Driver.hpp"
 
-   static int yylex(ECMA::ECMA_Parser::semantic_type *yylval, ECMA::ECMA_Scanner &scanner, ECMA::ECMA_Driver &driver);
+    #undef yylex
+    #define yylex scanner.yylex
+
 }
 
-
+%define api.value.type variant
+%define parse.assert
 
 %token END_OF_FILE
 %token BREAK
@@ -133,18 +139,12 @@
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token VALUE_INTEGER
-%token VALUE_FLOAT
-%token VALUE_STRING
 %token IDENTIFIER
+%token <int> VALUE_INTEGER
+%token <float> VALUE_FLOAT
+%token <std::string> VALUE_STRING
 
-%union {
-    struct {
-        int ival;
-        double fval;
-    };
-    std::string* sval;
-}
+%locations
 
 %error-verbose
 
@@ -453,14 +453,7 @@ FunctionStatementList:
     ;
 
 %%
-
-void ECMA::ECMA_Parser::error( const std::string &err_message )
+void ECMA::ECMA_Parser::error( const location_type &l, const std::string &err_message )
 {
-   std::cerr << "Error: " << err_message << "\n";
-}
-
-#include "ECMA_Scanner.hpp"
-static int yylex( ECMA::ECMA_Parser::semantic_type *yylval, ECMA::ECMA_Scanner &scanner, ECMA::ECMA_Driver &driver )
-{
-   return( scanner.yylex(yylval) );
+    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

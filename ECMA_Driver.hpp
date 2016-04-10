@@ -3,44 +3,26 @@
 //
 
 #ifndef IFN660_ECMASCRIPT_ECMA_DRIVER_H
-#define IFN660_ECMASCRIPT_ECMA_DRIVER_H
+#define IFN660_ECMASCRIPT_ECMA_DRIVER_H 1
 
 #include <string>
 #include "ECMA_Scanner.hpp"
-#include "grammar.tab.hh"
+#include "parser.tab.hh"
 
 namespace ECMA{
 
-    class ECMA_Driver{
-    public:
-        ECMA_Driver() : chars(0),
-                      words(0),
-                      lines(0),
-                      uppercase(0),
-                      lowercase(0),
-                      parser( nullptr ),
-                      scanner( nullptr ){};
+    class ECMA_Driver {
 
+    public:
+        ECMA_Driver() = default;
         virtual ~ECMA_Driver();
 
         void parse( const char *filename );
 
-
-        void add_upper();
-        void add_lower();
-        void add_word( const std::string &word );
-        void add_newline();
-        void add_char();
-
         std::ostream& print(std::ostream &stream);
     private:
-        int chars;
-        int words;
-        int lines;
-        int uppercase;
-        int lowercase;
-        ECMA::ECMA_Parser *parser;
-        ECMA::ECMA_Scanner *scanner;
+        ECMA::ECMA_Parser *parser = nullptr;
+        ECMA::ECMA_Scanner *scanner = nullptr;
     };
 
 } /* end namespace ECMA */

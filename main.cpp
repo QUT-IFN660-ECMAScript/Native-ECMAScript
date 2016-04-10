@@ -3,18 +3,18 @@
 
 #include "ECMA_Driver.hpp"
 
-int
-main(const int argc, const char **argv) {
-    if (argc != 2)
+using namespace std;
+
+int main(const int argc, const char **argv) {
+    if (argc != 2) {
+        cout << "Not enough args" << endl;
         return (EXIT_FAILURE);
+    }
     ECMA::ECMA_Driver driver;
 
     driver.parse(argv[1]);
 
-    std::cout << "Results\n";
-
-    driver.print(std::cout) << "\n";
+    cout << "Done!" <<endl;
 
     return (EXIT_SUCCESS);
-
 }

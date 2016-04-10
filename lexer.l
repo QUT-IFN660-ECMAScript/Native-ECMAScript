@@ -3,19 +3,21 @@
 #include "ECMA_Scanner.hpp"
 
 using namespace std;
-
-static void comment(void);
+#undef  YY_DECL
+#define YY_DECL int ECMA::ECMA_Scanner::yylex(ECMA::ECMA_Parser::semantic_type * const lval, ECMA::ECMA_Parser::location_type *location)
 
 typedef ECMA::ECMA_Parser::token token;
 
 #define YY_NO_UNISTD_H
 
-std::string* stringbuffer = new std::string
+#define YY_USER_ACTION loc->step(); loc->columns(yyleng);
+
+std::string* stringbuffer = new std::string;
 
 %}
 %option debug
 %option nodefault
-%option yyclass="ECMA_Scanner"
+%option yyclass="ECMA::ECMA_Scanner"
 %option noyywrap
 %option c++
 
@@ -25,7 +27,10 @@ CHAR                                [$_a-zA-Z]
 %x MULTILINE_STRING
 
 %%
-"/*"                                { comment(); }
+%{          // Code executed at the beginning of yylex
+            yylval = lval;
+%}
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* DO NOTHING */ }
 "//".*                              { /* multi-line comment //one-line one*/ }
 
 break                               { return token::BREAK; }
@@ -143,50 +148,30 @@ NaN                                 { return token::LITERAL_NAN; }
 "\""                                { return token::DOUBLE_QUOTE; }
 "'"                                 { return token::SINGLE_QUOTE; }
 
-{DIGIT}+\.{DIGIT}+                  { yylval->fval = atof(yytext); return token::VALUE_FLOAT; }
-{DIGIT}+                            { yylval->ival = atoi(yytext); return token::VALUE_INTEGER; }
-L?\"(\\.|[^\\"])*\"                 { yylval->sval = new std::string(yytext); return token::VALUE_STRING; }
-L?\'(\\.|[^\\"])*\'                 { yylval->sval = new std::string(yytext); return token::VALUE_STRING; }
+{DIGIT}+\.{DIGIT}+                  { yylval->build(yytext); return token::VALUE_FLOAT; }
+{DIGIT}+                            { yylval->build(yytext); return token::VALUE_INTEGER; }
+L?\"(\\.|[^\\"])*\"                 { yylval->build<std::string>(yytext); return token::VALUE_STRING; }
+L?\'(\\.|[^\\"])*\'                 { yylval->build<std::string>(yytext); return token::VALUE_STRING; }
 \`                                  {
                                       BEGIN(MULTILINE_STRING);
                                       stringbuffer = new std::string("");
                                     }
 <MULTILINE_STRING>\`                {
                                       BEGIN(INITIAL);
-                                      yylval->sval = stringbuffer; return token::VALUE_STRING;
+                                      //TODO yylval->build<std::string>(stringbuffer);
+                                      return token::VALUE_STRING;
                                     }
 <MULTILINE_STRING>\n                ;
 <MULTILINE_STRING>.                 {
-                                      stringbuffer += new std::string(yytext);
+                                      //TODO stringbuffer += new std::string(yytext);
                                     }
 
-{CHAR}({DIGIT}|{CHAR})*             { yylval->sval = new std::string(yytext); return token::IDENTIFIER; }
+{CHAR}({DIGIT}|{CHAR})*             {
+                                      // TODO yylval->sval = new std::string(yytext);
+                                      return token::IDENTIFIER;
+                                    }
 
 [ \t\n]                             /* do nothing */
 <<EOF>>                             { return token::END_OF_FILE; }
 .                                   { cout << "Unknown character" << endl; }
 %%
-extern FILE * yyin;
-
-static void comment(void)
-{
-/* TODO: Make this work in cpp
-    int character;
-    while ((character = input()) != 0)
-    {
-	if (character == '*')
-        {
-            while ((character = input()) == '*');
-            if (character == '/')
-            {
-                return;
-            }
-            if (character == 0)
-            {
-                break;
-            }
-        }
-    }
-    yyerror("unterminated comment");
-    */
-}
