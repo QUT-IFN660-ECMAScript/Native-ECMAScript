@@ -515,6 +515,7 @@ Finally:
 
 ThrowStatement:
     THROW Expression
+    "identifier"
 	;
 
 %%
