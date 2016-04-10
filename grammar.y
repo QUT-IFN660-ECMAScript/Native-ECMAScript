@@ -171,6 +171,7 @@ Statement:
     | IfStatement
     | BreakableStatement
     | TryStatement
+    | ThrowStatement
     ;
 
 BlockStatement:
@@ -517,5 +518,9 @@ Catch:
 Finally:
     FINALLY Block
     ;
+
+ThrowStatement:
+    THROW Expression
+	;
 
 %%
