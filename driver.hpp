@@ -8,6 +8,7 @@
 #include <string>
 #include "scanner.hpp"
 #include "parser.tab.hh"
+#include "ast/node.hpp"
 
 namespace ECMA{
 
