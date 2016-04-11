@@ -5,10 +5,7 @@ node_js:
 sudo: true
 cache:
   apt: true
-  ccache:
-  directories:
-    - bison
-    - node_modules
+  ccache: true
 env:
   global:
     - GCC_VERSION=5
