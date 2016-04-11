@@ -65,4 +65,3 @@ VALUE_INTEGER (9)
 )
 )
 ;
-END_OF_FILE

@@ -12,4 +12,3 @@ VALUE_INTEGER (3)
 ]
 ]
 ;
-END_OF_FILE
