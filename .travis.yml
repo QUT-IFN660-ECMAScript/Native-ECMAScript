@@ -10,7 +10,14 @@ addons:
     - ubuntu-toolchain-r-test
     - llvm-toolchain-precise
   packages:
+    - gcc-5
+    - g++-5
+    - binutils
+    - gawk
+    - build-essential
     - wget
+    - libtool
+    - flex
 before_script:
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - mkdir $HOME/bison
