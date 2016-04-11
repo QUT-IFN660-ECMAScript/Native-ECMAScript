@@ -8,7 +8,6 @@ cache:
   directories:
     - bison
     - node_modules
-sudo: true
 env:
   global:
     - GCC_VERSION=5
@@ -27,9 +26,8 @@ addons:
       - wget
       - libtool
       - flex
-      - npm
 before_script:
-  - sudo npm install -g babel-cli
+  - npm install -g babel-cli
   - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - mkdir $HOME/bison
