@@ -3,9 +3,11 @@ language:
 node_js:
   - "5"
 cache:
-  apt:
+  apt: true
   ccache:
   directories:
+    - bison
+    - node_modules
 sudo: true
 env:
   global:
