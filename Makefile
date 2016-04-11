@@ -1,6 +1,6 @@
 CC ?= gcc
 CXX ?= g++
-BABEL ?= $(shell command -v ./node_modules/.bin/babel)
+BABEL ?= ./node_modules/.bin/babel
 
 SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all
@@ -49,11 +49,9 @@ bison: .bison
 .run_lex_test: .build_lex_test
 	@touch log.txt;
 	$(foreach t, $(LEX_TESTS), \
-	$(eval ASSERT_FILE=$(patsubst %.js, %.txt, $(t)))\
-	$(shell $(BABEL) $(t) >> /dev/null 2>>log.txt;)\
-	# $(shell \
-	#  	diff $(subst $(LEX_TESTS_DIR), $(LEX_ASSERTS_DIR), $(ASSERT_FILE)) \
-	# 	<(./tests/test_lex < $(t)) >> log.txt 2>>&1;\
-	# )\
+	$(eval ASSERT_FILE=$(subst $(LEX_TESTS_DIR), $(LEX_ASSERTS_DIR), $(patsubst %.js, %.txt, $(t)))) \
+	$(shell $(BABEL) $(t) >> /dev/null 2>>log.txt; \
+		diff $(ASSERT_FILE) <(./tests/test_lex $(t)) >> log.txt 2>&1;\
+	) \
 	)
 	$(if $(shell if [ -s "./log.txt" ]; then echo not empty; fi), $(error $(shell cat log.txt)), $(info All Tests Passed))
