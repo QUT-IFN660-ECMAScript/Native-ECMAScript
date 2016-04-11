@@ -15,9 +15,6 @@ LEX_TESTS := $(wildcard $(LEX_TESTS_DIR)/*.js)
 TMP_DIR := tmp
 
 all: clean .build_prod
-ifndef BABEL
-	$(error babel not found, please install via npm -- sudo npm install -g babel-cli)
-endif
 clean: .clean_prod .clean_test
 test: clean .run_lex_test
 flex: .flex
