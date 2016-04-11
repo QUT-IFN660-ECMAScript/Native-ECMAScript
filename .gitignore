@@ -14,5 +14,6 @@ parser.tab.hh
 position.hh
 stack.hh
 tests/test_lex.*
-scanner.*
+compiler.*
+compiler
 *.output

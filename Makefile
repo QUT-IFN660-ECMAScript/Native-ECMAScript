@@ -20,7 +20,7 @@ TMP_DIR := tmp
 .clean_prod:
 	@rm -f parser.tab.* && rm -f lex.yy.* && rm -f scanner && rm -f position.hh stack.hh location.hh
 .build_prod: .bison .flex
-	@g++ $(CXXFLAGS) lex.yy.cc parser.tab.cc driver.cpp main.cpp -o scanner
+	@g++ $(CXXFLAGS) lex.yy.cc parser.tab.cc driver.cpp main.cpp -o compiler
 	$(info Build Success)
 
 .clean_test: .clean_prod
