@@ -1,5 +1,5 @@
 language:
-  cpp, node_js
+  node_js
 node_js:
   - "5"
 cache:
