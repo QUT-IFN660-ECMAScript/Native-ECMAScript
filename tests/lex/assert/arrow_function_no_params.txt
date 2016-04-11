@@ -6,4 +6,3 @@ IDENTIFIER (arrowNoParams)
 ARROW_FUNCTION
 null
 ;
-END_OF_FILE

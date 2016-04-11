@@ -205,11 +205,10 @@ int main(int argc, char* argv[])
                 break;
 
 // end of file
-            case END_OF_FILE:
-                printf("END_OF_FILE\n");
+            case 0:
                 break;
             default:
                 printf("Unexpected token %d\n", token);
         }
-    } while (token != END_OF_FILE);
+    } while (token != 0);
 }

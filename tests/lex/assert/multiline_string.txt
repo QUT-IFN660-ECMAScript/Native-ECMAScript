@@ -12,4 +12,3 @@ IDENTIFIER (y)
 =
 VALUE_STRING (this still is a valid string)
 ;
-END_OF_FILE

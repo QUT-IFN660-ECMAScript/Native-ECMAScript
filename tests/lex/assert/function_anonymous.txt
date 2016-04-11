@@ -9,4 +9,3 @@ RETURN
 VALUE_STRING ("test")
 ;
 }
-END_OF_FILE

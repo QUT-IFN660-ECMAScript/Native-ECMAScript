@@ -15,4 +15,3 @@ IDENTIFIER (anotherVariable)
 ;
 }
 ;
-END_OF_FILE

@@ -11,4 +11,3 @@ VALUE_STRING ("yes")
 :
 VALUE_STRING ("no")
 ;
-END_OF_FILE

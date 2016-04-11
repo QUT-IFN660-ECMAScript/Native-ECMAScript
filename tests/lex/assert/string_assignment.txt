@@ -3,4 +3,3 @@ IDENTIFIER (str)
 =
 VALUE_STRING ("string_literal")
 ;
-END_OF_FILE

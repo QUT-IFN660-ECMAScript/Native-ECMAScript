@@ -57,4 +57,3 @@ TRY
 FINALLY
 {
 }
-END_OF_FILE

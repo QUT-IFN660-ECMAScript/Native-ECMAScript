@@ -23,4 +23,3 @@ IDENTIFIER (x)
 ++
 ;
 }
-END_OF_FILE
