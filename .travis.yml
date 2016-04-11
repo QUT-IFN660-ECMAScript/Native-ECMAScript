@@ -2,7 +2,6 @@ language:
   node_js
 node_js:
   - "5"
-sudo: true
 cache:
   apt:
   ccache:
@@ -27,7 +26,7 @@ addons:
       - libtool
       - flex
 before_script:
-  - sudo $(which npm) install -g babel-cli
+  - npm install
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - mkdir $HOME/bison
   - tar -xf bison-3.0.4.tar.gz; cd bison-3.0.4; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;

@@ -1,6 +1,6 @@
 CC ?= gcc
 CXX ?= g++
-BABEL := $(shell command -v babel)
+BABEL ?= $(shell command -v ./node_modules/.bin/babel)
 
 SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all

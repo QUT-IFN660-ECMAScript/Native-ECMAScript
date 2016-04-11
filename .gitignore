@@ -18,3 +18,4 @@ compiler.*
 compiler
 *.output
 .*swp
+node_modules/
