@@ -2,18 +2,18 @@
 #include <fstream>
 #include <cassert>
 
-#include "ECMA_Driver.hpp"
+#include "driver.hpp"
 
 using namespace std;
 
-ECMA::ECMA_Driver::~ECMA_Driver(){
+ECMA::Driver::~Driver(){
     delete(scanner);
     scanner = nullptr;
     delete(parser);
     parser = nullptr;
 }
 
-void ECMA::ECMA_Driver::parse( const char *filename ) {
+void ECMA::Driver::parse( const char *filename ) {
     assert( filename != nullptr );
     std::ifstream in_file( filename );
     if( ! in_file.good() )  {
@@ -24,7 +24,7 @@ void ECMA::ECMA_Driver::parse( const char *filename ) {
     delete(scanner);
     try
     {
-        scanner = new ECMA::ECMA_Scanner( &in_file );
+        scanner = new ECMA::Scanner( &in_file );
     } catch( std::bad_alloc &ba ) {
         std::cerr << "Failed to allocate scanner: (" <<
         ba.what() << "), exiting!!\n";
@@ -35,7 +35,7 @@ void ECMA::ECMA_Driver::parse( const char *filename ) {
 
     delete(parser);
     try {
-        parser = new ECMA::ECMA_Parser( (*scanner) /* scanner */,
+        parser = new ECMA::Parser( (*scanner) /* scanner */,
                                     (*this) /* driver */ );
     } catch( std::bad_alloc &ba ) {
         std::cerr << "Failed to allocate parser: (" <<

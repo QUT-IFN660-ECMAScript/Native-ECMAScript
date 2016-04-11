@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "ECMA_Driver.hpp"
+#include "driver.hpp"
 
 using namespace std;
 
@@ -10,7 +10,7 @@ int main(const int argc, const char **argv) {
         cout << "Not enough args" << endl;
         return (EXIT_FAILURE);
     }
-    ECMA::ECMA_Driver driver;
+    ECMA::Driver driver;
 
     driver.parse(argv[1]);
 

@@ -1,12 +1,12 @@
 %{
 #include <string>
-#include "ECMA_Scanner.hpp"
+#include "scanner.hpp"
 
 using namespace std;
 #undef  YY_DECL
-#define YY_DECL int ECMA::ECMA_Scanner::yylex(ECMA::ECMA_Parser::semantic_type * const lval, ECMA::ECMA_Parser::location_type *location)
+#define YY_DECL int ECMA::Scanner::yylex(ECMA::Parser::semantic_type * const lval, ECMA::Parser::location_type *location)
 
-typedef ECMA::ECMA_Parser::token token;
+typedef ECMA::Parser::token token;
 
 #define YY_NO_UNISTD_H
 
@@ -17,7 +17,7 @@ std::string* stringbuffer = new std::string;
 %}
 %option debug
 %option nodefault
-%option yyclass="ECMA::ECMA_Scanner"
+%option yyclass="ECMA::Scanner"
 %option noyywrap
 %option c++
 

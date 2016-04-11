@@ -3,12 +3,12 @@
 %debug
 %defines
 %define api.namespace {ECMA}
-%define parser_class_name {ECMA_Parser}
+%define parser_class_name {Parser}
 
 %code requires{
    namespace ECMA {
-      class ECMA_Driver;
-      class ECMA_Scanner;
+      class Driver;
+      class Scanner;
    }
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -19,15 +19,15 @@
 # endif
 }
 
-%parse-param { ECMA_Scanner  &scanner  }
-%parse-param { ECMA_Driver  &driver  }
+%parse-param { Scanner  &scanner  }
+%parse-param { Driver  &driver  }
 
 %code{
     #include <iostream>
     #include <cstdlib>
     #include <fstream>
 
-    #include "ECMA_Driver.hpp"
+    #include "driver.hpp"
 
     #undef yylex
     #define yylex scanner.yylex
@@ -461,6 +461,6 @@ FunctionStatementList:
     ;
 
 %%
-void ECMA::ECMA_Parser::error( const location_type &l, const std::string &err_message ) {
+void ECMA::Parser::error( const location_type &l, const std::string &err_message ) {
     std::cerr << "Error: " << err_message << " at " << l << std::endl;
 }
