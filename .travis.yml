@@ -4,8 +4,8 @@ node_js:
   - "5"
 sudo: true
 cache:
-  apt: true
-  ccache: true
+  apt:
+  ccache:
 env:
   global:
     - GCC_VERSION=5
