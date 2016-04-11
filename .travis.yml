@@ -1,5 +1,7 @@
 language:
-  cpp
+  cpp, node_js
+node_js:
+  - "5"
 cache:
   apt:
   ccache:
@@ -25,7 +27,7 @@ addons:
       - flex
       - npm
 before_script:
-  - npm install -g babel-cli
+  - sudo npm install -g babel-cli
   - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - mkdir $HOME/bison
