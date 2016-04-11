@@ -2,7 +2,7 @@ SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all
 
 CXXDEBUG = -g -Wall
-CXXSTD = -std=c++11
+CXXSTD = -std=gnu++11
 CXXFLAGS = -Wno-deprecated-register -O0  $(CXXDEBUG) $(CXXSTD)
 
 LEX_TESTS_DIR := tests/lex/test
@@ -28,8 +28,6 @@ TMP_DIR := tmp
 .build_lex_test: .bison .flex
 	@g++ $(CXXFLAGS) lex.yy.cc parser.tab.cc driver.cpp test_lex.cpp -o tests/test_lex
 	$(info Build Success)
-
-
 
 all: clean .build_prod
 clean: .clean_prod .clean_test
