@@ -6,8 +6,6 @@ cache:
 env:
   global:
     - GCC_VERSION=5
-    - CXX=g++-${GCC_VERSION}
-    - CC=g++-${GCC_VERSION}
 addons:
  apt:
     sources:
@@ -25,6 +23,7 @@ addons:
       - flex
 before_script:
   - npm install
+  - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - mkdir $HOME/bison
   - tar -xf bison-3.0.4.tar.gz; cd bison-3.0.4; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;
