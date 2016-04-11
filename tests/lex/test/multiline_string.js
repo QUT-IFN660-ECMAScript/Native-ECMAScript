@@ -1,8 +1,8 @@
-``
+``;
 `this is valid`;
 `this is a valid
- string`;
+ string`
 x = `this also is
- a valid string`;
+ a valid string`
 var y = `this still
- is a valid string`;
+ is a valid string`
