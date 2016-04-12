@@ -7,3 +7,15 @@ grammar.tab.*
 .idea/
 tests/test_lex
 log.txt
+
+location.hh
+parser.tab.cc
+parser.tab.hh
+position.hh
+stack.hh
+tests/test_lex.*
+compiler.*
+compiler
+*.output
+.*swp
+node_modules/

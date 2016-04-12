@@ -8,4 +8,3 @@ IDENTIFIER (empty)
 (
 )
 ;
-END_OF_FILE

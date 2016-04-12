@@ -1,10 +1,42 @@
-%{
-#include <stdio.h>
-#include "y.tab.h"
-#include "lex.yy.h"
-%}
+%skeleton "lalr1.cc"
+%require  "3.0"
+%debug
+%defines
+%define api.namespace {ECMA}
+%define parser_class_name {Parser}
 
-%token END_OF_FILE
+%code requires{
+   namespace ECMA {
+      class Driver;
+      class Scanner;
+   }
+# ifndef YY_NULLPTR
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULLPTR nullptr
+#  else
+#   define YY_NULLPTR 0
+#  endif
+# endif
+}
+
+%parse-param { Scanner  &scanner  }
+%parse-param { Driver  &driver  }
+
+%code{
+    #include <iostream>
+    #include <cstdlib>
+    #include <fstream>
+
+    #include "driver.hpp"
+
+    #undef yylex
+    #define yylex scanner.yylex
+
+}
+
+%define parse.assert
+
+%token END_OF_FILE 0 "end of file"
 %token BREAK
 %token CASE
 %token CATCH
@@ -106,17 +138,21 @@
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token VALUE_INTEGER
-%token VALUE_FLOAT
-%token VALUE_STRING
 %token IDENTIFIER
-
+%token <int> VALUE_INTEGER
+%token <float> VALUE_FLOAT
+%token <std::string> VALUE_STRING
 
 %union {
-    int ival;
-    double fval;
-    char* sval;
+    struct {
+        int ival;
+        double fval;
+    };
+    std::string* sval;
 }
+
+
+%locations
 
 %error-verbose
 
@@ -167,8 +203,11 @@ Statement:
     BlockStatement
     | VariableStatement
     | EmptyStatement
+    | ExpressionStatement
     | IfStatement
     | BreakableStatement
+    | TryStatement
+    | ThrowStatement
     ;
 
 BlockStatement:
@@ -208,6 +247,10 @@ Initialiser:
 
 EmptyStatement:
     SEMICOLON
+    ;
+
+ExpressionStatement:
+    Expression SEMICOLON
     ;
 
 IfStatement:
@@ -296,19 +339,6 @@ Expression:
     | EqualityExpression
     ;
 
-PrimaryExpression:
-    THIS
-    | IdentifierReference
-    | Literal
-    ;
-
-EqualityExpression:
-    Expression EQUAL Expression
-    | Expression NOT_EQUAL Expression
-    | Expression EXACTLY_EQUAL Expression
-    | Expression NOT_EXACTLY_EQUAL Expression
-    ;
-
 Literal:
     NullLiteral
     | BooleanLiteral
@@ -326,8 +356,15 @@ BooleanLiteral:
     ;
 
 NumericLiteral:
+    DecimalLiteral
+    ;
+    
+DecimalLiteral:
+    DecimalIntegerLiteral
+    ;
+    
+DecimalIntegerLiteral:
     VALUE_INTEGER
-    | VALUE_FLOAT
     ;
 
 StringLiteral:
@@ -335,10 +372,89 @@ StringLiteral:
     ;
 
 AssignmentExpression:
-    YieldExpression
+    ConditionalExpression
+    | YieldExpression
     | ArrowFunction
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+    
+ConditionalExpression:
+    LogicalORExpression
+    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
+    ;
+    
+LogicalORExpression:
+    LogicalANDExpression
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+    ;
+    
+LogicalANDExpression:
+    BitwiseORExpression
+    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
+    ;
+    
+BitwiseORExpression:
+    BitwiseXORExpression
+    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
+    ;
+   
+BitwiseXORExpression:
+    BitwiseANDExpression
+    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
+    ;
+    
+BitwiseANDExpression:
+    EqualityExpression
+    | BitwiseANDExpression BITWISE_AND EqualityExpression
+    ;
+
+EqualityExpression:
+    RelationalExpression
+    ;
+    
+RelationalExpression:
+    ShiftExpression
+    /*
+    | Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    */
+    ;
+    
+ShiftExpression:
+    AdditiveExpression
+    ;
+    
+AdditiveExpression:
+    MultiplicativeExpression
+    ;
+    
+MultiplicativeExpression:
+    UnaryExpression
+    ;
+    
+UnaryExpression:
+    PostfixExpression
+    ;
+    
+PostfixExpression:
+    LeftHandSideExpression
+    ;
+
+NewExpression:
+    MemberExpression
+    ;
+    
+MemberExpression:
+    PrimaryExpression
+    ;
+    
+PrimaryExpression:
+    THIS
+    | IdentifierReference
+    | Literal
     ;
 
 AssignmentOperator:
@@ -357,6 +473,7 @@ AssignmentOperator:
 
 LeftHandSideExpression:
     CallExpression
+    | NewExpression
     ;
 
 CallExpression:
@@ -424,4 +541,25 @@ FunctionStatementList:
     StatementList
     ;
 
+TryStatement:
+    TRY Block Catch
+    | TRY Block Finally
+    | TRY Block Catch Finally
+    ;
+
+Catch:
+    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    ;
+
+Finally:
+    FINALLY Block
+    ;
+
+ThrowStatement:
+    THROW Expression
+	;
+
 %%
+void ECMA::Parser::error( const location_type &l, const std::string &err_message ) {
+    std::cerr << "Error: " << err_message << " at " << l << std::endl;
+}

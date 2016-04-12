@@ -32,4 +32,3 @@ IDENTIFIER (num)
 BREAK
 ;
 }
-END_OF_FILE

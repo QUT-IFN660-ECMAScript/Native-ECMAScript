@@ -21,4 +21,3 @@ VALUE_INTEGER (5)
 ]
 ]
 ;
-END_OF_FILE
