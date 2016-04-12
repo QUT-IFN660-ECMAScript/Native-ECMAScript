@@ -154,21 +154,26 @@ StatementListItem:
     ;
 
 Declaration:
-    "temp"
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
-    | ClassDeclaration
+ /* | ClassDeclaration
     | LexicalDeclaration
     */
     ;
 
+HoistableDeclaration:
+	FunctionDeclaration
+/*	| GeneratorDeclaration */
+	;	
 
 Statement:
     BlockStatement
     | VariableStatement
     | EmptyStatement
+    | ExpressionStatement
     | IfStatement
     | BreakableStatement
+    | TryStatement
     ;
 
 BlockStatement:
@@ -190,24 +195,29 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-    IDENTIFIER Initialiser
-    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
-    BindingIdentifier InitialiserOptional
-    | BindingPattern Initialiser
-    */
+	BindingIdentifier
+	| BindingIdentifier Initialiser
     ;
+    
+BindingIdentifier:
+	Identifier
+	| YIELD
+	;
+	
+Identifier:
+	IdentifierName 
+	;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
-  | ASSIGNMENT VALUE_FLOAT
-  | ASSIGNMENT VALUE_STRING
-  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
   ASSIGNMENT AssignmentExpression
-  */
   ;
 
 EmptyStatement:
     SEMICOLON
+    ;
+
+ExpressionStatement:
+    Expression SEMICOLON
     ;
 
 IfStatement:
@@ -241,7 +251,7 @@ ExpressionOptional:
     ;
     
 LexicalDeclaration:
-    LetOrConst 
+    LetOrConst BindingList
     // TODO not implemented yet | BindingList
     ;
     
@@ -262,6 +272,31 @@ LetOrConst:
     LET
     | CONST
     ;
+    
+BindingList:
+	LexicalBinding
+	| BindingList COMMA LexicalBinding
+	;
+	
+LexicalBinding:
+	BindingIdentifier 
+	| BindingIdentifier Initialiser
+	| BindingPattern 
+	| BindingPattern Initialiser
+	;
+	
+	
+IdentifierName:
+	"temp"
+	/* to do */
+	;
+	
+BindingPattern:
+	"todo"
+	/* to do */
+	;
+    
+    
 
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
@@ -296,19 +331,6 @@ Expression:
     | EqualityExpression
     ;
 
-PrimaryExpression:
-    THIS
-    | IdentifierReference
-    | Literal
-    ;
-
-EqualityExpression:
-    Expression EQUAL Expression
-    | Expression NOT_EQUAL Expression
-    | Expression EXACTLY_EQUAL Expression
-    | Expression NOT_EXACTLY_EQUAL Expression
-    ;
-
 Literal:
     NullLiteral
     | BooleanLiteral
@@ -326,8 +348,15 @@ BooleanLiteral:
     ;
 
 NumericLiteral:
+    DecimalLiteral
+    ;
+    
+DecimalLiteral:
+    DecimalIntegerLiteral
+    ;
+    
+DecimalIntegerLiteral:
     VALUE_INTEGER
-    | VALUE_FLOAT
     ;
 
 StringLiteral:
@@ -335,10 +364,83 @@ StringLiteral:
     ;
 
 AssignmentExpression:
-    YieldExpression
+    ConditionalExpression
+    | YieldExpression
     | ArrowFunction
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+    
+ConditionalExpression:
+    LogicalORExpression
+    ;
+    
+LogicalORExpression:
+    LogicalANDExpression
+    ;
+    
+LogicalANDExpression:
+    BitwiseORExpression
+    ;
+    
+BitwiseORExpression:
+    BitwiseXORExpression
+    ;
+   
+BitwiseXORExpression:
+    BitwiseANDExpression
+    ;
+    
+BitwiseANDExpression:
+    EqualityExpression
+    ;
+
+EqualityExpression:
+    RelationalExpression
+    ;
+    
+RelationalExpression:
+    ShiftExpression
+    /*
+    | Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    */
+    ;
+    
+ShiftExpression:
+    AdditiveExpression
+    ;
+    
+AdditiveExpression:
+    MultiplicativeExpression
+    ;
+    
+MultiplicativeExpression:
+    UnaryExpression
+    ;
+    
+UnaryExpression:
+    PostfixExpression
+    ;
+    
+PostfixExpression:
+    LeftHandSideExpression
+    ;
+
+NewExpression:
+    MemberExpression
+    ;
+    
+MemberExpression:
+    PrimaryExpression
+    ;
+    
+PrimaryExpression:
+    THIS
+    | IdentifierReference
+    | Literal
     ;
 
 AssignmentOperator:
@@ -357,6 +459,7 @@ AssignmentOperator:
 
 LeftHandSideExpression:
     CallExpression
+    | NewExpression
     ;
 
 CallExpression:
@@ -392,7 +495,13 @@ SuperCall:
 
 Arguments:
     LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
+   
+ArgumentList:
+ 	AssignmentExpression
+ 	| ArgumentList COMMA AssignmentExpression
+ 	;
 
 YieldExpression:
     YIELD
@@ -415,6 +524,49 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
+    
+/* Function Definitions ECMA 14.1 */
+
+/* Second function declaration anonymous function */
+FunctionDeclaration:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| IDENTIFIER LEFT_PAREN FUNCTION LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE RIGHT_PAREN
+	;
+	
+/*FunctionExpression:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+	*/
+	
+StrictFormalParameters:
+	FormalParameters
+	;
+
+FormalParameters:
+	FormalParameterList
+	;
+	
+FormalParameterList:
+	/* incomplete */
+	FormalsList
+	;
+	
+FormalsList:
+	FormalParameter
+	| FormalsList COMMA FormalParameter
+	;
+	
+FormalParameter:
+	BindingElement
+	;
+/* Addition Productions required for Function Definitions */
+
+BindingElement:
+	BindingPattern
+	| BindingPattern Initialiser
+	;
+
 
 FunctionBody:
     FunctionStatementList
@@ -422,6 +574,20 @@ FunctionBody:
 
 FunctionStatementList:
     StatementList
+    ;
+
+TryStatement:
+    TRY Block Catch
+    | TRY Block Finally
+    | TRY Block Catch Finally
+    ;
+
+Catch:
+    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    ;
+
+Finally:
+    FINALLY Block
     ;
 
 %%

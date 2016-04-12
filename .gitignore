@@ -2,8 +2,13 @@ scanner
 grammar.tab.*
 *.yy.*
 .idea/
+tests/test_*
+*.*~
 .gitignore
 *.*~
 .idea/
 tests/test_lex
 log.txt
+grammar.output
+grammar.dot
+*.ps
