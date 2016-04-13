@@ -534,10 +534,10 @@ FunctionDeclaration:
 	| IDENTIFIER LEFT_PAREN FUNCTION LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE RIGHT_PAREN
 	;
 	
-/*FunctionExpression:
+FunctionExpression:
 	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
 	;
-	*/
+
 	
 StrictFormalParameters:
 	FormalParameters
