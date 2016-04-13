@@ -156,8 +156,8 @@ StatementListItem:
 Declaration:
     /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
- /* | ClassDeclaration
-    | LexicalDeclaration
+	| ClassDeclaration
+ /*   | LexicalDeclaration
     */
     ;
 
@@ -287,9 +287,9 @@ LexicalBinding:
 	
 	
 IdentifierName:
-	"temp"
-	/* to do */
-	;
+    IdentifierStart
+    | IdentifierName IdentifierPart
+    ;
 	
 BindingPattern:
 	"todo"
@@ -478,10 +478,7 @@ IdentifierReference:
     IDENTIFIER
     ;
 
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
+
 
 IdentifierStart:
     "$"
@@ -584,6 +581,63 @@ FunctionBody:
 FunctionStatementList:
     StatementList
     ;
+    
+ClassDeclaration: 
+	CLASS BindingIdentifier ClassTail
+	| CLASS ClassTail
+	;
+/*	
+ClassExpression:
+	 CLASS BindingIdentifier ClassTail
+	 ;
+*/	 
+ClassTail:
+	ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+	;
+	
+ClassHeritage:
+	EXTENDS LeftHandSideExpression
+	;
+	
+ClassBody:
+	ClassElementList
+	;
+	
+ClassElementList:
+	ClassElement
+	| ClassElementList ClassElement
+	;
+	
+ClassElement:
+	MethodDefinition
+	| "static" MethodDefinition
+    | SEMICOLON
+    ;
+
+PropertyName:
+	LiteralPropertyName
+	;
+	
+LiteralPropertyName:
+	IdentifierName
+	| StringLiteral
+	| NumericLiteral
+	;
+
+StrictFormalParameters:
+	FormalParameters
+	;
+
+MethodDefinition:
+	PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /*	| GeneratorMethod */
+	| "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+
+PropertySetParameterList:
+	FormalParameter
+	;
 
 TryStatement:
     TRY Block Catch
