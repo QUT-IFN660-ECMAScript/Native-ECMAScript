@@ -531,17 +531,19 @@ ConciseBody:
 FunctionDeclaration:
 	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
 	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	| IDENTIFIER LEFT_PAREN FUNCTION LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE RIGHT_PAREN
 	;
-	
+
+/*
 FunctionExpression:
 	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
 	;
+*/
 
-	
+/* Required for ArrowFormalParameters	
 StrictFormalParameters:
 	FormalParameters
 	;
+*/
 
 FormalParameters:
 	FormalParameterList
@@ -550,6 +552,7 @@ FormalParameters:
 FormalParameterList:
 	/* incomplete */
 	FormalsList
+	| FormalsList COMMA FormalParameter
 	;
 	
 FormalsList:
