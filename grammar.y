@@ -173,7 +173,14 @@ Statement:
     | ExpressionStatement
     | IfStatement
     | BreakableStatement
+    | ContinueStatement
+    | BreakStatement
+    | ReturnStatement
+    | WithStatement
+    | LabelledStatement
+    | ThrowStatement
     | TryStatement
+    | DebuggerStatement
     ;
 
 BlockStatement:
@@ -203,6 +210,11 @@ BindingIdentifier:
 	Identifier
 	| YIELD
 	;
+
+LabelIdentifier:
+    Identifier
+    | YIELD
+    ;
 	
 Identifier:
 	IdentifierName 
@@ -243,6 +255,42 @@ IterationStatement:
     | FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement
     | FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement
     | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
+    ;
+
+ContinueStatement:
+    CONTINUE SEMICOLON
+    | CONTINUE LabelIdentifier SEMICOLON
+    ;
+
+BreakStatement:
+    BREAK SEMICOLON
+    | BREAK LabelIdentifier SEMICOLON
+    ;
+
+ReturnStatement:
+    RETURN SEMICOLON
+    | RETURN LabelIdentifier SEMICOLON
+    ;
+
+WithStatement:
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
+    ;
+
+LabelledStatement:
+    LabelIdentifier COLON LabelledItem
+    ;
+
+LabelledItem:
+    Statement
+    | FunctionDeclaration
+    ;
+
+ThrowStatement:
+    THROW Expression SEMICOLON
+    ;
+
+DebuggerStatement:
+    DEBUGGER SEMICOLON
     ;
 
 ExpressionOptional:
