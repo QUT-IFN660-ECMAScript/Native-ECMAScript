@@ -154,14 +154,17 @@ StatementListItem:
     ;
 
 Declaration:
-    "temp"
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
-    | ClassDeclaration
-    | LexicalDeclaration
+	| ClassDeclaration
+ /*   | LexicalDeclaration
     */
     ;
 
+HoistableDeclaration:
+	FunctionDeclaration
+/*	| GeneratorDeclaration */
+	;	
 
 Statement:
     BlockStatement
@@ -170,8 +173,18 @@ Statement:
     | ExpressionStatement
     | IfStatement
     | BreakableStatement
-    | TryStatement
+    | ContinueStatement
+    | BreakStatement
+    | ReturnStatement
+    | WithStatement
+    | LabelledStatement
     | ThrowStatement
+    | TryStatement
+<<<<<<< HEAD
+    | ThrowStatement
+=======
+    | DebuggerStatement
+>>>>>>> 65d889de0f9f260442d73ae16878e7dcc2ab14ca
     ;
 
 BlockStatement:
@@ -193,20 +206,26 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-    IDENTIFIER Initialiser
-    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
-    BindingIdentifier InitialiserOptional
-    | BindingPattern Initialiser
-    */
+	BindingIdentifier
+	| BindingIdentifier Initialiser
     ;
+    
+BindingIdentifier:
+	Identifier
+	| YIELD
+	;
+
+LabelIdentifier:
+    Identifier
+    | YIELD
+    ;
+	
+Identifier:
+	IdentifierName 
+	;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
-  | ASSIGNMENT VALUE_FLOAT
-  | ASSIGNMENT VALUE_STRING
-  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
   ASSIGNMENT AssignmentExpression
-  */
   ;
 
 EmptyStatement:
@@ -242,13 +261,49 @@ IterationStatement:
     | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
     ;
 
+ContinueStatement:
+    CONTINUE SEMICOLON
+    | CONTINUE LabelIdentifier SEMICOLON
+    ;
+
+BreakStatement:
+    BREAK SEMICOLON
+    | BREAK LabelIdentifier SEMICOLON
+    ;
+
+ReturnStatement:
+    RETURN SEMICOLON
+    | RETURN LabelIdentifier SEMICOLON
+    ;
+
+WithStatement:
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
+    ;
+
+LabelledStatement:
+    LabelIdentifier COLON LabelledItem
+    ;
+
+LabelledItem:
+    Statement
+    | FunctionDeclaration
+    ;
+
+ThrowStatement:
+    THROW Expression SEMICOLON
+    ;
+
+DebuggerStatement:
+    DEBUGGER SEMICOLON
+    ;
+
 ExpressionOptional:
     Expression
     | 
     ;
     
 LexicalDeclaration:
-    LetOrConst 
+    LetOrConst BindingList
     // TODO not implemented yet | BindingList
     ;
     
@@ -269,6 +324,31 @@ LetOrConst:
     LET
     | CONST
     ;
+    
+BindingList:
+	LexicalBinding
+	| BindingList COMMA LexicalBinding
+	;
+	
+LexicalBinding:
+	BindingIdentifier 
+	| BindingIdentifier Initialiser
+	| BindingPattern 
+	| BindingPattern Initialiser
+	;
+	
+	
+IdentifierName:
+    IdentifierStart
+    | IdentifierName IdentifierPart
+    ;
+	
+BindingPattern:
+	"todo"
+	/* to do */
+	;
+    
+    
 
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
@@ -450,10 +530,7 @@ IdentifierReference:
     IDENTIFIER
     ;
 
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
+
 
 IdentifierStart:
     "$"
@@ -473,7 +550,13 @@ SuperCall:
 
 Arguments:
     LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
+   
+ArgumentList:
+ 	AssignmentExpression
+ 	| ArgumentList COMMA AssignmentExpression
+ 	;
 
 YieldExpression:
     YIELD
@@ -496,6 +579,52 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
+    
+/* Function Definitions ECMA 14.1 */
+
+/* Second function declaration anonymous function */
+FunctionDeclaration:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+
+/*
+FunctionExpression:
+	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+*/
+
+/* Required for ArrowFormalParameters	
+StrictFormalParameters:
+	FormalParameters
+	;
+*/
+
+FormalParameters:
+	FormalParameterList
+	;
+	
+FormalParameterList:
+	/* incomplete */
+	FormalsList
+	| FormalsList COMMA FormalParameter
+	;
+	
+FormalsList:
+	FormalParameter
+	| FormalsList COMMA FormalParameter
+	;
+	
+FormalParameter:
+	BindingElement
+	;
+/* Addition Productions required for Function Definitions */
+
+BindingElement:
+	BindingPattern
+	| BindingPattern Initialiser
+	;
+
 
 FunctionBody:
     FunctionStatementList
@@ -504,6 +633,63 @@ FunctionBody:
 FunctionStatementList:
     StatementList
     ;
+    
+ClassDeclaration: 
+	CLASS BindingIdentifier ClassTail
+	| CLASS ClassTail
+	;
+/*	
+ClassExpression:
+	 CLASS BindingIdentifier ClassTail
+	 ;
+*/	 
+ClassTail:
+	ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+	;
+	
+ClassHeritage:
+	EXTENDS LeftHandSideExpression
+	;
+	
+ClassBody:
+	ClassElementList
+	;
+	
+ClassElementList:
+	ClassElement
+	| ClassElementList ClassElement
+	;
+	
+ClassElement:
+	MethodDefinition
+	| "static" MethodDefinition
+    | SEMICOLON
+    ;
+
+PropertyName:
+	LiteralPropertyName
+	;
+	
+LiteralPropertyName:
+	IdentifierName
+	| StringLiteral
+	| NumericLiteral
+	;
+
+StrictFormalParameters:
+	FormalParameters
+	;
+
+MethodDefinition:
+	PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /*	| GeneratorMethod */
+	| "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	| "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+	;
+
+PropertySetParameterList:
+	FormalParameter
+	;
 
 TryStatement:
     TRY Block Catch
