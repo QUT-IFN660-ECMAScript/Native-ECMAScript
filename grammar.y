@@ -209,7 +209,7 @@ Elision:
 
 ElisionOptional:
     Elision
-    | %empty
+    |
     ;
 
 SpreadElement:
@@ -469,7 +469,7 @@ Expression:
 
 ExpressionOptional:
     Expression
-    | %empty
+    |
     ;
 
 /* A.3 Statements */
@@ -526,7 +526,7 @@ StatementList:
 
 StatementListOptional:
     StatementList
-    | %empty
+    |
     ;
 
 StatementListItem:
@@ -630,7 +630,7 @@ BindingRestElement:
 
 BindingRestElementOptional:
     BindingRestElement
-    | %empty
+    |
     ;
 
 /*13.4 Empty Statement*/
@@ -723,7 +723,7 @@ CaseClauses:
     ;
 
 CaseClausesOptional:
-    %empty
+
     | CaseClauses
     ;
 
@@ -791,7 +791,7 @@ StrictFormalParameters:
     ;
 
 FormalParameters:
-    %empty
+
     | FormalParameterList
     ;
 
@@ -906,7 +906,7 @@ ClassHeritage:
 
 ClassHeritageOptional:
     ClassHeritage
-    | %empty
+    |
     ;
 
 ClassBody:
@@ -915,7 +915,7 @@ ClassBody:
 
 ClassBodyOptional:
     ClassBody
-    | %empty
+    |
     ;
 
 ClassElementList:
@@ -1010,7 +1010,7 @@ BindingIdentifier:
 
 BindingIdentifierOptional:
     BindingIdentifier
-    | %empty
+    |
     ;
 
 LabelIdentifier:
