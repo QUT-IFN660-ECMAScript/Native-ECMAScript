@@ -175,6 +175,7 @@ Statement:
     | ExpressionStatement
     | IfStatement
     | BreakableStatement
+    | ReturnStatement
     | ContinueStatement
     | BreakStatement
     | ReturnStatement
@@ -184,6 +185,11 @@ Statement:
     | TryStatement
     | DebuggerStatement
     ;
+
+ReturnStatement:
+    RETURN
+    | RETURN Expression
+    ; 
 
 BlockStatement:
     Block
@@ -706,6 +712,5 @@ Finally:
 ExportDeclaration:
     EXPORT VariableStatement
     ;
-
 
 %%
