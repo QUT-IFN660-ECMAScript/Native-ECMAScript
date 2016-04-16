@@ -139,6 +139,7 @@ NaN                                 { return LITERAL_NAN; }
 {DIGIT}+                            { yylval.ival = atoi(yytext); return VALUE_INTEGER; }
 L?\"(\\.|[^\\"])*\"                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
 L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE_STRING; }
+
 \`                                  {
                                       BEGIN(MULTILINE_STRING);
                                       stringbuffer = dynamic_strcat(NULL, "");
