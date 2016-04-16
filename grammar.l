@@ -161,7 +161,7 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 "\u2028"                            ;//  { return LINE_SEPARATOR; }
 "\u2029"                            ;//  { return PARAGRAPH_SEPARATOR; }
 
-[ \t]                               /* spaces and tabs, do nothing */
+[ |\t]                              ; /* spaces and tabs, do nothing */
 <<EOF>>                             { return END_OF_FILE; }
 .                                   { yyerror("Unknown character"); }
 %%

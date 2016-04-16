@@ -297,7 +297,7 @@ CallExpression:
     MemberExpression Arguments
     | SuperCall
     | CallExpression Arguments
-    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
+    | CallExpression LEFT_BRACKET Expression RIGHT_BRACKET
     | CallExpression FULL_STOP IdentifierName
     /*| CallExpression TemplateLiteral*/
     ;
@@ -464,8 +464,6 @@ AssignmentOperator:
 
 Expression:
     AssignmentExpression
-    /*| PrimaryExpression --- where are these from?
-    | EqualityExpression*/
     | Expression COMMA AssignmentExpression
     ;
 
@@ -498,7 +496,6 @@ Declaration:
     HoistableDeclaration
     | ClassDeclaration
     | LexicalDeclaration
-    /*| ExportDeclaration --- where is this from? */
     ;
 
 HoistableDeclaration:
@@ -880,9 +877,9 @@ GeneratorBody:
     FunctionBody
     ;
 
-/*
-FIXME: reduce/reduce
-YieldExpression:
+
+/*FIXME: reduce/reduce*/
+/*YieldExpression:
     YIELD
     | YIELD AssignmentExpression
     | YIELD MULTIPLY AssignmentExpression
@@ -890,29 +887,35 @@ YieldExpression:
 
 /* 14.5 Class Definitions */
 
-ClassDeclaration: // missing +default
+ClassDeclaration:
     CLASS BindingIdentifier ClassTail
-    | CLASS ClassTail
+    /*| CLASS ClassTail // missing +default*/
     ;
 
 ClassExpression:
-     CLASS BindingIdentifier ClassTail
-     | CLASS ClassTail
+     CLASS BindingIdentifierOptional ClassTail
      ;
 
 ClassTail:
-    ClassHeritage LEFT_BRACE ClassBody RIGHT_BRACE
-    | ClassHeritage LEFT_BRACE RIGHT_BRACE
-    | LEFT_BRACE ClassBody RIGHT_BRACE
-    | LEFT_BRACE RIGHT_BRACE
+    ClassHeritageOptional LEFT_BRACE ClassBodyOptional RIGHT_BRACE
     ;
 
 ClassHeritage:
     EXTENDS LeftHandSideExpression
     ;
 
+ClassHeritageOptional:
+    ClassHeritage
+    | %empty
+    ;
+
 ClassBody:
     ClassElementList
+    ;
+
+ClassBodyOptional:
+    ClassBody
+    | %empty
     ;
 
 ClassElementList:
@@ -930,6 +933,11 @@ ClassElement:
 /* 11.6 Names and Keywords */
 
 IdentifierName:
+    IDENTIFIER
+    ;
+/*
+?? shouldnt these be in the lex file?
+IdentifierName:
     IdentifierStart
     | IdentifierName IdentifierPart
     ;
@@ -944,7 +952,7 @@ IdentifierPart:
     "$"
     | "_"
     | IDENTIFIER
-    ;
+    ;*/
 
 /* 11.8 Literals */
 /*
@@ -980,6 +988,7 @@ DecimalLiteral:
 
 DecimalIntegerLiteral:
     VALUE_INTEGER
+    | VALUE_FLOAT
     ;
 
 StringLiteral:
@@ -990,13 +999,18 @@ StringLiteral:
 /*12.1 Identifiers*/
 
 IdentifierReference:
-    IDENTIFIER
+    Identifier
     | YIELD
     ;
 
 BindingIdentifier:
     Identifier
     | YIELD
+    ;
+
+BindingIdentifierOptional:
+    BindingIdentifier
+    | %empty
     ;
 
 LabelIdentifier:
