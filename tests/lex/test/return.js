@@ -1,2 +1,3 @@
-return 42;
-
+function x(){
+  return 42;
+}

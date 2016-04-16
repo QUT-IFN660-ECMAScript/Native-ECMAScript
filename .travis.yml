@@ -1,6 +1,36 @@
 language:
   cpp
+cache:
+  apt: true
+  ccache:
+env:
+  global:
+    - GCC_VERSION=5
+addons:
+ apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise
+    packages:
+# ensure these match GCC_VERSION
+      - gcc-5
+      - g++-5
+      - binutils
+      - gawk
+      - build-essential
+      - wget
+      - libtool
+      - flex
+before_script:
+  - npm install
+  - export BISON=./node_modules/.bin/babel
+  - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
 script:
-  make && make test
+  - ${CC} --version ; ${CXX} --version;
+  - bison --version
+  - pwd
+  - ls -la $HOME
+  - env
+  - make && make test_all
 notifications:
   slack: qut-ifn660-javascript:L91Jp7bz9fqP8fL4gudNYu1G

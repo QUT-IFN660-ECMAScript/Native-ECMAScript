@@ -4,7 +4,7 @@
 #include "lex.yy.h"
 %}
 
-%token END_OF_FILE
+%token END_OF_FILE 0
 %token BREAK
 %token CASE
 %token CATCH
@@ -110,6 +110,10 @@
 %token VALUE_FLOAT
 %token VALUE_STRING
 %token IDENTIFIER
+%token LINE_FEED
+%token CARRIAGE_RETURN
+%token LINE_SEPARATOR
+%token PARAGRAPH_SEPARATOR
 
 
 %union {
@@ -142,10 +146,10 @@ StatementList:
     StatementListItem
     | StatementList StatementListItem
     ;
-    
+
 StatementListOptional:
     StatementList
-    | 
+    |
     ;
 
 StatementListItem:
@@ -178,7 +182,6 @@ Statement:
     | ReturnStatement
     | ContinueStatement
     | BreakStatement
-    | ReturnStatement
     | WithStatement
     | LabelledStatement
     | ThrowStatement
@@ -194,7 +197,7 @@ ReturnStatement:
 BlockStatement:
     Block
     ;
-    
+
 Block:
     LEFT_BRACE StatementList RIGHT_BRACE
     | LEFT_BRACE RIGHT_BRACE
@@ -213,7 +216,7 @@ VariableDeclaration:
     BindingIdentifier
     | BindingIdentifier Initialiser
     ;
-    
+
 BindingIdentifier:
     Identifier
     | YIELD
@@ -249,7 +252,7 @@ BreakableStatement:
     IterationStatement
     | SwitchStatement
     ;
-    
+
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
@@ -303,19 +306,19 @@ DebuggerStatement:
 
 ExpressionOptional:
     Expression
-    | 
+    |
     ;
-    
+
 LexicalDeclaration:
     LetOrConst BindingList
     // TODO not implemented yet | BindingList
     ;
-    
+
 ForDeclaration:
-    LetOrConst 
+    LetOrConst
     | ForBinding
     ;
-    
+
 ForBinding:
     IDENTIFIER
     /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
@@ -328,7 +331,7 @@ LetOrConst:
     LET
     | CONST
     ;
-    
+
 BindingList:
     LexicalBinding
     | BindingList COMMA LexicalBinding
@@ -357,7 +360,7 @@ BindingPattern:
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
     ;
-    
+
 CaseBlock:
     LEFT_BRACE CaseClausesOptional RIGHT_BRACE
     | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
@@ -370,13 +373,13 @@ CaseClauses:
 
 CaseClausesOptional:
     CaseClauses
-    | 
+    |
     ;
-    
+
 CaseClause:
     CASE Expression COLON StatementListOptional
     ;
-    
+
 DefaultClause:
     DEFAULT COLON StatementListOptional
     ;
@@ -394,6 +397,34 @@ Literal:
     | StringLiteral
     ;
 
+ArrayLiteral:
+    LEFT_BRACKET RIGHT_BRACKET
+    | LEFT_BRACKET Elision RIGHT_BRACKET
+    | LEFT_BRACKET ElementList RIGHT_BRACKET
+    | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
+    | LEFT_BRACKET ElementList COMMA RIGHT_BRACKET
+    ;
+
+ElementList:
+    Elision AssignmentExpression
+    | AssignmentExpression
+    | Elision SpreadElement
+    | SpreadElement
+    | ElementList COMMA Elision AssignmentExpression
+    | ElementList COMMA AssignmentExpression
+    | ElementList COMMA Elision SpreadElement
+    | ElementList COMMA SpreadElement
+    ;
+
+Elision:
+    COMMA
+    | Elision COMMA
+    ;
+
+SpreadElement:
+    ELLIPSIS AssignmentExpression
+    ;
+
 NullLiteral:
     LITERAL_NULL
     ;
@@ -406,11 +437,11 @@ BooleanLiteral:
 NumericLiteral:
     DecimalLiteral
     ;
-    
+
 DecimalLiteral:
     DecimalIntegerLiteral
     ;
-    
+
 DecimalIntegerLiteral:
     VALUE_INTEGER
     ;
@@ -426,32 +457,32 @@ AssignmentExpression:
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
     ;
-    
+
 ConditionalExpression:
     LogicalORExpression
     | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
     ;
-    
+
 LogicalORExpression:
     LogicalANDExpression
     | LogicalORExpression LOGICAL_OR LogicalANDExpression
     ;
-    
+
 LogicalANDExpression:
     BitwiseORExpression
     | LogicalANDExpression LOGICAL_AND BitwiseORExpression
     ;
-    
+
 BitwiseORExpression:
     BitwiseXORExpression
     | BitwiseORExpression BITWISE_OR BitwiseXORExpression
     ;
-   
+
 BitwiseXORExpression:
     BitwiseANDExpression
     | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
     ;
-    
+
 BitwiseANDExpression:
     EqualityExpression
     | BitwiseANDExpression BITWISE_AND EqualityExpression
@@ -460,7 +491,7 @@ BitwiseANDExpression:
 EqualityExpression:
     RelationalExpression
     ;
-    
+
 RelationalExpression:
     ShiftExpression
     /*
@@ -470,23 +501,23 @@ RelationalExpression:
     | Expression NOT_EXACTLY_EQUAL Expression
     */
     ;
-    
+
 ShiftExpression:
     AdditiveExpression
     ;
-    
+
 AdditiveExpression:
     MultiplicativeExpression
     ;
-    
+
 MultiplicativeExpression:
     UnaryExpression
     ;
-    
+
 UnaryExpression:
     PostfixExpression
     ;
-    
+
 PostfixExpression:
     LeftHandSideExpression
     ;
@@ -494,15 +525,16 @@ PostfixExpression:
 NewExpression:
     MemberExpression
     ;
-    
+
 MemberExpression:
     PrimaryExpression
     ;
-    
+
 PrimaryExpression:
     THIS
     | IdentifierReference
     | Literal
+    | ArrayLiteral
     ;
 
 AssignmentOperator:
@@ -556,7 +588,7 @@ Arguments:
     LEFT_PAREN RIGHT_PAREN
     | LEFT_PAREN ArgumentList RIGHT_PAREN
     ;
-   
+
 ArgumentList:
     AssignmentExpression
     | ArgumentList COMMA AssignmentExpression
@@ -583,7 +615,7 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
-    
+
 /* Function Definitions ECMA 14.1 */
 
 /* Second function declaration anonymous function */
@@ -713,4 +745,18 @@ ExportDeclaration:
     EXPORT VariableStatement
     ;
 
+/*LineTerminator:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
+    ;
+
+LineTerminatorSequence:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
+    | CARRIAGE_RETURN LINE_FEED
+    ;*/
 %%

@@ -7,8 +7,8 @@ tests/test_*
 .gitignore
 *.*~
 .idea/
-tests/test_lex
-log.txt
+*.log
+node_modules/
 grammar.output
 grammar.dot
 *.ps
