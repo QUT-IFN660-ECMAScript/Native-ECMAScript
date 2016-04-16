@@ -110,6 +110,10 @@
 %token VALUE_FLOAT
 %token VALUE_STRING
 %token IDENTIFIER
+%token LINE_FEED
+%token CARRIAGE_RETURN
+%token LINE_SEPARATOR
+%token PARAGRAPH_SEPARATOR
 
 
 %union {
@@ -741,4 +745,18 @@ ExportDeclaration:
     EXPORT VariableStatement
     ;
 
+/*LineTerminator:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
+    ;
+
+LineTerminatorSequence:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
+    | CARRIAGE_RETURN LINE_FEED
+    ;*/
 %%

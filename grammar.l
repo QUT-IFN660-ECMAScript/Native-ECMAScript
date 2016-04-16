@@ -156,7 +156,12 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
-[ \t\n]                             /* do nothing */
+"\n"                                //  { return LINE_FEED; }
+"\r"                                //  { return CARRIAGE_RETURN; }
+"\u2028"                            //  { return LINE_SEPARATOR; }
+"\u2029"                            //  { return PARAGRAPH_SEPARATOR; }
+
+[ \t]                               /* spaces and tabs, do nothing */
 <<EOF>>                             { return END_OF_FILE; }
 .                                   { yyerror("Unknown character"); }
 %%

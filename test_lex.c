@@ -204,6 +204,15 @@ int main(int argc, char* argv[])
                 printf("FINALLY\n");
                 break;
 
+// line terminators, print nothing
+            // case LINE_FEED:
+            //     break;
+            // case CARRIAGE_RETURN:
+            //     break;
+            // case LINE_SEPARATOR:
+            //     break;
+            // case PARAGRAPH_SEPARATOR:
+            //     break;
 // end of file
             case END_OF_FILE:
                 printf("END_OF_FILE\n");
