@@ -7,7 +7,7 @@ tests/test_*
 .gitignore
 *.*~
 .idea/
-log.txt
+*.log
 node_modules/
 grammar.output
 grammar.dot

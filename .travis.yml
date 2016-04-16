@@ -31,6 +31,6 @@ script:
   - pwd
   - ls -la $HOME
   - env
-  - make && make test
+  - make && make test_all
 notifications:
   slack: qut-ifn660-javascript:L91Jp7bz9fqP8fL4gudNYu1G
