@@ -6,4 +6,6 @@ grammar.tab.*
 *.*~
 .idea/
 tests/test_lex
+tests/test_parser
 log.txt
+node_modules/

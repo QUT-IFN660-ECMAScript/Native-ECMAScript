@@ -4,7 +4,7 @@
 #include "lex.yy.h"
 %}
 
-%token END_OF_FILE
+%token END_OF_FILE 0 "end of file"
 %token BREAK
 %token CASE
 %token CATCH
@@ -142,10 +142,10 @@ StatementList:
     StatementListItem
     | StatementList StatementListItem
     ;
-    
+
 StatementListOptional:
     StatementList
-    | 
+    |
     ;
 
 StatementListItem:
@@ -174,7 +174,7 @@ Statement:
 BlockStatement:
     Block
     ;
-    
+
 Block:
     LEFT_BRACE StatementList RIGHT_BRACE
     | LEFT_BRACE RIGHT_BRACE
@@ -219,7 +219,7 @@ BreakableStatement:
     IterationStatement
     | SwitchStatement
     ;
-    
+
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
@@ -237,19 +237,19 @@ IterationStatement:
 
 ExpressionOptional:
     Expression
-    | 
+    |
     ;
-    
+
 LexicalDeclaration:
-    LetOrConst 
+    LetOrConst
     // TODO not implemented yet | BindingList
     ;
-    
+
 ForDeclaration:
-    LetOrConst 
+    LetOrConst
     | ForBinding
     ;
-    
+
 ForBinding:
     IDENTIFIER
     /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
@@ -266,7 +266,7 @@ LetOrConst:
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
     ;
-    
+
 CaseBlock:
     LEFT_BRACE CaseClausesOptional RIGHT_BRACE
     | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
@@ -279,13 +279,13 @@ CaseClauses:
 
 CaseClausesOptional:
     CaseClauses
-    | 
+    |
     ;
-    
+
 CaseClause:
     CASE Expression COLON StatementListOptional
     ;
-    
+
 DefaultClause:
     DEFAULT COLON StatementListOptional
     ;
