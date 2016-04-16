@@ -154,22 +154,36 @@ StatementListItem:
     ;
 
 Declaration:
-    "temp"
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
     | ClassDeclaration
-    | LexicalDeclaration
-    */
+ /*   | LexicalDeclaration
+    */  
+    | ExportDeclaration
+
     ;
 
+HoistableDeclaration:
+    FunctionDeclaration
+/*  | GeneratorDeclaration */
+    ;   
 
 Statement:
     BlockStatement
     | VariableStatement
     | EmptyStatement
+    | ExpressionStatement
     | IfStatement
     | BreakableStatement
     | ReturnStatement
+    | ContinueStatement
+    | BreakStatement
+    | ReturnStatement
+    | WithStatement
+    | LabelledStatement
+    | ThrowStatement
+    | TryStatement
+    | DebuggerStatement
     ;
 
 ReturnStatement:
@@ -196,24 +210,34 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-    IDENTIFIER Initialiser
-    /* TODO temp rules above, the below needs to be implemented see 13.3.2 in spec
-    BindingIdentifier InitialiserOptional
-    | BindingPattern Initialiser
-    */
+    BindingIdentifier
+    | BindingIdentifier Initialiser
+    ;
+    
+BindingIdentifier:
+    Identifier
+    | YIELD
+    ;
+
+LabelIdentifier:
+    Identifier
+    | YIELD
+    ;
+    
+Identifier:
+    IdentifierName 
     ;
 
 Initialiser:
-  ASSIGNMENT VALUE_INTEGER
-  | ASSIGNMENT VALUE_FLOAT
-  | ASSIGNMENT VALUE_STRING
-  /* TODO above rules are temp, below need to be implemented see 12.2.6 in spec
   ASSIGNMENT AssignmentExpression
-  */
   ;
 
 EmptyStatement:
     SEMICOLON
+    ;
+
+ExpressionStatement:
+    Expression SEMICOLON
     ;
 
 IfStatement:
@@ -241,13 +265,49 @@ IterationStatement:
     | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
     ;
 
+ContinueStatement:
+    CONTINUE SEMICOLON
+    | CONTINUE LabelIdentifier SEMICOLON
+    ;
+
+BreakStatement:
+    BREAK SEMICOLON
+    | BREAK LabelIdentifier SEMICOLON
+    ;
+
+ReturnStatement:
+    RETURN SEMICOLON
+    | RETURN LabelIdentifier SEMICOLON
+    ;
+
+WithStatement:
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
+    ;
+
+LabelledStatement:
+    LabelIdentifier COLON LabelledItem
+    ;
+
+LabelledItem:
+    Statement
+    | FunctionDeclaration
+    ;
+
+ThrowStatement:
+    THROW Expression SEMICOLON
+    ;
+
+DebuggerStatement:
+    DEBUGGER SEMICOLON
+    ;
+
 ExpressionOptional:
     Expression
     | 
     ;
     
 LexicalDeclaration:
-    LetOrConst 
+    LetOrConst BindingList
     // TODO not implemented yet | BindingList
     ;
     
@@ -268,6 +328,31 @@ LetOrConst:
     LET
     | CONST
     ;
+    
+BindingList:
+    LexicalBinding
+    | BindingList COMMA LexicalBinding
+    ;
+    
+LexicalBinding:
+    BindingIdentifier 
+    | BindingIdentifier Initialiser
+    | BindingPattern 
+    | BindingPattern Initialiser
+    ;
+    
+    
+IdentifierName:
+    IdentifierStart
+    | IdentifierName IdentifierPart
+    ;
+    
+BindingPattern:
+    "todo"
+    /* to do */
+    ;
+    
+    
 
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
@@ -302,19 +387,6 @@ Expression:
     | EqualityExpression
     ;
 
-PrimaryExpression:
-    THIS
-    | IdentifierReference
-    | Literal
-    ;
-
-EqualityExpression:
-    Expression EQUAL Expression
-    | Expression NOT_EQUAL Expression
-    | Expression EXACTLY_EQUAL Expression
-    | Expression NOT_EXACTLY_EQUAL Expression
-    ;
-
 Literal:
     NullLiteral
     | BooleanLiteral
@@ -332,8 +404,15 @@ BooleanLiteral:
     ;
 
 NumericLiteral:
+    DecimalLiteral
+    ;
+    
+DecimalLiteral:
+    DecimalIntegerLiteral
+    ;
+    
+DecimalIntegerLiteral:
     VALUE_INTEGER
-    | VALUE_FLOAT
     ;
 
 StringLiteral:
@@ -341,10 +420,89 @@ StringLiteral:
     ;
 
 AssignmentExpression:
-    YieldExpression
+    ConditionalExpression
+    | YieldExpression
     | ArrowFunction
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+    
+ConditionalExpression:
+    LogicalORExpression
+    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
+    ;
+    
+LogicalORExpression:
+    LogicalANDExpression
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+    ;
+    
+LogicalANDExpression:
+    BitwiseORExpression
+    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
+    ;
+    
+BitwiseORExpression:
+    BitwiseXORExpression
+    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
+    ;
+   
+BitwiseXORExpression:
+    BitwiseANDExpression
+    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
+    ;
+    
+BitwiseANDExpression:
+    EqualityExpression
+    | BitwiseANDExpression BITWISE_AND EqualityExpression
+    ;
+
+EqualityExpression:
+    RelationalExpression
+    ;
+    
+RelationalExpression:
+    ShiftExpression
+    /*
+    | Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    */
+    ;
+    
+ShiftExpression:
+    AdditiveExpression
+    ;
+    
+AdditiveExpression:
+    MultiplicativeExpression
+    ;
+    
+MultiplicativeExpression:
+    UnaryExpression
+    ;
+    
+UnaryExpression:
+    PostfixExpression
+    ;
+    
+PostfixExpression:
+    LeftHandSideExpression
+    ;
+
+NewExpression:
+    MemberExpression
+    ;
+    
+MemberExpression:
+    PrimaryExpression
+    ;
+    
+PrimaryExpression:
+    THIS
+    | IdentifierReference
+    | Literal
     ;
 
 AssignmentOperator:
@@ -363,6 +521,7 @@ AssignmentOperator:
 
 LeftHandSideExpression:
     CallExpression
+    | NewExpression
     ;
 
 CallExpression:
@@ -375,10 +534,7 @@ IdentifierReference:
     IDENTIFIER
     ;
 
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
+
 
 IdentifierStart:
     "$"
@@ -398,6 +554,12 @@ SuperCall:
 
 Arguments:
     LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ArgumentList RIGHT_PAREN
+    ;
+   
+ArgumentList:
+    AssignmentExpression
+    | ArgumentList COMMA AssignmentExpression
     ;
 
 YieldExpression:
@@ -421,6 +583,52 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
+    
+/* Function Definitions ECMA 14.1 */
+
+/* Second function declaration anonymous function */
+FunctionDeclaration:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+/*
+FunctionExpression:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+*/
+
+/* Required for ArrowFormalParameters   
+StrictFormalParameters:
+    FormalParameters
+    ;
+*/
+
+FormalParameters:
+    FormalParameterList
+    ;
+    
+FormalParameterList:
+    /* incomplete */
+    FormalsList
+    | FormalsList COMMA FormalParameter
+    ;
+    
+FormalsList:
+    FormalParameter
+    | FormalsList COMMA FormalParameter
+    ;
+    
+FormalParameter:
+    BindingElement
+    ;
+/* Addition Productions required for Function Definitions */
+
+BindingElement:
+    BindingPattern
+    | BindingPattern Initialiser
+    ;
+
 
 FunctionBody:
     FunctionStatementList
@@ -428,6 +636,81 @@ FunctionBody:
 
 FunctionStatementList:
     StatementList
+    ;
+    
+ClassDeclaration: 
+    CLASS BindingIdentifier ClassTail
+    | CLASS ClassTail
+    ;
+/*  
+ClassExpression:
+     CLASS BindingIdentifier ClassTail
+     ;
+*/   
+ClassTail:
+    ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+    ;
+    
+ClassHeritage:
+    EXTENDS LeftHandSideExpression
+    ;
+    
+ClassBody:
+    ClassElementList
+    ;
+    
+ClassElementList:
+    ClassElement
+    | ClassElementList ClassElement
+    ;
+    
+ClassElement:
+    MethodDefinition
+    | "static" MethodDefinition
+    | SEMICOLON
+    ;
+
+PropertyName:
+    LiteralPropertyName
+    ;
+    
+LiteralPropertyName:
+    IdentifierName
+    | StringLiteral
+    | NumericLiteral
+    ;
+
+StrictFormalParameters:
+    FormalParameters
+    ;
+
+MethodDefinition:
+    PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /* | GeneratorMethod */
+    | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+PropertySetParameterList:
+    FormalParameter
+    ;
+
+TryStatement:
+    TRY Block Catch
+    | TRY Block Finally
+    | TRY Block Catch Finally
+    ;
+
+Catch:
+    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    ;
+
+Finally:
+    FINALLY Block
+    ;
+
+ExportDeclaration:
+    EXPORT VariableStatement
     ;
 
 %%

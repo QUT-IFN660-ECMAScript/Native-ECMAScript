@@ -34,6 +34,12 @@ int main(int argc, char* argv[])
             case RETURN:
                 printf("RETURN\n");
                 break;
+            case EXPORT:
+                printf("EXPORT\n");
+                break;
+            case CONST:
+                printf("CONST\n");
+                break;
             case FUNCTION:
                 printf("FUNCTION\n");
                 break;
@@ -58,7 +64,7 @@ int main(int argc, char* argv[])
               	printf("/\n");
               	break;
             case MODULO:
-                printf("%%\n");
+                printf("MODULO\n");
                 break;
             case UNARY_ADD:
                 printf("++\n");
@@ -91,6 +97,13 @@ int main(int argc, char* argv[])
             case GREATER_THAN_OR_EQUAL:
                 printf(">=\n");
                 break;
+// logical operators
+            case LOGICAL_AND:
+                printf("&&\n");
+                break;
+            case LOGICAL_OR:
+                printf("||\n");
+                break;
 // bitwise operators
             case LEFT_SHIFT:
                 printf("<<\n");
@@ -100,6 +113,15 @@ int main(int argc, char* argv[])
                 break;
             case UNSIGNED_RIGHT_SHIFT:
                 printf(">>>\n");
+                break;
+            case BITWISE_AND:
+                printf("&\n");
+                break;
+            case BITWISE_OR:
+                printf("|\n");
+                break;
+            case BITWISE_XOR:
+                printf("^\n");
                 break;
 // brackets
             case LEFT_BRACKET:
@@ -132,6 +154,9 @@ int main(int argc, char* argv[])
                 break;
             case COLON:
                 printf(":\n");
+                break;
+            case QUESTION_MARK:
+                printf("?\n");
                 break;
 // logical
             case IF:
@@ -168,7 +193,16 @@ int main(int argc, char* argv[])
             case WHILE:
                 printf("WHILE\n");
                 break;
-
+// try catch finally
+            case TRY:
+                printf("TRY\n");
+                break;
+            case CATCH:
+                printf("CATCH\n");
+                break;
+            case FINALLY:
+                printf("FINALLY\n");
+                break;
 
 // end of file
             case END_OF_FILE:

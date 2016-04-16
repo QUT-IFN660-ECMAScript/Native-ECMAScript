@@ -1,0 +1,38 @@
+FUNCTION
+IDENTIFIER (multiple_vars)
+(
+IDENTIFIER (variable_one)
+,
+IDENTIFIER (variable_two)
+,
+IDENTIFIER (variable_three)
+,
+IDENTIFIER (variable_four)
+)
+{
+IDENTIFIER (variable_five)
+=
+IDENTIFIER (variable_one)
++
+IDENTIFIER (variable_two)
++
+IDENTIFIER (variable_three)
++
+IDENTIFIER (variable_four)
+;
+RETURN
+IDENTIFIER (variable_five)
+;
+}
+IDENTIFIER (multiple_vars)
+(
+VALUE_INTEGER (1)
+,
+VALUE_INTEGER (2)
+,
+VALUE_INTEGER (3)
+,
+VALUE_INTEGER (4)
+)
+;
+END_OF_FILE
