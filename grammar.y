@@ -158,7 +158,9 @@ Declaration:
     HoistableDeclaration
     | ClassDeclaration
  /*   | LexicalDeclaration
-    */
+    */  
+    | ExportDeclaration
+
     ;
 
 HoistableDeclaration:
@@ -700,5 +702,10 @@ Catch:
 Finally:
     FINALLY Block
     ;
+
+ExportDeclaration:
+    EXPORT VariableStatement
+    ;
+
 
 %%
