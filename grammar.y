@@ -35,6 +35,7 @@
 %token THROW
 %token TRY
 %token TYPEOF
+%token TARGET
 %token VAR
 %token VOID
 %token WHILE
@@ -134,295 +135,35 @@
 
 %%
 
-Script:
-    ScriptBody
-    ;
+/* A.1 Lexical Grammar */
+/* 11.6 Names and Keywords */
 
-ScriptBody:
-    StatementList
-    ;
-
-StatementList:
-    StatementListItem
-    | StatementList StatementListItem
-    ;
-
-StatementListOptional:
-    StatementList
-    |
-    ;
-
-StatementListItem:
-    Statement
-    | Declaration
-    ;
-
-Declaration:
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
-    HoistableDeclaration
-    | ClassDeclaration
- /*   | LexicalDeclaration
-    */  
-    | ExportDeclaration
-
-    ;
-
-HoistableDeclaration:
-    FunctionDeclaration
-/*  | GeneratorDeclaration */
-    ;   
-
-Statement:
-    BlockStatement
-    | VariableStatement
-    | EmptyStatement
-    | ExpressionStatement
-    | IfStatement
-    | BreakableStatement
-    | ReturnStatement
-    | ContinueStatement
-    | BreakStatement
-    | WithStatement
-    | LabelledStatement
-    | ThrowStatement
-    | TryStatement
-    | DebuggerStatement
-    ;
-
-ReturnStatement:
-    RETURN
-    | RETURN Expression
-    ; 
-
-BlockStatement:
-    Block
-    ;
-
-Block:
-    LEFT_BRACE StatementList RIGHT_BRACE
-    | LEFT_BRACE RIGHT_BRACE
-    ;
-
-VariableStatement:
-    VAR VariableDeclarationList
-    ;
-
-VariableDeclarationList:
-    VariableDeclaration
-    | VariableDeclarationList COMMA VariableDeclaration
-    ;
-
-VariableDeclaration:
-    BindingIdentifier
-    | BindingIdentifier Initialiser
-    ;
-
-BindingIdentifier:
-    Identifier
-    | YIELD
-    ;
-
-LabelIdentifier:
-    Identifier
-    | YIELD
-    ;
-    
-Identifier:
-    IdentifierName 
-    ;
-
-Initialiser:
-  ASSIGNMENT AssignmentExpression
-  ;
-
-EmptyStatement:
-    SEMICOLON
-    ;
-
-ExpressionStatement:
-    Expression SEMICOLON
-    ;
-
-IfStatement:
-    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
-    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
-    ;
-
-BreakableStatement:
-    IterationStatement
-    | SwitchStatement
-    ;
-
-IterationStatement:
-    // TODO Missing look-ahead checks, see 13.7 for more details
-    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
-    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
-    | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
-    | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
-    | FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement
-    | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
-    ;
-
-ContinueStatement:
-    CONTINUE SEMICOLON
-    | CONTINUE LabelIdentifier SEMICOLON
-    ;
-
-BreakStatement:
-    BREAK SEMICOLON
-    | BREAK LabelIdentifier SEMICOLON
-    ;
-
-ReturnStatement:
-    RETURN SEMICOLON
-    | RETURN LabelIdentifier SEMICOLON
-    ;
-
-WithStatement:
-    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
-    ;
-
-LabelledStatement:
-    LabelIdentifier COLON LabelledItem
-    ;
-
-LabelledItem:
-    Statement
-    | FunctionDeclaration
-    ;
-
-ThrowStatement:
-    THROW Expression SEMICOLON
-    ;
-
-DebuggerStatement:
-    DEBUGGER SEMICOLON
-    ;
-
-ExpressionOptional:
-    Expression
-    |
-    ;
-
-LexicalDeclaration:
-    LetOrConst BindingList
-    // TODO not implemented yet | BindingList
-    ;
-
-ForDeclaration:
-    LetOrConst
-    | ForBinding
-    ;
-
-ForBinding:
-    IDENTIFIER
-    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
-    BindingIdentifier
-    | BindingPattern
-    */
-    ;
-
-LetOrConst:
-    LET
-    | CONST
-    ;
-
-BindingList:
-    LexicalBinding
-    | BindingList COMMA LexicalBinding
-    ;
-    
-LexicalBinding:
-    BindingIdentifier 
-    | BindingIdentifier Initialiser
-    | BindingPattern 
-    | BindingPattern Initialiser
-    ;
-    
-    
 IdentifierName:
     IdentifierStart
     | IdentifierName IdentifierPart
     ;
-    
-BindingPattern:
-    "todo"
-    /* to do */
-    ;
-    
-    
 
-SwitchStatement:
-    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+IdentifierStart:
+    "$"
+    | "_"
+    | IDENTIFIER
     ;
 
-CaseBlock:
-    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
-    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+IdentifierPart:
+    "$"
+    | "_"
+    | IDENTIFIER
     ;
 
-CaseClauses:
-    CaseClause
-    | CaseClauses CaseClause
+/* 11.8 Literals */
+
+DivPunctuator:
+    DIVIDE
+    | DIVISION_ASSIGNMENT
     ;
 
-CaseClausesOptional:
-    CaseClauses
-    |
-    ;
-
-CaseClause:
-    CASE Expression COLON StatementListOptional
-    ;
-
-DefaultClause:
-    DEFAULT COLON StatementListOptional
-    ;
-
-Expression:
-    AssignmentExpression
-    | PrimaryExpression
-    | EqualityExpression
-    ;
-
-Literal:
-    NullLiteral
-    | BooleanLiteral
-    | NumericLiteral
-    | StringLiteral
-    ;
-
-ArrayLiteral:
-    LEFT_BRACKET RIGHT_BRACKET
-    | LEFT_BRACKET Elision RIGHT_BRACKET
-    | LEFT_BRACKET ElementList RIGHT_BRACKET
-    | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
-    | LEFT_BRACKET ElementList COMMA RIGHT_BRACKET
-    ;
-
-ElementList:
-    Elision AssignmentExpression
-    | AssignmentExpression
-    | Elision SpreadElement
-    | SpreadElement
-    | ElementList COMMA Elision AssignmentExpression
-    | ElementList COMMA AssignmentExpression
-    | ElementList COMMA Elision SpreadElement
-    | ElementList COMMA SpreadElement
-    ;
-
-Elision:
-    COMMA
-    | Elision COMMA
-    ;
-
-SpreadElement:
-    ELLIPSIS AssignmentExpression
+RightBracePunctuator:
+    RIGHT_BRACE
     ;
 
 NullLiteral:
@@ -436,6 +177,9 @@ BooleanLiteral:
 
 NumericLiteral:
     DecimalLiteral
+    /*| BinaryIntegerLiteral
+    | OctalIntegerLiteral
+    | HexIntegerLiteral*/
     ;
 
 DecimalLiteral:
@@ -450,134 +194,176 @@ StringLiteral:
     VALUE_STRING
     ;
 
-AssignmentExpression:
-    ConditionalExpression
-    | YieldExpression
-    | ArrowFunction
-    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
-    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+
+/*12.1 Identifiers*/
+
+IdentifierReference:
+    IDENTIFIER
+    | YIELD
     ;
 
-ConditionalExpression:
-    LogicalORExpression
-    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
+BindingIdentifier:
+    Identifier
+    | YIELD
     ;
 
-LogicalORExpression:
-    LogicalANDExpression
-    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+LabelIdentifier:
+    Identifier
+    | YIELD
     ;
 
-LogicalANDExpression:
-    BitwiseORExpression
-    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
+Identifier:
+    IdentifierName
     ;
 
-BitwiseORExpression:
-    BitwiseXORExpression
-    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
-    ;
-
-BitwiseXORExpression:
-    BitwiseANDExpression
-    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
-    ;
-
-BitwiseANDExpression:
-    EqualityExpression
-    | BitwiseANDExpression BITWISE_AND EqualityExpression
-    ;
-
-EqualityExpression:
-    RelationalExpression
-    ;
-
-RelationalExpression:
-    ShiftExpression
-    /*
-    | Expression EQUAL Expression
-    | Expression NOT_EQUAL Expression
-    | Expression EXACTLY_EQUAL Expression
-    | Expression NOT_EXACTLY_EQUAL Expression
-    */
-    ;
-
-ShiftExpression:
-    AdditiveExpression
-    ;
-
-AdditiveExpression:
-    MultiplicativeExpression
-    ;
-
-MultiplicativeExpression:
-    UnaryExpression
-    ;
-
-UnaryExpression:
-    PostfixExpression
-    ;
-
-PostfixExpression:
-    LeftHandSideExpression
-    ;
-
-NewExpression:
-    MemberExpression
-    ;
-
-MemberExpression:
-    PrimaryExpression
-    ;
+/* 12.2 Primary Expression */
 
 PrimaryExpression:
     THIS
     | IdentifierReference
     | Literal
     | ArrayLiteral
+    /*| ObjectLiteral*/
+    | FunctionExpression
+    /*| ClassExpression*/
+    /*| GeneratorExpression*/
+    /*| RegularExpressionLiteral*/
+    /*| TemplateLiteral*/
+    | CoverParenthesizedExpressionAndArrowParameterList
     ;
 
-AssignmentOperator:
-    MULTIPLICATION_ASSIGNMENT
-    | DIVISION_ASSIGNMENT
-    | MODULUS_ASSIGNMENT
-    | ADDITION_ASSIGNMENT
-    | SUBTRACTION_ASSIGNMENT
-    | LEFT_SHIFT_ASSIGNMENT
-    | SIGNED_RIGHT_SHIFT_ASSIGNMENT
-    | UNSIGNED_RIGHT_SHIFT_ASSIGNMENT
-    | BITWISE_AND_ASSIGNMENT
-    | BITWISE_XOR_ASSIGNMENT
-    | BITWISE_OR_ASSIGNMENT
+CoverParenthesizedExpressionAndArrowParameterList:
+    LEFT_PAREN Expression RIGHT_PAREN
+    | LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ELLIPSIS BindingIdentifier
+    | LEFT_PAREN Expression COMMA ELLIPSIS BindingIdentifier RIGHT_PAREN
     ;
 
-LeftHandSideExpression:
-    CallExpression
-    | NewExpression
+ParenthesizedExpression:
+    LEFT_PAREN Expression RIGHT_PAREN
+    ;
+
+/* 12.2.4 Literals */
+
+Literal:
+    NullLiteral
+    | BooleanLiteral
+    | NumericLiteral
+    | StringLiteral
+    ;
+
+/*12.2.5 Array Initialiser*/
+
+ArrayLiteral:
+    LEFT_BRACKET ElisionOptional RIGHT_BRACKET
+    | LEFT_BRACKET ElementList RIGHT_BRACKET
+    | LEFT_BRACKET ElementList COMMA ElisionOptional RIGHT_BRACKET
+    ;
+
+ElementList:
+    ElisionOptional AssignmentExpression
+    | ElisionOptional SpreadElement
+    | ElementList COMMA ElisionOptional AssignmentExpression
+    | ElementList COMMA ElisionOptional SpreadElement
+    ;
+
+Elision:
+    COMMA
+    | Elision COMMA
+    ;
+
+ElisionOptional:
+    %empty
+    | Elision
+    ;
+
+SpreadElement:
+    ELLIPSIS AssignmentExpression
+    ;
+
+/*12.2.6 Object Initialiser*/
+
+ObjectLiteral:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE PropertyDefinitionList RIGHT_BRACE
+    | LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE
+    ;
+
+PropertyDefinitionList:
+    PropertyDefinition
+    | PropertyDefinitionList COMMA PropertyDefinition
+    ;
+
+PropertyDefinition:
+    IdentifierReference
+    | CoverInitializedName
+    | PropertyName COLON AssignmentExpression
+    | MethodDefinition
+    ;
+
+PropertyName:
+    LiteralPropertyName
+    | ComputedPropertyName
+    ;
+
+LiteralPropertyName:
+    IdentifierName
+    | StringLiteral
+    | NumericLiteral
+    ;
+
+ComputedPropertyName:
+    LEFT_BRACKET AssignmentExpression RIGHT_BRACKET
+    ;
+
+CoverInitializedName:
+    IdentifierReference Initialiser
+
+Initialiser:
+    ASSIGNMENT AssignmentExpression
+    ;
+
+/*12.2.9 Template Literals -- "multiline string" TODO */
+
+
+
+/* 12.3 Left Hand Side Expressions */
+
+MemberExpression:
+    PrimaryExpression
+    | MemberExpression LEFT_BRACKET Expression RIGHT_BRACKET
+    | MemberExpression FULL_STOP IdentifierName
+    /*MemberExpression TemplateLiteral*/
+    | SuperProperty
+    | MetaProperty
+    | NEW MemberExpression Arguments
+    ;
+
+SuperProperty:
+    SUPER LEFT_BRACKET Expression RIGHT_BRACKET
+    | SUPER FULL_STOP IdentifierName
+    ;
+
+MetaProperty:
+    NewTarget
+    ;
+
+NewTarget:
+    NEW FULL_STOP TARGET
+    ;
+
+NewExpression:
+    MemberExpression
+    | NEW NewExpression
     ;
 
 CallExpression:
-    SuperCall
+    MemberExpression Arguments
+    | SuperCall
+    | CallExpression Arguments
     | CallExpression RIGHT_BRACE Expression LEFT_BRACE
     | CallExpression FULL_STOP IdentifierName
-    ;
-
-IdentifierReference:
-    IDENTIFIER
-    ;
-
-
-
-IdentifierStart:
-    "$"
-    | "_"
-    | IDENTIFIER
-    ;
-
-IdentifierPart:
-    "$"
-    | "_"
-    | IDENTIFIER
+    /*| CallExpression TemplateLiteral*/
     ;
 
 SuperCall:
@@ -594,138 +380,443 @@ ArgumentList:
     | ArgumentList COMMA AssignmentExpression
     ;
 
-YieldExpression:
-    YIELD
-    | YIELD AssignmentExpression
+LeftHandSideExpression:
+    CallExpression
+    | NewExpression
     ;
 
-ArrowFunction:
-    ArrowParameters ARROW_FUNCTION ConciseBody
+
+/*12.4 Postfix Expressions*/
+
+PostfixExpression:
+    LeftHandSideExpression
+    | LeftHandSideExpression UNARY_ADD
+    | LeftHandSideExpression UNARY_SUBTRACT
     ;
 
-ArrowParameters:
-    CoverParenthesizedExpressionAndArrowParameterList
+/*12.5 Unary Operators*/
+
+UnaryExpression:
+    PostfixExpression
+    | DELETE UnaryExpression
+    | VOID UnaryExpression
+    | TYPEOF UnaryExpression
+    | UNARY_ADD UnaryExpression
+    | UNARY_SUBTRACT UnaryExpression
+    | ADD UnaryExpression
+    | SUBTRACT UnaryExpression
+    | BITWISE_NOT UnaryExpression
+    | LOGICAL_NOT UnaryExpression
     ;
 
-CoverParenthesizedExpressionAndArrowParameterList:
-    LEFT_PAREN Expression RIGHT_PAREN
+/*12.6 Multiplicative Operators*/
+
+MultiplicativeExpression:
+    UnaryExpression
+    | MultiplicativeExpression MultiplicativeOperator UnaryExpression
     ;
 
-ConciseBody:
+MultiplicativeOperator:
+    MULTIPLY
+    | DIVIDE
+    | MODULO
+    ;
+
+/* 12.7 Additive Operators */
+
+AdditiveExpression:
+    MultiplicativeExpression
+    | AdditiveExpression ADD MultiplicativeExpression
+    | AdditiveExpression SUBTRACT MultiplicativeExpression
+    ;
+
+/* 12.8 Bitwise Shift Operators */
+
+ShiftExpression:
+    AdditiveExpression
+    | ShiftExpression LEFT_SHIFT AdditiveExpression
+    | ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
+    | ShiftExpression UNSIGNED_RIGHT_SHIFT AdditiveExpression
+    ;
+
+/* 12.9 Relational Operators */
+
+RelationalExpression:
+    ShiftExpression
+    | RelationalExpression LESS_THAN ShiftExpression
+    | RelationalExpression GREATER_THAN ShiftExpression
+    | RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
+    | RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+    | RelationalExpression INSTANCEOF ShiftExpression
+    | RelationalExpression IN ShiftExpression
+    ;
+
+/* 12.10 Equality Operators */
+
+EqualityExpression:
+    RelationalExpression
+    | EqualityExpression EQUAL RelationalExpression
+    | EqualityExpression NOT_EQUAL RelationalExpression
+    | EqualityExpression EXACTLY_EQUAL RelationalExpression
+    | EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
+    ;
+
+/* 12.11 Binary Bitwise Operators */
+
+BitwiseANDExpression:
+    EqualityExpression
+    | BitwiseANDExpression BITWISE_AND EqualityExpression
+    ;
+
+BitwiseXORExpression:
+    BitwiseANDExpression
+    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
+    ;
+
+BitwiseORExpression:
+    BitwiseXORExpression
+    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
+    ;
+
+/* 12.12 Binary Logical Operators */
+
+LogicalANDExpression:
+    BitwiseORExpression
+    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
+    ;
+
+LogicalORExpression:
+    LogicalANDExpression
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+    ;
+
+/* 12.13 Conditional Operator ( ? : ) */
+
+ConditionalExpression:
+    LogicalORExpression
+    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
+    ;
+
+/* 12.14 Assignment Operators */
+
+AssignmentExpression:
+    ConditionalExpression
+    | YieldExpression
+    | ArrowFunction
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    ;
+
+AssignmentOperator:
+    MULTIPLICATION_ASSIGNMENT
+    | DIVISION_ASSIGNMENT
+    | MODULUS_ASSIGNMENT
+    | ADDITION_ASSIGNMENT
+    | SUBTRACTION_ASSIGNMENT
+    | LEFT_SHIFT_ASSIGNMENT
+    | SIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | UNSIGNED_RIGHT_SHIFT_ASSIGNMENT
+    | BITWISE_AND_ASSIGNMENT
+    | BITWISE_XOR_ASSIGNMENT
+    | BITWISE_OR_ASSIGNMENT
+    ;
+
+/*12.15 Comma Operator ( , )*/
+
+Expression:
     AssignmentExpression
-    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+    /*| PrimaryExpression --- where are these from?
+    | EqualityExpression*/
+    | Expression COMMA AssignmentExpression
     ;
 
-/* Function Definitions ECMA 14.1 */
-
-/* Second function declaration anonymous function */
-FunctionDeclaration:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+ExpressionOptional:
+    %empty
+    | Expression
     ;
 
-/*
-FunctionExpression:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-    ;
-*/
+/* A.3 Statements */
+/* 13 ECMAScript Language: Statements and Declarations */
 
-/* Required for ArrowFormalParameters   
-StrictFormalParameters:
-    FormalParameters
+Statement:
+    BlockStatement
+    | VariableStatement
+    | EmptyStatement
+    | ExpressionStatement
+    | IfStatement
+    | BreakableStatement
+    | ContinueStatement
+    | BreakStatement
+    | ReturnStatement
+    | WithStatement
+    | LabelledStatement
+    | ThrowStatement
+    | TryStatement
+    | DebuggerStatement
     ;
-*/
 
-FormalParameters:
-    FormalParameterList
+Declaration:
+    HoistableDeclaration
+    | ClassDeclaration
+    | LexicalDeclaration
+    /*| ExportDeclaration --- where is this from? */
     ;
-    
-FormalParameterList:
-    /* incomplete */
-    FormalsList
-    | FormalsList COMMA FormalParameter
-    ;
-    
-FormalsList:
-    FormalParameter
-    | FormalsList COMMA FormalParameter
-    ;
-    
-FormalParameter:
-    BindingElement
-    ;
-/* Addition Productions required for Function Definitions */
 
-BindingElement:
-    BindingPattern
+HoistableDeclaration:
+    FunctionDeclaration
+    | GeneratorDeclaration
+    ;
+
+BreakableStatement:
+    IterationStatement
+    | SwitchStatement
+    ;
+
+/*13.2 Block*/
+
+BlockStatement:
+    Block
+    ;
+
+Block:
+    LEFT_BRACE StatementList RIGHT_BRACE
+    | LEFT_BRACE RIGHT_BRACE
+    ;
+
+StatementList:
+    StatementListItem
+    | StatementList StatementListItem
+    ;
+
+StatementListOptional:
+    %empty
+    | StatementList
+
+
+StatementListItem:
+    Statement
+    | Declaration
+    ;
+
+/* 13.3.1 Let and Const Declarations */
+
+LexicalDeclaration:
+    LetOrConst BindingList
+    // TODO not implemented yet | BindingList
+    ;
+
+LetOrConst:
+    LET
+    | CONST
+    ;
+
+BindingList:
+    LexicalBinding
+    | BindingList COMMA LexicalBinding
+    ;
+
+LexicalBinding:
+    BindingIdentifier
+    | BindingIdentifier Initialiser
+    | BindingPattern
     | BindingPattern Initialiser
     ;
 
+/* 13.3.2 Variable Statement */
 
-FunctionBody:
-    FunctionStatementList
-    ;
-
-FunctionStatementList:
-    StatementList
-    ;
-    
-ClassDeclaration: 
-    CLASS BindingIdentifier ClassTail
-    | CLASS ClassTail
-    ;
-/*  
-ClassExpression:
-     CLASS BindingIdentifier ClassTail
-     ;
-*/   
-ClassTail:
-    ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
-    ;
-    
-ClassHeritage:
-    EXTENDS LeftHandSideExpression
-    ;
-    
-ClassBody:
-    ClassElementList
-    ;
-    
-ClassElementList:
-    ClassElement
-    | ClassElementList ClassElement
-    ;
-    
-ClassElement:
-    MethodDefinition
-    | "static" MethodDefinition
-    | SEMICOLON
+VariableStatement:
+    VAR VariableDeclarationList
     ;
 
-PropertyName:
-    LiteralPropertyName
-    ;
-    
-LiteralPropertyName:
-    IdentifierName
-    | StringLiteral
-    | NumericLiteral
+VariableDeclarationList:
+    VariableDeclaration
+    | VariableDeclarationList COMMA VariableDeclaration
     ;
 
-StrictFormalParameters:
-    FormalParameters
+VariableDeclaration:
+    BindingIdentifier
+    | BindingIdentifier Initialiser
     ;
 
-MethodDefinition:
-    PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
- /* | GeneratorMethod */
-    | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-    | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+
+/* 13.3.3 Destructuring Binding Patterns */
+
+BindingPattern:
+    ObjectBindingPattern
+    | ArrayBindingPattern
     ;
 
-PropertySetParameterList:
-    FormalParameter
+ObjectBindingPattern:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
     ;
+
+ArrayBindingPattern:
+    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET // Elison opt, BindingRestElement opt
+    | LEFT_BRACKET RIGHT_BRACKET
+    | LEFT_BRACKET BindingRestElement RIGHT_BRACKET
+    | LEFT_BRACKET Elision RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET // Elison opt, BindingRestElement opt
+    | LEFT_BRACKET BindingElementList COMMA BindingRestElement RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA RIGHT_BRACKET
+    ;
+
+BindingPropertyList:
+    BindingProperty
+    | BindingPropertyList COMMA BindingProperty
+    ;
+
+BindingElementList:
+    BindingElisionElement
+    | BindingElementList COMMA BindingElisionElement
+    ;
+
+BindingElisionElement:
+    Elision BindingElement
+    | BindingElement
+
+BindingProperty:
+    SingleNameBinding
+    | PropertyName COLON BindingElement
+    ;
+
+BindingElement:
+    SingleNameBinding
+    | BindingPattern Initialiser // Initialiser opt
+    | BindingPattern
+    ;
+
+SingleNameBinding:
+    BindingIdentifier Initialiser // Initialiser opt
+    | BindingIdentifier
+    ;
+
+BindingRestElement:
+    ELLIPSIS BindingIdentifier
+    ;
+
+/*13.4 Empty Statement*/
+
+EmptyStatement:
+    SEMICOLON
+    ;
+
+/* 13.5 Expression Statement */
+
+ExpressionStatement:
+    Expression SEMICOLON
+    ;
+
+/* 13.6 The if Statement */
+
+IfStatement:
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+    ;
+
+/* 13.7 Iteration Statements */
+
+IterationStatement:
+    // TODO Missing look-ahead checks, see 13.7 for more details
+    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration IN Expression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN LeftHandSideExpression OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN VAR ForBinding OF AssignmentExpression RIGHT_PAREN Statement
+    | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
+    ;
+
+ForDeclaration:
+    LetOrConst ForBinding
+    ;
+
+ForBinding:
+    BindingIdentifier
+    | BindingPattern
+    ;
+
+/*13.8 The continue Statement*/
+
+ContinueStatement:
+    CONTINUE SEMICOLON
+    | CONTINUE LabelIdentifier SEMICOLON
+    ;
+
+/*13.9 The break Statement*/
+
+BreakStatement:
+    BREAK SEMICOLON
+    | BREAK LabelIdentifier SEMICOLON
+    ;
+
+/*13.10 The return Statement*/
+
+ReturnStatement:
+    RETURN SEMICOLON
+    | RETURN LabelIdentifier SEMICOLON
+    ;
+
+/*13.11 The with Statement*/
+
+WithStatement:
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
+    ;
+
+/*13.12 The switch Statement*/
+
+
+SwitchStatement:
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+    ;
+
+CaseBlock:
+    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
+    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    ;
+
+CaseClauses:
+    CaseClause
+    | CaseClauses CaseClause
+    ;
+
+CaseClausesOptional:
+    %empty
+    | CaseClauses
+    ;
+
+CaseClause:
+    CASE Expression COLON StatementListOptional
+    ;
+
+DefaultClause:
+    DEFAULT COLON StatementListOptional
+    ;
+
+/* 13.13 Labelled Statements */
+
+LabelledStatement:
+    LabelIdentifier COLON LabelledItem
+    ;
+
+LabelledItem:
+    Statement
+    | FunctionDeclaration
+    ;
+
+/*13.14 The throw Statement*/
+ThrowStatement:
+    THROW Expression SEMICOLON
+    ;
+
+/* 13.15 The try Statement */
 
 TryStatement:
     TRY Block Catch
@@ -741,10 +832,178 @@ Finally:
     FINALLY Block
     ;
 
+/*13.16 The debugger statement*/
+
+DebuggerStatement:
+    DEBUGGER SEMICOLON
+    ;
+
+/*A.4 Functions and Classes*/
+/*14.1 Function Definitions*/
+/* Second function declaration anonymous function */
+FunctionDeclaration:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+FunctionExpression:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+StrictFormalParameters:
+    FormalParameters
+    ;
+
+FormalParameters:
+    %empty
+    | FormalParameterList
+    ;
+
+FormalsList:
+    FormalParameter
+    | FormalsList COMMA FormalParameter
+    ;
+
+FormalParameterList:
+    FunctionRestParameter
+    | FormalsList
+    | FormalsList COMMA FormalParameter
+    ;
+
+FunctionRestParameter:
+    BindingRestElement
+    ;
+
+FormalParameter:
+    BindingElement
+    ;
+
+FunctionBody:
+    FunctionStatementList
+    ;
+
+FunctionStatementList:
+    StatementList
+    ;
+
+/*14.2 Arrow Function Definitions*/
+
+ArrowFunction:
+    ArrowParameters ARROW_FUNCTION ConciseBody
+    ;
+
+ArrowParameters:
+    BindingIdentifier
+    | CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+ConciseBody:
+    // TODO missing look-ahead
+    AssignmentExpression
+    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+    ;
+
+ArrowFormalParameters:
+    LEFT_PAREN StrictFormalParameters RIGHT_PAREN
+    ;
+
+/* 14.3 Method Definitions */
+MethodDefinition:
+    PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /* | GeneratorMethod */
+    | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+PropertySetParameterList:
+    FormalParameter
+    ;
+
+/* 14.4 Generator Function Definitions */
+
+GeneratorMethod:
+    MULTIPLY PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
+GeneratorDeclaration:
+    FUNCTION MULTIPLY BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    | FUNCTION MULTIPLY LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
+GeneratorBody:
+    FunctionBody
+    ;
+
+
+YieldExpression:
+    YIELD
+    | YIELD AssignmentExpression
+    | YIELD MULTIPLY AssignmentExpression
+    ;
+
+/* 14.5 Class Definitions */
+
+ClassDeclaration:
+    CLASS BindingIdentifier ClassTail
+    | CLASS ClassTail
+    ;
+
+ClassExpression:
+     CLASS BindingIdentifier ClassTail
+     | CLASS ClassTail
+     ;
+
+ClassTail:
+    ClassHeritage LEFT_BRACE ClassBody RIGHT_BRACE
+    | ClassHeritage LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE ClassBody RIGHT_BRACE
+    | LEFT_BRACE RIGHT_BRACE
+    ;
+
+ClassHeritage:
+    EXTENDS LeftHandSideExpression
+    ;
+
+ClassBody:
+    ClassElementList
+    ;
+
+ClassElementList:
+    ClassElement
+    | ClassElementList ClassElement
+    ;
+
+ClassElement:
+    MethodDefinition
+    | "static" MethodDefinition
+    | SEMICOLON
+    ;
+
+
+/*A.5 Scripts and Modules*/
+
+/*15.1 Scripts*/
+
+Script:
+    ScriptBodOptional
+    ;
+
+ScriptBody:
+    StatementList
+    ;
+
+ScriptBodOptional:
+    %empty
+    | ScriptBody
+    ;
+
+
 ExportDeclaration:
     EXPORT VariableStatement
     ;
 
+/* TODO this is required to handle SEMICOLON issues */
 /*LineTerminator:
     LINE_FEED
     | CARRIAGE_RETURN
