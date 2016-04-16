@@ -156,15 +156,17 @@ StatementListItem:
 Declaration:
     /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
-	| ClassDeclaration
+    | ClassDeclaration
  /*   | LexicalDeclaration
-    */
+    */  
+    | ExportDeclaration
+
     ;
 
 HoistableDeclaration:
-	FunctionDeclaration
-/*	| GeneratorDeclaration */
-	;	
+    FunctionDeclaration
+/*  | GeneratorDeclaration */
+    ;   
 
 Statement:
     BlockStatement
@@ -202,23 +204,23 @@ VariableDeclarationList:
     ;
 
 VariableDeclaration:
-	BindingIdentifier
-	| BindingIdentifier Initialiser
+    BindingIdentifier
+    | BindingIdentifier Initialiser
     ;
     
 BindingIdentifier:
-	Identifier
-	| YIELD
-	;
+    Identifier
+    | YIELD
+    ;
 
 LabelIdentifier:
     Identifier
     | YIELD
     ;
-	
+    
 Identifier:
-	IdentifierName 
-	;
+    IdentifierName 
+    ;
 
 Initialiser:
   ASSIGNMENT AssignmentExpression
@@ -322,27 +324,27 @@ LetOrConst:
     ;
     
 BindingList:
-	LexicalBinding
-	| BindingList COMMA LexicalBinding
-	;
-	
+    LexicalBinding
+    | BindingList COMMA LexicalBinding
+    ;
+    
 LexicalBinding:
-	BindingIdentifier 
-	| BindingIdentifier Initialiser
-	| BindingPattern 
-	| BindingPattern Initialiser
-	;
-	
-	
+    BindingIdentifier 
+    | BindingIdentifier Initialiser
+    | BindingPattern 
+    | BindingPattern Initialiser
+    ;
+    
+    
 IdentifierName:
     IdentifierStart
     | IdentifierName IdentifierPart
     ;
-	
+    
 BindingPattern:
-	"todo"
-	/* to do */
-	;
+    "todo"
+    /* to do */
+    ;
     
     
 
@@ -550,9 +552,9 @@ Arguments:
     ;
    
 ArgumentList:
- 	AssignmentExpression
- 	| ArgumentList COMMA AssignmentExpression
- 	;
+    AssignmentExpression
+    | ArgumentList COMMA AssignmentExpression
+    ;
 
 YieldExpression:
     YIELD
@@ -580,46 +582,46 @@ ConciseBody:
 
 /* Second function declaration anonymous function */
 FunctionDeclaration:
-	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
 
 /*
 FunctionExpression:
-	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
 */
 
-/* Required for ArrowFormalParameters	
+/* Required for ArrowFormalParameters   
 StrictFormalParameters:
-	FormalParameters
-	;
+    FormalParameters
+    ;
 */
 
 FormalParameters:
-	FormalParameterList
-	;
-	
+    FormalParameterList
+    ;
+    
 FormalParameterList:
-	/* incomplete */
-	FormalsList
-	| FormalsList COMMA FormalParameter
-	;
-	
+    /* incomplete */
+    FormalsList
+    | FormalsList COMMA FormalParameter
+    ;
+    
 FormalsList:
-	FormalParameter
-	| FormalsList COMMA FormalParameter
-	;
-	
+    FormalParameter
+    | FormalsList COMMA FormalParameter
+    ;
+    
 FormalParameter:
-	BindingElement
-	;
+    BindingElement
+    ;
 /* Addition Productions required for Function Definitions */
 
 BindingElement:
-	BindingPattern
-	| BindingPattern Initialiser
-	;
+    BindingPattern
+    | BindingPattern Initialiser
+    ;
 
 
 FunctionBody:
@@ -631,61 +633,61 @@ FunctionStatementList:
     ;
     
 ClassDeclaration: 
-	CLASS BindingIdentifier ClassTail
-	| CLASS ClassTail
-	;
-/*	
+    CLASS BindingIdentifier ClassTail
+    | CLASS ClassTail
+    ;
+/*  
 ClassExpression:
-	 CLASS BindingIdentifier ClassTail
-	 ;
-*/	 
+     CLASS BindingIdentifier ClassTail
+     ;
+*/   
 ClassTail:
-	ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
-	;
-	
+    ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+    ;
+    
 ClassHeritage:
-	EXTENDS LeftHandSideExpression
-	;
-	
+    EXTENDS LeftHandSideExpression
+    ;
+    
 ClassBody:
-	ClassElementList
-	;
-	
+    ClassElementList
+    ;
+    
 ClassElementList:
-	ClassElement
-	| ClassElementList ClassElement
-	;
-	
+    ClassElement
+    | ClassElementList ClassElement
+    ;
+    
 ClassElement:
-	MethodDefinition
-	| "static" MethodDefinition
+    MethodDefinition
+    | "static" MethodDefinition
     | SEMICOLON
     ;
 
 PropertyName:
-	LiteralPropertyName
-	;
-	
+    LiteralPropertyName
+    ;
+    
 LiteralPropertyName:
-	IdentifierName
-	| StringLiteral
-	| NumericLiteral
-	;
+    IdentifierName
+    | StringLiteral
+    | NumericLiteral
+    ;
 
 StrictFormalParameters:
-	FormalParameters
-	;
+    FormalParameters
+    ;
 
 MethodDefinition:
-	PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
- /*	| GeneratorMethod */
-	| "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	| "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
+    PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /* | GeneratorMethod */
+    | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
 
 PropertySetParameterList:
-	FormalParameter
-	;
+    FormalParameter
+    ;
 
 TryStatement:
     TRY Block Catch
@@ -700,5 +702,10 @@ Catch:
 Finally:
     FINALLY Block
     ;
+
+ExportDeclaration:
+    EXPORT VariableStatement
+    ;
+
 
 %%
