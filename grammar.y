@@ -178,7 +178,6 @@ Statement:
     | ReturnStatement
     | ContinueStatement
     | BreakStatement
-    | ReturnStatement
     | WithStatement
     | LabelledStatement
     | ThrowStatement
