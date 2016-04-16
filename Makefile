@@ -20,6 +20,11 @@ test_all: clean .setup_tests .run_babel_tests .run_lexer_test .run_parser_test .
 test_lexer: clean .setup_tests .run_lexer_test .teardown_tests
 test_parser: clean .setup_tests .run_parser_test .teardown_tests
 test: clean .setup_tests .run_lexer_test .run_parser_test .teardown_tests
+generate: .flex .bison
+conflicts: .bison_v
+
+.bison_v:
+	@bison -v -g grammar.y
 
 .bison:
 	@bison -d grammar.y

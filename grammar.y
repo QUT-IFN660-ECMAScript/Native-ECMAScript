@@ -135,85 +135,16 @@
 
 %%
 
-/* A.1 Lexical Grammar */
-/* 11.6 Names and Keywords */
+/*A.5 Scripts and Modules*/
 
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
+/*15.1 Scripts*/
+
+Script:
+    ScriptBody
     ;
 
-IdentifierStart:
-    "$"
-    | "_"
-    | IDENTIFIER
-    ;
-
-IdentifierPart:
-    "$"
-    | "_"
-    | IDENTIFIER
-    ;
-
-/* 11.8 Literals */
-
-DivPunctuator:
-    DIVIDE
-    | DIVISION_ASSIGNMENT
-    ;
-
-RightBracePunctuator:
-    RIGHT_BRACE
-    ;
-
-NullLiteral:
-    LITERAL_NULL
-    ;
-
-BooleanLiteral:
-    LITERAL_TRUE
-    | LITERAL_FALSE
-    ;
-
-NumericLiteral:
-    DecimalLiteral
-    /*| BinaryIntegerLiteral
-    | OctalIntegerLiteral
-    | HexIntegerLiteral*/
-    ;
-
-DecimalLiteral:
-    DecimalIntegerLiteral
-    ;
-
-DecimalIntegerLiteral:
-    VALUE_INTEGER
-    ;
-
-StringLiteral:
-    VALUE_STRING
-    ;
-
-
-/*12.1 Identifiers*/
-
-IdentifierReference:
-    IDENTIFIER
-    | YIELD
-    ;
-
-BindingIdentifier:
-    Identifier
-    | YIELD
-    ;
-
-LabelIdentifier:
-    Identifier
-    | YIELD
-    ;
-
-Identifier:
-    IdentifierName
+ScriptBody:
+    StatementList
     ;
 
 /* 12.2 Primary Expression */
@@ -223,10 +154,10 @@ PrimaryExpression:
     | IdentifierReference
     | Literal
     | ArrayLiteral
-    /*| ObjectLiteral*/
+    | ObjectLiteral
     | FunctionExpression
-    /*| ClassExpression*/
-    /*| GeneratorExpression*/
+    | ClassExpression
+    | GeneratorExpression
     /*| RegularExpressionLiteral*/
     /*| TemplateLiteral*/
     | CoverParenthesizedExpressionAndArrowParameterList
@@ -239,9 +170,10 @@ CoverParenthesizedExpressionAndArrowParameterList:
     | LEFT_PAREN Expression COMMA ELLIPSIS BindingIdentifier RIGHT_PAREN
     ;
 
-ParenthesizedExpression:
+/* FIXME: unused
+  ParenthesizedExpression:
     LEFT_PAREN Expression RIGHT_PAREN
-    ;
+    ;*/
 
 /* 12.2.4 Literals */
 
@@ -252,6 +184,7 @@ Literal:
     | StringLiteral
     ;
 
+
 /*12.2.5 Array Initialiser*/
 
 ArrayLiteral:
@@ -261,8 +194,10 @@ ArrayLiteral:
     ;
 
 ElementList:
-    ElisionOptional AssignmentExpression
-    | ElisionOptional SpreadElement
+    Elision AssignmentExpression
+    | AssignmentExpression
+    | Elision SpreadElement
+    | SpreadElement
     | ElementList COMMA ElisionOptional AssignmentExpression
     | ElementList COMMA ElisionOptional SpreadElement
     ;
@@ -273,8 +208,8 @@ Elision:
     ;
 
 ElisionOptional:
-    %empty
-    | Elision
+    Elision
+    | %empty
     ;
 
 SpreadElement:
@@ -318,6 +253,7 @@ ComputedPropertyName:
 
 CoverInitializedName:
     IdentifierReference Initialiser
+    ;
 
 Initialiser:
     ASSIGNMENT AssignmentExpression
@@ -498,13 +434,16 @@ ConditionalExpression:
     ;
 
 /* 12.14 Assignment Operators */
-
+/* 14.6.2.2 Expression Rules */
 AssignmentExpression:
     ConditionalExpression
-    | YieldExpression
+    /*| YieldExpression*/
     | ArrowFunction
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    | BitwiseANDExpression COLON BitwiseANDExpression BITWISE_AND EqualityExpression
+    | BitwiseXORExpression COLON BitwiseXORExpression BITWISE_NOT BitwiseANDExpression
+    | BitwiseORExpression COLON BitwiseORExpression BITWISE_OR BitwiseXORExpression
     ;
 
 AssignmentOperator:
@@ -531,8 +470,8 @@ Expression:
     ;
 
 ExpressionOptional:
-    %empty
-    | Expression
+    Expression
+    | %empty
     ;
 
 /* A.3 Statements */
@@ -589,9 +528,9 @@ StatementList:
     ;
 
 StatementListOptional:
-    %empty
-    | StatementList
-
+    StatementList
+    | %empty
+    ;
 
 StatementListItem:
     Statement
@@ -653,15 +592,9 @@ ObjectBindingPattern:
     ;
 
 ArrayBindingPattern:
-    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET // Elison opt, BindingRestElement opt
-    | LEFT_BRACKET RIGHT_BRACKET
-    | LEFT_BRACKET BindingRestElement RIGHT_BRACKET
-    | LEFT_BRACKET Elision RIGHT_BRACKET
+    LEFT_BRACKET ElisionOptional BindingRestElementOptional RIGHT_BRACKET
     | LEFT_BRACKET BindingElementList RIGHT_BRACKET
-    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET // Elison opt, BindingRestElement opt
-    | LEFT_BRACKET BindingElementList COMMA BindingRestElement RIGHT_BRACKET
-    | LEFT_BRACKET BindingElementList COMMA Elision RIGHT_BRACKET
-    | LEFT_BRACKET BindingElementList COMMA RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA ElisionOptional BindingRestElementOptional  RIGHT_BRACKET
     ;
 
 BindingPropertyList:
@@ -675,8 +608,8 @@ BindingElementList:
     ;
 
 BindingElisionElement:
-    Elision BindingElement
-    | BindingElement
+    ElisionOptional BindingElement
+    ;
 
 BindingProperty:
     SingleNameBinding
@@ -685,17 +618,22 @@ BindingProperty:
 
 BindingElement:
     SingleNameBinding
-    | BindingPattern Initialiser // Initialiser opt
+    | BindingPattern Initialiser
     | BindingPattern
     ;
 
 SingleNameBinding:
-    BindingIdentifier Initialiser // Initialiser opt
+    BindingIdentifier Initialiser
     | BindingIdentifier
     ;
 
 BindingRestElement:
     ELLIPSIS BindingIdentifier
+    ;
+
+BindingRestElementOptional:
+    BindingRestElement
+    | %empty
     ;
 
 /*13.4 Empty Statement*/
@@ -860,14 +798,14 @@ FormalParameters:
     | FormalParameterList
     ;
 
-FormalsList:
-    FormalParameter
-    | FormalsList COMMA FormalParameter
-    ;
-
 FormalParameterList:
     FunctionRestParameter
     | FormalsList
+    | FormalsList COMMA FormalParameter
+    ;
+
+FormalsList:
+    FormalParameter
     | FormalsList COMMA FormalParameter
     ;
 
@@ -904,14 +842,16 @@ ConciseBody:
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
 
+/*
+FIXME: unused
 ArrowFormalParameters:
     LEFT_PAREN StrictFormalParameters RIGHT_PAREN
-    ;
+    ;*/
 
 /* 14.3 Method Definitions */
 MethodDefinition:
     PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
- /* | GeneratorMethod */
+    | GeneratorMethod
     | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
@@ -931,20 +871,26 @@ GeneratorDeclaration:
     | FUNCTION MULTIPLY LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
     ;
 
+GeneratorExpression:
+    FUNCTION MULTIPLY BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    |  FUNCTION MULTIPLY LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
 GeneratorBody:
     FunctionBody
     ;
 
-
+/*
+FIXME: reduce/reduce
 YieldExpression:
     YIELD
     | YIELD AssignmentExpression
     | YIELD MULTIPLY AssignmentExpression
-    ;
+    ;*/
 
 /* 14.5 Class Definitions */
 
-ClassDeclaration:
+ClassDeclaration: // missing +default
     CLASS BindingIdentifier ClassTail
     | CLASS ClassTail
     ;
@@ -980,28 +926,94 @@ ClassElement:
     | SEMICOLON
     ;
 
+/* A.1 Lexical Grammar */
+/* 11.6 Names and Keywords */
 
-/*A.5 Scripts and Modules*/
-
-/*15.1 Scripts*/
-
-Script:
-    ScriptBodOptional
+IdentifierName:
+    IdentifierStart
+    | IdentifierName IdentifierPart
     ;
 
-ScriptBody:
-    StatementList
+IdentifierStart:
+    "$"
+    | "_"
+    | IDENTIFIER
     ;
 
-ScriptBodOptional:
-    %empty
-    | ScriptBody
+IdentifierPart:
+    "$"
+    | "_"
+    | IDENTIFIER
+    ;
+
+/* 11.8 Literals */
+/*
+FIXME: unused
+DivPunctuator:
+    DIVIDE
+    | DIVISION_ASSIGNMENT
+    ;
+
+RightBracePunctuator:
+    RIGHT_BRACE
+    ;*/
+
+NullLiteral:
+    LITERAL_NULL
+    ;
+
+BooleanLiteral:
+    LITERAL_TRUE
+    | LITERAL_FALSE
+    ;
+
+NumericLiteral:
+    DecimalLiteral
+    /*| BinaryIntegerLiteral
+    | OctalIntegerLiteral
+    | HexIntegerLiteral*/
+    ;
+
+DecimalLiteral:
+    DecimalIntegerLiteral
+    ;
+
+DecimalIntegerLiteral:
+    VALUE_INTEGER
+    ;
+
+StringLiteral:
+    VALUE_STRING
     ;
 
 
+/*12.1 Identifiers*/
+
+IdentifierReference:
+    IDENTIFIER
+    | YIELD
+    ;
+
+BindingIdentifier:
+    Identifier
+    | YIELD
+    ;
+
+LabelIdentifier:
+    Identifier
+    | YIELD
+    ;
+
+Identifier:
+    IdentifierName
+    ;
+
+
+/*
+TODO: modules
 ExportDeclaration:
     EXPORT VariableStatement
-    ;
+    ;*/
 
 /* TODO this is required to handle SEMICOLON issues */
 /*LineTerminator:
