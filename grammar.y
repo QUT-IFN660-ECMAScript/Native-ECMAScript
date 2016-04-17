@@ -137,6 +137,7 @@
 /* 15.1 Scripts
  * http://www.ecma-international.org/ecma-262/6.0/#sec-scripts
  */
+ 
 Script:
     ScriptBody
     ;
@@ -205,7 +206,6 @@ StrictFormalParameters:
  * http://www.ecma-international.org/ecma-262/6.0/#sec-generator-function-definitions
  */
 
-
 YieldExpression:
     YIELD
     | YIELD AssignmentExpression
@@ -229,8 +229,7 @@ PropertySetParameterList:
 /* 14.2 Arrow Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-arrow-function-definitions
  */
- 
-     
+  
 ArrowFunction:
     ArrowParameters ARROW_FUNCTION ConciseBody
     ;
@@ -913,7 +912,10 @@ IdentifierPart:
     | "_"
     | IDENTIFIER
     ;
-    
+/* 11.3 Line Terminators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
+ */
+     
 /*LineTerminator:
     LINE_FEED
     | CARRIAGE_RETURN
