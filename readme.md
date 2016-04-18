@@ -4,6 +4,25 @@
 - bison 2.3+ - 3.0 will still work but gives warnings
 - babel-cli from npm, installed with -g - if you want to run JS validations
 
+## Project Structure
+```
+|-- ast                    # contains AST node classes
+|-- tests            
+|   |-- parseable
+|   |   |-- lexer-assert   # contains expected lexer output for parseable/test tests
+|   |   |-- test           # tests in this folder must be
+|   |                        valid javascript and passes all tests
+|   |-- unparseable
+|       |-- lexer-assert   # contains expected lexer output for unparseable/test tests
+|       |-- test           # tests in this folder must be
+|                            valid javascript, passes lexer tests,
+|                            but does not need to be parseable
+|-- .travis.yml            # travis ci build configuration
+|-- grammar.l              # lexer/flex grammar
+|-- grammar.y              # bison/parser grammar
+...
+```
+
 ## Build Commands
 
 Just build the compiler
@@ -36,8 +55,8 @@ make test_parser
 ```
 
 
-### Error Logs
-| Log file  | What's in it                                    | Importance |
+## Error Logs
+| Log  | What's in it                                         | What's it for |
 |-----------|---------------                                  |------------|
 | error.log | lexer error, parser error for /parseable/ tests | You need to fix these to have a successful build |
 | error_parser.log | parser error for /unparseable/ tests     | You want to fix these eventually |
