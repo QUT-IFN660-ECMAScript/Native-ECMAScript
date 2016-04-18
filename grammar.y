@@ -494,6 +494,7 @@ VariableDeclaration:
     BindingIdentifier
     | BindingIdentifier Initialiser
     ;
+
     
 /* 13.3.1 let and const Declaration
  * http://www.ecma-international.org/ecma-262/6.0/#sec-let-and-const-declarations
@@ -724,6 +725,15 @@ MultiplicativeExpression:
     
 UnaryExpression:
     PostfixExpression
+	| DELETE UnaryExpression
+	| VOID UnaryExpression
+	| TYPEOF UnaryExpression
+	| UNARY_ADD UnaryExpression
+	| UNARY_SUBTRACT UnaryExpression
+	| ADD UnaryExpression
+	| SUBTRACT UnaryExpression
+	| BITWISE_NOT UnaryExpression
+	| LOGICAL_NOT UnaryExpression
     ;
     
 /* 12.4 Postfix Expression
