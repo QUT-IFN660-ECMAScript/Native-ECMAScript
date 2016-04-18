@@ -18,7 +18,7 @@ PARSER_ERROR_LOG := error_parser.log
 all: clean .build_prod
 
 clean: .clean_prod
-test_all: clean .setup_tests .run_babel_tests .run_lexer_test .run_parser_test .teardown_tests
+test_all: clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
 test_lexer: clean .setup_tests .run_lexer_tests .teardown_tests
 test_parser: clean .setup_tests .run_parser_tests .teardown_tests
 test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
