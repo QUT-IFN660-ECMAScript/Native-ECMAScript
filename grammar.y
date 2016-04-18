@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include "lex.yy.h"
+
+int yylex();
 %}
 
 %token END_OF_FILE 0
