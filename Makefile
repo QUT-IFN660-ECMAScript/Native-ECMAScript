@@ -15,13 +15,27 @@ ERROR_LOG := error.log
 TEMP_ERROR_LOG := temperror.log
 PARSER_ERROR_LOG := error_parser.log
 
-all: clean .build_prod
+.checkdep:
+ifndef CC
+	$(error gcc not installed)
+endif
+ifndef CXX
+	$(error g++ not installed)
+endif
+ifndef BABEL
+	$(warning babel not installed, test_all will not run)
+endif
+.checkbabeldep:
+ifndef BABEL
+	$(error)
+endif
 
+all: .checkdep clean .build_prod
 clean: .clean_prod
-test_all: clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
-test_lexer: clean .setup_tests .run_lexer_tests .teardown_tests
-test_parser: clean .setup_tests .run_parser_tests .teardown_tests
-test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
+test_all: .checkdep .checkbabeldep clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
+test_lexer: .checkdep clean .setup_tests .run_lexer_tests .teardown_tests
+test_parser: .checkdep clean .setup_tests .run_parser_tests .teardown_tests
+test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 
 .bison:
 	@bison -d grammar.y
@@ -43,16 +57,16 @@ test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 	@$(CC) lex.yy.c grammar.tab.c utils.c test_parser.c -o tests/test_parser -ll -ly
 	$(info Build Parser Success)
 
+# remove any previous ERROR_LOG and TEMP_ERROR_LOG, create new ERROR_LOG
 .setup_tests:
-	# remove any previous ERROR_LOG and TEMP_ERROR_LOG, create new ERROR_LOG
 	@rm -f $(ERROR_LOG);
 	@rm -f $(TEMP_ERROR_LOG);
 	@touch $(ERROR_LOG);
 
+# if ERROR_LOG is not empty, throw make error,
+# otherwise if PARSER_ERROR_LOG is not empty, show info message
+# otherwise indicate all tests are passed
 .teardown_tests:
-	# if ERROR_LOG is not empty, throw make error,
-	# otherwise if PARSER_ERROR_LOG is not empty, show info message
-	# otherwise indicate all tests are passed
 	$(if $(shell if [ -s "./$(ERROR_LOG)" ]; then echo not empty; fi), \
 		$(error $(shell cat $(ERROR_LOG))), \
 		$(if $(shell if [ -s "./$(PARSER_ERROR_LOG)" ]; then echo not empty; fi), \
@@ -61,8 +75,8 @@ test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 		)\
 	)
 
+# run babel transpiler on js files, if js file is invalid, it writes all stderr to ERROR_LOG
 .run_babel_tests:
-	# run babel transpiler on js files, if js file is invalid, it writes all stderr to ERROR_LOG
 	$(foreach t, $(TESTS), \
 		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
 		$(shell $(BABEL) $(t) >> /dev/null 2>>$(ERROR_LOG);))
@@ -70,9 +84,9 @@ test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 		 	$(error $(shell cat $(ERROR_LOG))),\
 		  $(info All JS files are valid))
 
+# run lexer tests, use diff to compare lexer dump to expected output
 .run_lexer_tests: .build_lexer_test
 	$(info Running Lexer Tests)
-	# run lexer tests, use diff to compare lexer dump to expected output
 	$(foreach t, $(TESTS), \
 		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
 		$(shell diff $(ASSERT_FILE) <(./tests/test_lex < $(t))>> $(TEMP_ERROR_LOG) 2>&1;\
@@ -82,16 +96,16 @@ test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 		)\
 	)
 
+# test parseable tests, log any error to ERROR_LOG
+# test unparseable tests, if tests are parseable, show warning to indicate tests are parseable
 .run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
-	# test parseable tests, log any error to ERROR_LOG
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
 		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 		if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
 			cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
 		)\
 	)
-	# test unparseable tests, if tests are parseable, show warning to indicate tests are parseable
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
 		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\

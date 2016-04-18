@@ -1,3 +1,9 @@
+## Dependencies
+- gcc/g++ 5+ on ubuntu, on OSX 4.2.1 is sufficient
+- flex 2.5+
+- bison 2.3+ - 3.0 will still work but gives warnings
+- babel-cli from npm, installed with -g - if you want to run JS validations
+
 ## Build Commands
 
 Just build the compiler
