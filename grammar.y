@@ -2,8 +2,12 @@
 #include <stdio.h>
 #include "y.tab.h"
 #include "lex.yy.h"
+#include "ast/ast.hpp"
 
 int yylex();
+
+ScriptBody *root;
+
 %}
 
 %token END_OF_FILE 0
@@ -119,6 +123,9 @@ int yylex();
 
 
 %union {
+    ScriptBody* scriptBody;
+    StatementList* statementList;
+
     int ival;
     double fval;
     char* sval;
@@ -134,24 +141,27 @@ int yylex();
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
 
+%type <scriptBody> ScriptBody
+%type <statementList> StatementList
+
 %%
 
 /* 15.1 Scripts
  * http://www.ecma-international.org/ecma-262/6.0/#sec-scripts
  */
- 
+
 Script:
-    ScriptBody
+    ScriptBody                                  { root = $1 }
     ;
 
 ScriptBody:
-    StatementList
+    StatementList                               {  }
     ;
 
-/* 15.2.3 Exports 
+/* 15.2.3 Exports
  * http://www.ecma-international.org/ecma-262/6.0/#sec-exports
  */
- 
+
  ExportDeclaration:
     EXPORT VariableStatement
     ;
@@ -160,45 +170,45 @@ ScriptBody:
  * http://www.ecma-international.org/ecma-262/6.0/#sec-class-declarations
  */
 
-    
-ClassDeclaration: 
+
+ClassDeclaration:
     CLASS BindingIdentifier ClassTail
     | CLASS ClassTail
     ;
-/*  
+/*
 ClassExpression:
      CLASS BindingIdentifier ClassTail
      ;
-*/   
+*/
 ClassTail:
     ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
     ;
-    
+
 ClassHeritage:
     EXTENDS LeftHandSideExpression
     ;
-    
+
 ClassBody:
     ClassElementList
     ;
-    
+
 ClassElementList:
     ClassElement
     | ClassElementList ClassElement
     ;
-    
+
 ClassElement:
     MethodDefinition
     | "static" MethodDefinition
     | SEMICOLON
     ;
-    
+
 StrictFormalParameters:
     FormalParameters
     ;
 
 
-/* Required for ArrowFormalParameters   
+/* Required for ArrowFormalParameters
 StrictFormalParameters:
     FormalParameters
     ;
@@ -231,7 +241,7 @@ PropertySetParameterList:
 /* 14.2 Arrow Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-arrow-function-definitions
  */
-  
+
 ArrowFunction:
     ArrowParameters ARROW_FUNCTION ConciseBody
     ;
@@ -248,7 +258,7 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
-    
+
 /* 14.1 Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-function-definitions
  */
@@ -267,18 +277,18 @@ FunctionExpression:
 FormalParameters:
     FormalParameterList
     ;
-    
+
 FormalParameterList:
     /* incomplete */
     FormalsList
     | FormalsList COMMA FormalParameter
     ;
-    
+
 FormalsList:
     FormalParameter
     | FormalsList COMMA FormalParameter
     ;
-    
+
 FormalParameter:
     BindingElement
     ;
@@ -341,8 +351,8 @@ LabelledItem:
 
 /* 13.12 The switch Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-switch-statement
- */ 
- 
+ */
+
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
     ;
@@ -399,16 +409,16 @@ ContinueStatement:
 /* 13.7 The return Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-return-statement
  */
- 
+
 ReturnStatement:
     RETURN SEMICOLON
     | RETURN Expression SEMICOLON
-    ; 
+    ;
 
 /* 13.7 Iteration Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-iteration-statements
  */
- 
+
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
@@ -436,24 +446,24 @@ ForBinding:
     | BindingPattern
     */
     ;
- 
+
 /* 13.6 If Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
  */
-  
+
 IfStatement:
     IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
     | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
-    ;  
- 
+    ;
+
  /* 13.5 Expression Statement
   * http://www.ecma-international.org/ecma-262/6.0/#sec-expression-statement
   */
 
 ExpressionStatement:
     Expression SEMICOLON
-    ;  
- 
+    ;
+
 /* 13.4 Empty Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-empty-statement
  */
@@ -461,8 +471,8 @@ ExpressionStatement:
 EmptyStatement:
     SEMICOLON
     ;
-    
-    
+
+
 /* 13.3.3 Destructuting Binding Patterns
  * http://www.ecma-international.org/ecma-262/6.0/#sec-destructuring-binding-patterns
  */
@@ -476,7 +486,7 @@ BindingElement:
     BindingPattern
     | BindingPattern Initialiser
     ;
-    
+
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
  */
@@ -494,7 +504,7 @@ VariableDeclaration:
     BindingIdentifier
     | BindingIdentifier Initialiser
     ;
-    
+
 /* 13.3.1 let and const Declaration
  * http://www.ecma-international.org/ecma-262/6.0/#sec-let-and-const-declarations
  */
@@ -513,13 +523,13 @@ BindingList:
     LexicalBinding
     | BindingList COMMA LexicalBinding
     ;
- 
+
 LexicalBinding:
-    BindingIdentifier 
+    BindingIdentifier
     | BindingIdentifier Initialiser
-    | BindingPattern 
+    | BindingPattern
     | BindingPattern Initialiser
-    ;    
+    ;
 
 /* 13.2 Block
  * http://www.ecma-international.org/ecma-262/6.0/#sec-block
@@ -532,7 +542,7 @@ BlockStatement:
 Block:
     LEFT_BRACE StatementList RIGHT_BRACE
     | LEFT_BRACE RIGHT_BRACE
-    ;    
+    ;
 
 StatementList:
     StatementListItem
@@ -548,8 +558,8 @@ StatementListItem:
     Statement
     | Declaration
     ;
-    
-/* 13 Statements and Declations    
+
+/* 13 Statements and Declations
  * http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-statements-and-declarations
  */
 
@@ -568,27 +578,27 @@ Statement:
     | ThrowStatement
     | TryStatement
     | DebuggerStatement
-    ; 
- 
+    ;
+
  Declaration:
     /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
     | ClassDeclaration
  /*   | LexicalDeclaration
-    */  
+    */
     | ExportDeclaration
     ;
- 
+
  HoistableDeclaration:
     FunctionDeclaration
 /*  | GeneratorDeclaration */
-    ;  
+    ;
 
 BreakableStatement:
     IterationStatement
     | SwitchStatement
     ;
- 
+
 /* 12.15 Comma Operator
  * http://www.ecma-international.org/ecma-262/6.0/#sec-comma-operator
  */
@@ -607,7 +617,7 @@ ExpressionOptional:
 /* 12.14 AssignmentOperator
  * http://www.ecma-international.org/ecma-262/6.0/#sec-assignment-operators
  */
- 
+
 AssignmentExpression:
     ConditionalExpression
     | YieldExpression
@@ -660,7 +670,7 @@ LogicalORExpression:
 BitwiseANDExpression:
     EqualityExpression
     | BitwiseANDExpression BITWISE_AND EqualityExpression
-    ; 
+    ;
 
 BitwiseXORExpression:
     BitwiseANDExpression
@@ -693,14 +703,14 @@ RelationalExpression:
     | Expression NOT_EXACTLY_EQUAL Expression
     */
     ;
-    
+
 /* 12.8 Bitwise Shift Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-bitwise-shift-operators
  */
 
 ShiftExpression:
     AdditiveExpression
-    ; 
+    ;
 
 /* 12.7 Additive Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-additive-operators
@@ -717,15 +727,15 @@ AdditiveExpression:
 MultiplicativeExpression:
     UnaryExpression
     ;
-    
+
 /* 12.5 Unary Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators
  */
-    
+
 UnaryExpression:
     PostfixExpression
     ;
-    
+
 /* 12.4 Postfix Expression
  * http://www.ecma-international.org/ecma-262/6.0/#sec-postifx-expression
  */
@@ -778,7 +788,7 @@ LeftHandSideExpression:
 PropertyName:
     LiteralPropertyName
     ;
-    
+
 LiteralPropertyName:
     IdentifierName
     | StringLiteral
@@ -792,7 +802,7 @@ Initialiser:
 /* 12.2.5 Array Initialiser
  * http://www.ecma-international.org/ecma-262/6.0/#sec-array-initializer
  */
-    
+
 ElementList:
     Elision AssignmentExpression
     | AssignmentExpression
@@ -816,7 +826,7 @@ SpreadElement:
 /* 12.2.4 Literals
  * http://www.ecma-international.org/ecma-262/6.0/#sec-primary-expression-literals
  */
- 
+
 Literal:
     NullLiteral
     | BooleanLiteral
@@ -855,7 +865,7 @@ PrimaryExpression:
     | Literal
     | ArrayLiteral
     ;
-    
+
 /* 12.1 Identifier
  * http://www.ecma-international.org/ecma-262/6.0/#sec-identifiers
  */
@@ -873,15 +883,15 @@ LabelIdentifier:
     Identifier
     | YIELD
     ;
-    
+
 Identifier:
-    IdentifierName 
+    IdentifierName
     ;
-    
+
 /* 11.8.3 Numeric Literals
  * http://www.ecma-international.org/ecma-262/6.0/#sec-literals-numeric-literals
  */
- 
+
 NumericLiteral:
     DecimalLiteral
     ;
@@ -897,7 +907,7 @@ DecimalIntegerLiteral:
 /* 11.6 Name and Keywords
  * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
  */
-  
+
 IdentifierName:
     IdentifierStart
     | IdentifierName IdentifierPart
@@ -917,7 +927,7 @@ IdentifierPart:
 /* 11.3 Line Terminators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
  */
-     
+
 /*LineTerminator:
     LINE_FEED
     | CARRIAGE_RETURN

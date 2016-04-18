@@ -1,0 +1,2 @@
+class ScriptBody: public Node {
+};

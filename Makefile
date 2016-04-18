@@ -2,6 +2,8 @@ CC ?= $(shell command -v gcc)
 CXX ?= $(shell command -v g++)
 BABEL ?= $(shell command -v babel)
 
+CXX_FLAGS := -x c++ -Wno-write-strings
+
 SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all
 
@@ -47,14 +49,14 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 .clean_prod:
 	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f compiler
 .build_prod: .bison .flex
-	@$(CXX) -x c++ lex.yy.c grammar.tab.c utils.c main.cpp -o compiler -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c main.cpp -o compiler -ll -ly
 	$(info Build Success)
 
 .build_lexer_test: .bison .flex
-	@$(CC) lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
 	$(info Build Lexer Success)
 .build_parser_test: .bison .flex
-	@$(CC) lex.yy.c grammar.tab.c utils.c test_parser.c -o tests/test_parser -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c test_parser.cpp -o tests/test_parser -ll -ly
 	$(info Build Parser Success)
 
 # remove any previous ERROR_LOG and TEMP_ERROR_LOG, create new ERROR_LOG
