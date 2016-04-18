@@ -6,7 +6,7 @@ SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all
 
 TESTS_PATH := test
-ASSERTS_PATH := assert
+LEXER_ASSERTS_PATH := lexer-assert
 
 TESTS_ROOT := tests
 TESTS := $(wildcard $(TESTS_ROOT)/**/$(TESTS_PATH)/*.js)
@@ -78,7 +78,6 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 # run babel transpiler on js files, if js file is invalid, it writes all stderr to ERROR_LOG
 .run_babel_tests:
 	$(foreach t, $(TESTS), \
-		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
 		$(shell $(BABEL) $(t) >> /dev/null 2>>$(ERROR_LOG);))
 		$(if $(shell if [ -s "./$(ERROR_LOG)" ]; then echo not empty; fi),\
 		 	$(error $(shell cat $(ERROR_LOG))),\
@@ -88,7 +87,7 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 .run_lexer_tests: .build_lexer_test
 	$(info Running Lexer Tests)
 	$(foreach t, $(TESTS), \
-		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
+		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(LEXER_ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
 		$(shell diff $(ASSERT_FILE) <(./tests/test_lex < $(t))>> $(TEMP_ERROR_LOG) 2>&1;\
 			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
 				cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; \
