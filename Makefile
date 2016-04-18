@@ -13,6 +13,7 @@ TMP_DIR := tmp
 
 ERROR_LOG := error.log
 TEMP_ERROR_LOG := temperror.log
+PARSER_ERROR_LOG := error_parser.log
 
 all: clean .build_prod
 
@@ -73,5 +74,7 @@ test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 	))
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/nonparseable/$(TESTS_PATH)/*.js), \
 	$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
-	if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi; rm -f $(TEMP_ERROR_LOG);\
+	if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
+	echo $(t) >> $(PARSER_ERROR_LOG); cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
+	rm -f $(TEMP_ERROR_LOG);\
 	), ,$(warning $(t) is parseable, consider moving it to /parseable/)))
