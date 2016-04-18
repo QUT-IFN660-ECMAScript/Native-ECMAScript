@@ -28,10 +28,13 @@ test: clean .setup_tests .run_lexer_test .run_parser_test .teardown_tests
 	@flex --header-file=lex.yy.h grammar.l
 	$(info Scanner Generated)
 
+.flex_prod:
+	@flex -+ --header-file=lex.yy.hh grammar.l
+
 .clean_prod:
-	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f scanner
+	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f compiler
 .build_prod: .bison .flex
-	@$(CC) lex.yy.c grammar.tab.c utils.c main.c -o scanner -ll -ly
+	@$(CXX) -x c lex.yy.c grammar.tab.c utils.c -x c++ main.cpp -o compiler -ll -ly
 	$(info Build Success)
 
 .clean_test: .clean_prod
