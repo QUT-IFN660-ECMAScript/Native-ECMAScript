@@ -701,6 +701,9 @@ RelationalExpression:
 
 ShiftExpression:
     AdditiveExpression
+	| ShiftExpression LEFT_SHIFT AdditiveExpression
+	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
+	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
     ; 
 
 /* 12.7 Additive Operators
