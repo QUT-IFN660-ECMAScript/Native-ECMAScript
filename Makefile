@@ -8,9 +8,7 @@ SHELL := $(shell echo $$SHELL)
 TESTS_PATH := test
 ASSERTS_PATH := assert
 TESTS_ROOT := tests
-TESTS := $(wildcard $(TESTS_ROOT)/**/test/*.js)
-PARSABLE_TESTS_DIR := $(TESTS_ROOT)/parsable
-PARSABLE_TESTS := $(wildcard $(PARSABLE_TESTS_DIR)/test/*.js)
+TESTS := $(wildcard $(TESTS_ROOT)/**/$(TESTS_PATH)/*.js)
 TMP_DIR := tmp
 
 ERROR_LOG := error.log
@@ -20,9 +18,9 @@ all: clean .build_prod
 
 clean: .clean_prod
 test_all: clean .setup_tests .run_babel_tests .run_lexer_test .run_parser_test .teardown_tests
-test_lexer: clean .setup_tests .run_lexer_test .teardown_tests
-test_parser: clean .setup_tests .run_parser_test .teardown_tests
-test: clean .setup_tests .run_lexer_test .run_parser_test .teardown_tests
+test_lexer: clean .setup_tests .run_lexer_tests .teardown_tests
+test_parser: clean .setup_tests .run_parser_tests .teardown_tests
+test: clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
 
 .bison:
 	@bison -d grammar.y
@@ -59,7 +57,7 @@ test: clean .setup_tests .run_lexer_test .run_parser_test .teardown_tests
 	$(if $(shell if [ -s "./$(ERROR_LOG)" ]; then echo not empty; fi), $(error $(shell cat $(ERROR_LOG))), $(info All JS files are valid))
 
 # this seems a little crazy
-.run_lexer_test: .build_lexer_test
+.run_lexer_tests: .build_lexer_test
 	$(info Running Lexer Tests)
 	$(foreach t, $(TESTS), \
 	$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
@@ -67,9 +65,13 @@ test: clean .setup_tests .run_lexer_test .run_parser_test .teardown_tests
 	if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
 	))
 
-.run_parser_test: .build_parser_test
+.run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
-	$(foreach t, $(PARSABLE_TESTS), \
+	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
 	$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 	if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
 	))
+	$(foreach t, $(wildcard ./$(TESTS_ROOT)/nonparseable/$(TESTS_PATH)/*.js), \
+	$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+	if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi; rm -f $(TEMP_ERROR_LOG);\
+	), ,$(warning $(t) is parseable, consider moving it to /parseable/)))
