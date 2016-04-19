@@ -777,6 +777,7 @@ LeftHandSideExpression:
 
 PropertyName:
     LiteralPropertyName
+    | ComputedPropertyName
     ;
     
 LiteralPropertyName:
@@ -788,6 +789,32 @@ LiteralPropertyName:
 Initialiser:
   ASSIGNMENT AssignmentExpression
   ;
+
+ObjectLiteral:
+	LEFT_BRACE RIGHT_BRACE
+	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE
+	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE
+	;
+
+PropertyDefinitionList:
+	PropertyDefinition
+	| PropertyDefinitionList COMMA PropertyDefinition
+	;
+
+PropertyDefinition:
+	IdentifierReference
+	| CoverInitializedName
+	| PropertyName COLON AssignmentExpression
+	| MethodDefinition
+	;
+
+ComputedPropertyName:
+	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET
+	;
+
+CoverInitializedName:
+	IdentifierReference Initialiser
+	;
 
 /* 12.2.5 Array Initialiser
  * http://www.ecma-international.org/ecma-262/6.0/#sec-array-initializer
@@ -854,6 +881,7 @@ PrimaryExpression:
     | IdentifierReference
     | Literal
     | ArrayLiteral
+    | ObjectLiteral
     ;
     
 /* 12.1 Identifier
