@@ -733,8 +733,8 @@ UnaryExpression:
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
 	| UNARY_SUBTRACT UnaryExpression
-	| ADD UnaryExpression
-	| SUBTRACT UnaryExpression
+	/* | ADD UnaryExpression 		
+	| SUBTRACT UnaryExpression */
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;
