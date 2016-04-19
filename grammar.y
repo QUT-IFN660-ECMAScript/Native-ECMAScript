@@ -430,11 +430,8 @@ ForDeclaration:
     ;
 
 ForBinding:
-    IDENTIFIER
-    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
     BindingIdentifier
     | BindingPattern
-    */
     ;
  
 /* 13.6 If Statement
@@ -596,8 +593,7 @@ BreakableStatement:
 
 Expression:
     AssignmentExpression
-    | PrimaryExpression
-    | EqualityExpression
+    | Expression COMMA AssignmentExpression
     ;
 
 ExpressionOptional:
@@ -762,7 +758,7 @@ NewExpression:
 CallExpression:
     SuperCall
     | CallExpression RIGHT_BRACE Expression LEFT_BRACE
-    | CallExpression FULL_STOP IdentifierName
+    | CallExpression FULL_STOP Identifier
     ;
 
 SuperCall:
@@ -794,7 +790,7 @@ PropertyName:
     ;
     
 LiteralPropertyName:
-    IdentifierName
+    Identifier
     | StringLiteral
     | NumericLiteral
     ;
@@ -902,7 +898,7 @@ PrimaryExpression:
  */
 
 IdentifierReference:
-    IDENTIFIER
+    Identifier
     ;
 
 BindingIdentifier:
@@ -916,7 +912,7 @@ LabelIdentifier:
     ;
     
 Identifier:
-    IdentifierName 
+    IDENTIFIER 
     ;
     
 /* 11.8.3 Numeric Literals
@@ -935,26 +931,6 @@ DecimalIntegerLiteral:
     VALUE_INTEGER
     ;
 
-/* 11.6 Name and Keywords
- * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
- */
-  
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
-
-IdentifierStart:
-    "$"
-    | "_"
-    | IDENTIFIER
-    ;
-
-IdentifierPart:
-    "$"
-    | "_"
-    | IDENTIFIER
-    ;
 /* 11.3 Line Terminators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
  */
