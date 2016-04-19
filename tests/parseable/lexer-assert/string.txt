@@ -1,4 +1,3 @@
-VAR
 IDENTIFIER (str)
 =
 VALUE_STRING ("Test string")
