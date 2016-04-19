@@ -723,7 +723,10 @@ RelationalExpression:
 
 ShiftExpression:
     AdditiveExpression	{$$ = $1;}
-    ;
+	| ShiftExpression LEFT_SHIFT AdditiveExpression
+	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
+	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
+    ; 
 
 /* 12.7 Additive Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-additive-operators
@@ -747,6 +750,15 @@ MultiplicativeExpression:
 
 UnaryExpression:
     PostfixExpression	{ $$ = $1; }
+	| DELETE UnaryExpression
+	| VOID UnaryExpression
+	| TYPEOF UnaryExpression
+	| UNARY_ADD UnaryExpression
+	| UNARY_SUBTRACT UnaryExpression
+	/* | ADD UnaryExpression 		
+	| SUBTRACT UnaryExpression */
+	| BITWISE_NOT UnaryExpression
+	| LOGICAL_NOT UnaryExpression
     ;
 
 /* 12.4 Postfix Expression
@@ -800,6 +812,7 @@ LeftHandSideExpression:
 
 PropertyName:
     LiteralPropertyName
+    | ComputedPropertyName
     ;
 
 LiteralPropertyName:
@@ -811,6 +824,32 @@ LiteralPropertyName:
 Initialiser:
   ASSIGNMENT AssignmentExpression
   ;
+
+ObjectLiteral:
+	LEFT_BRACE RIGHT_BRACE
+	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE
+	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE
+	;
+
+PropertyDefinitionList:
+	PropertyDefinition
+	| PropertyDefinitionList COMMA PropertyDefinition
+	;
+
+PropertyDefinition:
+	IdentifierReference
+	| CoverInitializedName
+	| PropertyName COLON AssignmentExpression
+	| MethodDefinition
+	;
+
+ComputedPropertyName:
+	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET
+	;
+
+CoverInitializedName:
+	IdentifierReference Initialiser
+	;
 
 /* 12.2.5 Array Initialiser
  * http://www.ecma-international.org/ecma-262/6.0/#sec-array-initializer
@@ -877,6 +916,7 @@ PrimaryExpression:
     | IdentifierReference { $$ = $1; }
     | Literal	{ $$ = $1; }
     | ArrayLiteral
+    | ObjectLiteral
     ;
 
 /* 12.1 Identifier
