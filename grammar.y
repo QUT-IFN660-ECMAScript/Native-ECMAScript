@@ -1,8 +1,9 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
-#include "lex.yy.h"
 #include "ast/ast.hpp"
+#include "lex.yy.h"
+
 
 int yylex();
 
@@ -112,7 +113,7 @@ ScriptBody *root;
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token VALUE_INTEGER
+%token <ival>VALUE_INTEGER
 %token VALUE_FLOAT
 %token VALUE_STRING
 %token IDENTIFIER
@@ -125,6 +126,7 @@ ScriptBody *root;
 %union {
     ScriptBody* scriptBody;
     StatementList* statementList;
+    Expression* expression;
 
     int ival;
     double fval;
@@ -143,7 +145,7 @@ ScriptBody *root;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-
+%type <expression> Expression DecimalIntegerLiteral DecimalLiteral	NumericLiteral	Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
 %%
 
 /* 15.1 Scripts
@@ -151,7 +153,7 @@ ScriptBody *root;
  */
 
 Script:
-    ScriptBody                                  { root = $1 }
+    ScriptBody                                  { root = $1; }
     ;
 
 ScriptBody:
@@ -604,7 +606,7 @@ BreakableStatement:
  */
 
 Expression:
-    AssignmentExpression
+    AssignmentExpression	SEMICOLON{$$ = $1;}
     | PrimaryExpression
     | EqualityExpression
     ;
@@ -619,10 +621,10 @@ ExpressionOptional:
  */
 
 AssignmentExpression:
-    ConditionalExpression
+    ConditionalExpression	{$$ = $1;}
     | YieldExpression
     | ArrowFunction
-    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression {$$ = new AssignmentExpression($1, $3);}
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
     ;
 
@@ -645,7 +647,7 @@ AssignmentOperator:
  */
 
 ConditionalExpression:
-    LogicalORExpression
+    LogicalORExpression	{$$ = $1;}
     | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
     ;
 
@@ -654,12 +656,12 @@ ConditionalExpression:
  */
 
 LogicalANDExpression:
-    BitwiseORExpression
+    BitwiseORExpression	{$$ = $1;}
     | LogicalANDExpression LOGICAL_AND BitwiseORExpression
     ;
 
 LogicalORExpression:
-    LogicalANDExpression
+    LogicalANDExpression	{$$ = $1;}
     | LogicalORExpression LOGICAL_OR LogicalANDExpression
     ;
 
@@ -668,17 +670,17 @@ LogicalORExpression:
  */
 
 BitwiseANDExpression:
-    EqualityExpression
+    EqualityExpression {$$ = $1;}
     | BitwiseANDExpression BITWISE_AND EqualityExpression
     ;
 
 BitwiseXORExpression:
-    BitwiseANDExpression
+    BitwiseANDExpression {$$ = $1;}
     | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
     ;
 
 BitwiseORExpression:
-    BitwiseXORExpression
+    BitwiseXORExpression	{$$ = $1;}
     | BitwiseORExpression BITWISE_OR BitwiseXORExpression
     ;
 
@@ -687,7 +689,7 @@ BitwiseORExpression:
  */
 
 EqualityExpression:
-    RelationalExpression
+    RelationalExpression	{$$ = $1;}
     ;
 
 /* 12.9 Relational Operators
@@ -695,7 +697,7 @@ EqualityExpression:
  */
 
 RelationalExpression:
-    ShiftExpression
+    ShiftExpression	{$$ = $1;}
     /*
     | Expression EQUAL Expression
     | Expression NOT_EQUAL Expression
@@ -709,7 +711,7 @@ RelationalExpression:
  */
 
 ShiftExpression:
-    AdditiveExpression
+    AdditiveExpression	{$$ = $1;}
     ;
 
 /* 12.7 Additive Operators
@@ -717,7 +719,7 @@ ShiftExpression:
  */
 
 AdditiveExpression:
-    MultiplicativeExpression
+    MultiplicativeExpression	{$$ = $1;}
     ;
 
 /* 12.6 Multiplicative Operators
@@ -725,7 +727,7 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression
+    UnaryExpression	{$$=$1;}
     ;
 
 /* 12.5 Unary Operators
@@ -733,7 +735,7 @@ MultiplicativeExpression:
  */
 
 UnaryExpression:
-    PostfixExpression
+    PostfixExpression	{$$=$1;}
     ;
 
 /* 12.4 Postfix Expression
@@ -741,7 +743,7 @@ UnaryExpression:
  */
 
 PostfixExpression:
-    LeftHandSideExpression
+    LeftHandSideExpression	{$$=$1;}
     ;
 
 /* 12.3 Left-Hand-Side Expressions
@@ -749,11 +751,11 @@ PostfixExpression:
  */
 
 MemberExpression:
-    PrimaryExpression
+    PrimaryExpression	{$$=$1;}
     ;
 
 NewExpression:
-    MemberExpression
+    MemberExpression	{$$=$1;}
     ;
 
 CallExpression:
@@ -777,7 +779,7 @@ ArgumentList:
     ;
 
 LeftHandSideExpression:
-    NewExpression
+    NewExpression	{$$=$1;}
     | CallExpression
     ;
 
@@ -830,7 +832,7 @@ SpreadElement:
 Literal:
     NullLiteral
     | BooleanLiteral
-    | NumericLiteral
+    | NumericLiteral	{$$=$1;}
     | StringLiteral
     ;
 
@@ -862,7 +864,7 @@ StringLiteral:
 PrimaryExpression:
     THIS
     | IdentifierReference
-    | Literal
+    | Literal	{$$=$1;}
     | ArrayLiteral
     ;
 
@@ -893,15 +895,15 @@ Identifier:
  */
 
 NumericLiteral:
-    DecimalLiteral
+    DecimalLiteral	{$$ = $1; }
     ;
 
 DecimalLiteral:
-    DecimalIntegerLiteral
+    DecimalIntegerLiteral	{$$ = $1; }
     ;
 
 DecimalIntegerLiteral:
-    VALUE_INTEGER
+    VALUE_INTEGER	{$$ = new IntegerLiteralExpression($1); }
     ;
 
 /* 11.6 Name and Keywords

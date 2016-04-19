@@ -29,15 +29,15 @@ public:
     }
 };
 
-class IndentifierExpression:public Expression{
+class IdentifierExpression:public Expression{
 private:
     std::string *name;
 public:
-    IndentifierExpression(std::string *name){
+    IdentifierExpression(std::string *name){
         this->name = name;
     };
     void dump(int indent){
-        label(indent, "IndentifierExpression\n");
+        label(indent, "IdentifierExpression\n");
         printf("name: %s", name->c_str());
     }
 };

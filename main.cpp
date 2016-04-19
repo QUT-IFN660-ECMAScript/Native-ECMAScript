@@ -3,12 +3,13 @@
 //
 #include <stdio.h>
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include "lex.yy.h"
 
 extern FILE *yyin;
 int yyparse(void);
-ScriptBody *root;
+//ScriptBody *root;
 
 int main(int argc, char* argv[])
 {

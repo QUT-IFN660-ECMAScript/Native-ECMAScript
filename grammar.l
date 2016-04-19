@@ -1,6 +1,7 @@
 %{
 
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include <stdbool.h>
 
