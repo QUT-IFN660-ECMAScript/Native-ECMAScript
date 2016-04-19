@@ -211,6 +211,7 @@ StrictFormalParameters:
 YieldExpression:
     YIELD
     | YIELD AssignmentExpression
+    | YIELD MULTIPLY AssignmentExpression
     ;
 
 /* 14.3 Method Definitions
@@ -242,6 +243,9 @@ ArrowParameters:
 
 CoverParenthesizedExpressionAndArrowParameterList:
     LEFT_PAREN Expression RIGHT_PAREN
+    | LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ELLIPSIS BindingIdentifier RIGHT_PAREN
+    | LEFT_PAREN Expression COMMA ELLIPSIS BindingIdentifier RIGHT_PAREN
     ;
 
 ConciseBody:
@@ -479,7 +483,7 @@ BindingElement:
  */
 
 VariableStatement:
-    VAR VariableDeclarationList
+    VAR VariableDeclarationList SEMICOLON
     ;
 
 VariableDeclarationList:
@@ -498,8 +502,7 @@ VariableDeclaration:
  */
 
 LexicalDeclaration:
-    LetOrConst BindingList
-    // TODO not implemented yet | BindingList
+    LetOrConst BindingList SEMICOLON
     ;
 
 LetOrConst:
@@ -513,9 +516,7 @@ BindingList:
     ;
  
 LexicalBinding:
-    BindingIdentifier 
-    | BindingIdentifier Initialiser
-    | BindingPattern 
+    BindingIdentifier Initialiser
     | BindingPattern Initialiser
     ;    
 
@@ -528,8 +529,7 @@ BlockStatement:
     ;
 
 Block:
-    LEFT_BRACE StatementList RIGHT_BRACE
-    | LEFT_BRACE RIGHT_BRACE
+    LEFT_BRACE StatementListOptional RIGHT_BRACE
     ;    
 
 StatementList:
@@ -753,11 +753,12 @@ MemberExpression:
 
 NewExpression:
     MemberExpression
+    | NEW NewExpression
     ;
 
 CallExpression:
     SuperCall
-    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
+    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
     | CallExpression FULL_STOP Identifier
     ;
 
@@ -796,8 +797,8 @@ LiteralPropertyName:
     ;
 
 Initialiser:
-  ASSIGNMENT AssignmentExpression
-  ;
+    ASSIGNMENT AssignmentExpression
+    ;
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE
@@ -891,6 +892,7 @@ PrimaryExpression:
     | Literal
     | ArrayLiteral
     | ObjectLiteral
+    | CoverParenthesizedExpressionAndArrowParameterList
     ;
     
 /* 12.1 Identifier
