@@ -1,5 +1,5 @@
 %{
-#include <stdio.h>
+#include <cstdio>
 #include "y.tab.h"
 #include "ast/ast.hpp"
 #include "lex.yy.h"
@@ -8,6 +8,8 @@
 int yylex();
 
 ScriptBody *root;
+
+using namespace std;
 
 %}
 
@@ -113,10 +115,10 @@ ScriptBody *root;
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token <ival>VALUE_INTEGER
-%token VALUE_FLOAT
-%token VALUE_STRING
-%token IDENTIFIER
+%token <ival> VALUE_INTEGER
+%token <fval> VALUE_FLOAT
+%token <sval> VALUE_STRING
+%token <sval> IDENTIFIER
 %token LINE_FEED
 %token CARRIAGE_RETURN
 %token LINE_SEPARATOR
@@ -125,8 +127,9 @@ ScriptBody *root;
 
 %union {
     ScriptBody* scriptBody;
-    StatementList* statementList;
+    vector<Statement* >* statementList;
     Expression* expression;
+    Statement* statement;
 
     int ival;
     double fval;
@@ -145,7 +148,14 @@ ScriptBody *root;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <expression> Expression DecimalIntegerLiteral DecimalLiteral	NumericLiteral	Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+%type <statement> Statement StatementListItem ExpressionStatement
+%type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
+  Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
+  PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
+  ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+  ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference
+
 %%
 
 /* 15.1 Scripts
@@ -157,16 +167,16 @@ Script:
     ;
 
 ScriptBody:
-    StatementList                               {  }
+    StatementList                               { $$ = new ScriptBody($1);  }
     ;
 
 /* 15.2.3 Exports
  * http://www.ecma-international.org/ecma-262/6.0/#sec-exports
  */
 
- ExportDeclaration:
+ /*ExportDeclaration:
     EXPORT VariableStatement
-    ;
+    ;*/
 
 /* 14.5 Class Declarations
  * http://www.ecma-international.org/ecma-262/6.0/#sec-class-declarations
@@ -463,7 +473,7 @@ IfStatement:
   */
 
 ExpressionStatement:
-    Expression SEMICOLON
+    Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
     ;
 
 /* 13.4 Empty Statement
@@ -547,8 +557,8 @@ Block:
     ;
 
 StatementList:
-    StatementListItem
-    | StatementList StatementListItem
+    StatementListItem                   { $$ = new vector<Statement*>; $$->push_back($1); }
+    | StatementList StatementListItem   { $$ = $1; $$->push_back($2); }
     ;
 
 StatementListOptional:
@@ -557,7 +567,7 @@ StatementListOptional:
     ;
 
 StatementListItem:
-    Statement
+    Statement               { $$ = $1; }
     | Declaration
     ;
 
@@ -569,7 +579,7 @@ Statement:
     BlockStatement
     | VariableStatement
     | EmptyStatement
-    | ExpressionStatement
+    | ExpressionStatement   { $$ = $1; }
     | IfStatement
     | BreakableStatement
     | ReturnStatement
@@ -588,7 +598,7 @@ Statement:
     | ClassDeclaration
  /*   | LexicalDeclaration
     */
-    | ExportDeclaration
+    /*| ExportDeclaration -- where is this from?*/
     ;
 
  HoistableDeclaration:
@@ -606,7 +616,7 @@ BreakableStatement:
  */
 
 Expression:
-    AssignmentExpression	SEMICOLON{$$ = $1;}
+    AssignmentExpression    {$$ = $1;}
     | PrimaryExpression
     | EqualityExpression
     ;
@@ -727,7 +737,7 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression	{$$=$1;}
+    UnaryExpression	{ $$ = $1; }
     ;
 
 /* 12.5 Unary Operators
@@ -735,7 +745,7 @@ MultiplicativeExpression:
  */
 
 UnaryExpression:
-    PostfixExpression	{$$=$1;}
+    PostfixExpression	{ $$ = $1; }
     ;
 
 /* 12.4 Postfix Expression
@@ -743,7 +753,7 @@ UnaryExpression:
  */
 
 PostfixExpression:
-    LeftHandSideExpression	{$$=$1;}
+    LeftHandSideExpression	{ $$ = $1; }
     ;
 
 /* 12.3 Left-Hand-Side Expressions
@@ -751,11 +761,11 @@ PostfixExpression:
  */
 
 MemberExpression:
-    PrimaryExpression	{$$=$1;}
+    PrimaryExpression	{ $$ = $1; }
     ;
 
 NewExpression:
-    MemberExpression	{$$=$1;}
+    MemberExpression	{ $$ = $1; }
     ;
 
 CallExpression:
@@ -779,7 +789,7 @@ ArgumentList:
     ;
 
 LeftHandSideExpression:
-    NewExpression	{$$=$1;}
+    NewExpression	{ $$ = $1; }
     | CallExpression
     ;
 
@@ -863,8 +873,8 @@ StringLiteral:
 
 PrimaryExpression:
     THIS
-    | IdentifierReference
-    | Literal	{$$=$1;}
+    | IdentifierReference { $$ = $1; }
+    | Literal	{ $$ = $1; }
     | ArrayLiteral
     ;
 
@@ -873,7 +883,7 @@ PrimaryExpression:
  */
 
 IdentifierReference:
-    IDENTIFIER
+    IDENTIFIER  { $$ = new IdentifierExpression($1); }
     ;
 
 BindingIdentifier:
@@ -903,7 +913,7 @@ DecimalLiteral:
     ;
 
 DecimalIntegerLiteral:
-    VALUE_INTEGER	{$$ = new IntegerLiteralExpression($1); }
+    VALUE_INTEGER	{ $$ = new IntegerLiteralExpression($1); }
     ;
 
 /* 11.6 Name and Keywords

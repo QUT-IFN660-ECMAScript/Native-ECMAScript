@@ -37,7 +37,9 @@ clean: .clean_prod
 test_all: .checkdep .checkbabeldep clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
 test_lexer: .checkdep clean .setup_tests .run_lexer_tests .teardown_tests
 test_parser: .checkdep clean .setup_tests .run_parser_tests .teardown_tests
+simple: .checkdep clean .run_simple
 test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
+generate: .bison .flex
 
 .bison:
 	@bison -d grammar.y
@@ -102,13 +104,13 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 .run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
-		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 		if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
 			cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
 		)\
 	)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
-		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
 				echo $(t) >> $(PARSER_ERROR_LOG); \
 				cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
@@ -117,3 +119,7 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 			 $(warning $(t) is parseable, consider moving it to /parseable/)\
 		)\
 	)
+
+.run_simple: .build_prod
+	$(info Running Simple Test)
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js

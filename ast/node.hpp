@@ -1,9 +1,13 @@
+#pragma once
+#include <cstdarg>
+#include <cstdio>
+#include <iostream>
 //
 // Created by Harry Scells on 18/04/2016.
 //
+using namespace std;
 
-class Node
-{
+class Node {
 public:
 	virtual void dump(int indent)=0;
 	void indent(int N) {

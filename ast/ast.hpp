@@ -1,6 +1,7 @@
+#pragma once
 #include <cstdarg>
-#include <string>
 #include <cstdio>
+#include <string>
 #include <vector>
 #include "node.hpp"
 #include "script.hpp"

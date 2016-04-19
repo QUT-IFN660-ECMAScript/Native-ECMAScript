@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include "lex.yy.h"
 

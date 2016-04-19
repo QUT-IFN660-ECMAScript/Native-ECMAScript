@@ -1,3 +1,10 @@
+#pragma once
+#include <cstdarg>
+#include <cstdio>
+#include "node.hpp"
+
+using namespace std;
+
 class Expression:public Node{
 };
 
@@ -24,20 +31,18 @@ public:
         this->value = value;
     };
     void dump(int indent){
-        label(indent, "IntegerLiteralExpression\n");
-        printf("value: %d", value);
+        label(indent, "IntegerLiteralExpression: %d\n", value);
     }
 };
 
 class IdentifierExpression:public Expression{
 private:
-    std::string *name;
+    char *name;
 public:
-    IdentifierExpression(std::string *name){
+    IdentifierExpression(char *name){
         this->name = name;
     };
     void dump(int indent){
-        label(indent, "IdentifierExpression\n");
-        printf("name: %s", name->c_str());
+        label(indent, "IdentifierExpression: %s\n", name);
     }
 };
