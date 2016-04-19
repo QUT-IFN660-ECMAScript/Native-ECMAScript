@@ -10,7 +10,7 @@
 
 extern FILE *yyin;
 int yyparse(void);
-Node *node;
+
 
 int main(int argc, char* argv[])
 {
