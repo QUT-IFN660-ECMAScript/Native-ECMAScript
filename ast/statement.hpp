@@ -1,4 +1,7 @@
-class StatementList: public Node {
+/*class Statement: public Node {};
+
+
+class StatementList: public Statement {
 // private:
 //   vector<StatementListItem*> items;
 // public:
@@ -9,6 +12,32 @@ class StatementList: public Node {
 //       (*iter)->dump(indent+1);
 //   }
 };
-class StatementListItem: public Node {
+class StatementListItem: public Statement {
 
+}; */
+
+#include <iostream>
+#include <vector>
+
+
+class Statement: public Node { };
+
+class StatementList : public Statement {
+
+private:
+	Statement* statement;
+public:
+    std::vector<const Statement*>* statements;	
+    StatementList(const Statement* s)  {
+		statements = new std::vector<const Statement*>();
+	 	statements->push_back(s);
+    }
+    StatementList()  {
+         statements = new std::vector<const Statement*>();
+    }	
+    
+    
 };
+
+
+

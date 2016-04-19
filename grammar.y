@@ -125,8 +125,9 @@ ScriptBody *root;
 
 %union {
     ScriptBody* scriptBody;
-    StatementList* statementList;
+  //  StatementList* statementList;
     Expression* expression;
+    Statement* statement;
 
     int ival;
     double fval;
@@ -144,8 +145,8 @@ ScriptBody *root;
 %nonassoc NOT_EXACTLY_EQUAL
 
 %type <scriptBody> ScriptBody
-%type <statementList> StatementList
-%type <expression> Expression DecimalIntegerLiteral DecimalLiteral	NumericLiteral	Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+//%type <statement> StatementList StatementListItem StatementListOptional
+%type <expression> Expression DecimalIntegerLiteral DecimalLiteral	NumericLiteral	Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression ShiftExpression RelationalExpression EqualityExpression  AssignmentExpression ConditionalExpression LogicalORExpression LogicalANDExpression BitwiseORExpression BitwiseANDExpression BitwiseXORExpression
 %%
 
 /* 15.1 Scripts
@@ -547,17 +548,16 @@ Block:
     ;
 
 StatementList:
-    StatementListItem
+    StatementListItem			 
     | StatementList StatementListItem
     ;
 
 StatementListOptional:
-    StatementList
-    |
+    StatementList			 
     ;
 
 StatementListItem:
-    Statement
+    Statement				 
     | Declaration
     ;
 
@@ -606,7 +606,7 @@ BreakableStatement:
  */
 
 Expression:
-    AssignmentExpression	SEMICOLON{$$ = $1;}
+    AssignmentExpression SEMICOLON		{$$ = $1;}
     | PrimaryExpression
     | EqualityExpression
     ;

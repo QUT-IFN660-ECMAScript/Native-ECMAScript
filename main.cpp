@@ -9,7 +9,7 @@
 
 extern FILE *yyin;
 int yyparse(void);
-//ScriptBody *root;
+ScriptBody *root;
 
 int main(int argc, char* argv[])
 {
