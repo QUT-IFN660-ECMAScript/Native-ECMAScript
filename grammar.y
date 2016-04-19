@@ -1,9 +1,16 @@
 %{
-#include <stdio.h>
+#include <cstdio>
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "lex.yy.h"
 
+
 int yylex();
+
+ScriptBody *root;
+
+using namespace std;
+
 %}
 
 %token END_OF_FILE 0
@@ -108,10 +115,10 @@ int yylex();
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token VALUE_INTEGER
-%token VALUE_FLOAT
-%token VALUE_STRING
-%token IDENTIFIER
+%token <ival> VALUE_INTEGER
+%token <fval> VALUE_FLOAT
+%token <sval> VALUE_STRING
+%token <sval> IDENTIFIER
 %token LINE_FEED
 %token CARRIAGE_RETURN
 %token LINE_SEPARATOR
@@ -119,6 +126,11 @@ int yylex();
 
 
 %union {
+    ScriptBody* scriptBody;
+    vector<Statement* >* statementList;
+    Expression* expression;
+    Statement* statement;
+
     int ival;
     double fval;
     char* sval;
@@ -134,71 +146,82 @@ int yylex();
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
 
+%type <scriptBody> ScriptBody
+%type <statementList> StatementList
+%type <statement> Statement StatementListItem ExpressionStatement
+%type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
+  Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
+  PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
+  ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+  ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier
+%type <sval> Identifier IdentifierName
+
 %%
 
 /* 15.1 Scripts
  * http://www.ecma-international.org/ecma-262/6.0/#sec-scripts
  */
- 
+
 Script:
-    ScriptBody
+    ScriptBody                                  { root = $1; }
     ;
 
 ScriptBody:
-    StatementList
+    StatementList                               { $$ = new ScriptBody($1);  }
     ;
 
-/* 15.2.3 Exports 
+/* 15.2.3 Exports
  * http://www.ecma-international.org/ecma-262/6.0/#sec-exports
  */
- 
- ExportDeclaration:
+
+ /*ExportDeclaration:
     EXPORT VariableStatement
-    ;
+    ;*/
 
 /* 14.5 Class Declarations
  * http://www.ecma-international.org/ecma-262/6.0/#sec-class-declarations
  */
 
-    
-ClassDeclaration: 
+
+ClassDeclaration:
     CLASS BindingIdentifier ClassTail
     | CLASS ClassTail
     ;
-/*  
+/*
 ClassExpression:
      CLASS BindingIdentifier ClassTail
      ;
-*/   
+*/
 ClassTail:
     ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
     ;
-    
+
 ClassHeritage:
     EXTENDS LeftHandSideExpression
     ;
-    
+
 ClassBody:
     ClassElementList
     ;
-    
+
 ClassElementList:
     ClassElement
     | ClassElementList ClassElement
     ;
-    
+
 ClassElement:
     MethodDefinition
     | "static" MethodDefinition
     | SEMICOLON
     ;
-    
+
 StrictFormalParameters:
     FormalParameters
     ;
 
 
-/* Required for ArrowFormalParameters   
+/* Required for ArrowFormalParameters
 StrictFormalParameters:
     FormalParameters
     ;
@@ -231,7 +254,7 @@ PropertySetParameterList:
 /* 14.2 Arrow Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-arrow-function-definitions
  */
-  
+
 ArrowFunction:
     ArrowParameters ARROW_FUNCTION ConciseBody
     ;
@@ -248,7 +271,7 @@ ConciseBody:
     AssignmentExpression
     | RIGHT_BRACKET FunctionBody LEFT_BRACKET
     ;
-    
+
 /* 14.1 Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-function-definitions
  */
@@ -267,18 +290,18 @@ FunctionExpression:
 FormalParameters:
     FormalParameterList
     ;
-    
+
 FormalParameterList:
     /* incomplete */
     FormalsList
     | FormalsList COMMA FormalParameter
     ;
-    
+
 FormalsList:
     FormalParameter
     | FormalsList COMMA FormalParameter
     ;
-    
+
 FormalParameter:
     BindingElement
     ;
@@ -341,8 +364,8 @@ LabelledItem:
 
 /* 13.12 The switch Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-switch-statement
- */ 
- 
+ */
+
 SwitchStatement:
     SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
     ;
@@ -399,16 +422,16 @@ ContinueStatement:
 /* 13.7 The return Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-return-statement
  */
- 
+
 ReturnStatement:
     RETURN SEMICOLON
     | RETURN Expression SEMICOLON
-    ; 
+    ;
 
 /* 13.7 Iteration Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-iteration-statements
  */
- 
+
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
@@ -436,24 +459,24 @@ ForBinding:
     | BindingPattern
     */
     ;
- 
+
 /* 13.6 If Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
  */
-  
+
 IfStatement:
     IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
     | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
-    ;  
- 
+    ;
+
  /* 13.5 Expression Statement
   * http://www.ecma-international.org/ecma-262/6.0/#sec-expression-statement
   */
 
 ExpressionStatement:
-    Expression SEMICOLON
-    ;  
- 
+    Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
+    ;
+
 /* 13.4 Empty Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-empty-statement
  */
@@ -461,8 +484,8 @@ ExpressionStatement:
 EmptyStatement:
     SEMICOLON
     ;
-    
-    
+
+
 /* 13.3.3 Destructuting Binding Patterns
  * http://www.ecma-international.org/ecma-262/6.0/#sec-destructuring-binding-patterns
  */
@@ -476,7 +499,7 @@ BindingElement:
     BindingPattern
     | BindingPattern Initialiser
     ;
-    
+
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
  */
@@ -495,7 +518,6 @@ VariableDeclaration:
     | BindingIdentifier Initialiser
     ;
 
-    
 /* 13.3.1 let and const Declaration
  * http://www.ecma-international.org/ecma-262/6.0/#sec-let-and-const-declarations
  */
@@ -514,13 +536,13 @@ BindingList:
     LexicalBinding
     | BindingList COMMA LexicalBinding
     ;
- 
+
 LexicalBinding:
-    BindingIdentifier 
+    BindingIdentifier
     | BindingIdentifier Initialiser
-    | BindingPattern 
+    | BindingPattern
     | BindingPattern Initialiser
-    ;    
+    ;
 
 /* 13.2 Block
  * http://www.ecma-international.org/ecma-262/6.0/#sec-block
@@ -533,11 +555,11 @@ BlockStatement:
 Block:
     LEFT_BRACE StatementList RIGHT_BRACE
     | LEFT_BRACE RIGHT_BRACE
-    ;    
+    ;
 
 StatementList:
-    StatementListItem
-    | StatementList StatementListItem
+    StatementListItem                   { $$ = new vector<Statement*>; $$->push_back($1); }
+    | StatementList StatementListItem   { $$ = $1; $$->push_back($2); }
     ;
 
 StatementListOptional:
@@ -546,11 +568,11 @@ StatementListOptional:
     ;
 
 StatementListItem:
-    Statement
+    Statement               { $$ = $1; }
     | Declaration
     ;
-    
-/* 13 Statements and Declations    
+
+/* 13 Statements and Declations
  * http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-statements-and-declarations
  */
 
@@ -558,7 +580,7 @@ Statement:
     BlockStatement
     | VariableStatement
     | EmptyStatement
-    | ExpressionStatement
+    | ExpressionStatement   { $$ = $1; }
     | IfStatement
     | BreakableStatement
     | ReturnStatement
@@ -569,33 +591,33 @@ Statement:
     | ThrowStatement
     | TryStatement
     | DebuggerStatement
-    ; 
- 
+    ;
+
  Declaration:
     /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
     HoistableDeclaration
     | ClassDeclaration
  /*   | LexicalDeclaration
-    */  
-    | ExportDeclaration
+    */
+    /*| ExportDeclaration -- where is this from?*/
     ;
- 
+
  HoistableDeclaration:
     FunctionDeclaration
 /*  | GeneratorDeclaration */
-    ;  
+    ;
 
 BreakableStatement:
     IterationStatement
     | SwitchStatement
     ;
- 
+
 /* 12.15 Comma Operator
  * http://www.ecma-international.org/ecma-262/6.0/#sec-comma-operator
  */
 
 Expression:
-    AssignmentExpression
+    AssignmentExpression    {$$ = $1;}
     | PrimaryExpression
     | EqualityExpression
     ;
@@ -608,12 +630,12 @@ ExpressionOptional:
 /* 12.14 AssignmentOperator
  * http://www.ecma-international.org/ecma-262/6.0/#sec-assignment-operators
  */
- 
+
 AssignmentExpression:
-    ConditionalExpression
+    ConditionalExpression	{$$ = $1;}
     | YieldExpression
     | ArrowFunction
-    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression {$$ = new AssignmentExpression($1, $3);}
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
     ;
 
@@ -636,7 +658,7 @@ AssignmentOperator:
  */
 
 ConditionalExpression:
-    LogicalORExpression
+    LogicalORExpression	{$$ = $1;}
     | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
     ;
 
@@ -645,12 +667,12 @@ ConditionalExpression:
  */
 
 LogicalANDExpression:
-    BitwiseORExpression
+    BitwiseORExpression	{$$ = $1;}
     | LogicalANDExpression LOGICAL_AND BitwiseORExpression
     ;
 
 LogicalORExpression:
-    LogicalANDExpression
+    LogicalANDExpression	{$$ = $1;}
     | LogicalORExpression LOGICAL_OR LogicalANDExpression
     ;
 
@@ -659,17 +681,17 @@ LogicalORExpression:
  */
 
 BitwiseANDExpression:
-    EqualityExpression
+    EqualityExpression {$$ = $1;}
     | BitwiseANDExpression BITWISE_AND EqualityExpression
-    ; 
+    ;
 
 BitwiseXORExpression:
-    BitwiseANDExpression
+    BitwiseANDExpression {$$ = $1;}
     | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
     ;
 
 BitwiseORExpression:
-    BitwiseXORExpression
+    BitwiseXORExpression	{$$ = $1;}
     | BitwiseORExpression BITWISE_OR BitwiseXORExpression
     ;
 
@@ -678,7 +700,7 @@ BitwiseORExpression:
  */
 
 EqualityExpression:
-    RelationalExpression
+    RelationalExpression	{$$ = $1;}
     ;
 
 /* 12.9 Relational Operators
@@ -686,7 +708,7 @@ EqualityExpression:
  */
 
 RelationalExpression:
-    ShiftExpression
+    ShiftExpression	{$$ = $1;}
     /*
     | Expression EQUAL Expression
     | Expression NOT_EQUAL Expression
@@ -694,13 +716,13 @@ RelationalExpression:
     | Expression NOT_EXACTLY_EQUAL Expression
     */
     ;
-    
+
 /* 12.8 Bitwise Shift Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-bitwise-shift-operators
  */
 
 ShiftExpression:
-    AdditiveExpression
+    AdditiveExpression	{$$ = $1;}
 	| ShiftExpression LEFT_SHIFT AdditiveExpression
 	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
 	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
@@ -711,7 +733,7 @@ ShiftExpression:
  */
 
 AdditiveExpression:
-    MultiplicativeExpression
+    MultiplicativeExpression	{$$ = $1;}
     ;
 
 /* 12.6 Multiplicative Operators
@@ -719,15 +741,15 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression
+    UnaryExpression	{ $$ = $1; }
     ;
-    
+
 /* 12.5 Unary Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators
  */
-    
+
 UnaryExpression:
-    PostfixExpression
+    PostfixExpression	{ $$ = $1; }
 	| DELETE UnaryExpression
 	| VOID UnaryExpression
 	| TYPEOF UnaryExpression
@@ -738,13 +760,13 @@ UnaryExpression:
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;
-    
+
 /* 12.4 Postfix Expression
  * http://www.ecma-international.org/ecma-262/6.0/#sec-postifx-expression
  */
 
 PostfixExpression:
-    LeftHandSideExpression
+    LeftHandSideExpression	{ $$ = $1; }
     ;
 
 /* 12.3 Left-Hand-Side Expressions
@@ -752,11 +774,11 @@ PostfixExpression:
  */
 
 MemberExpression:
-    PrimaryExpression
+    PrimaryExpression	{ $$ = $1; }
     ;
 
 NewExpression:
-    MemberExpression
+    MemberExpression	{ $$ = $1; }
     ;
 
 CallExpression:
@@ -780,7 +802,7 @@ ArgumentList:
     ;
 
 LeftHandSideExpression:
-    NewExpression
+    NewExpression	{ $$ = $1; }
     | CallExpression
     ;
 
@@ -792,7 +814,7 @@ PropertyName:
     LiteralPropertyName
     | ComputedPropertyName
     ;
-    
+
 LiteralPropertyName:
     IdentifierName
     | StringLiteral
@@ -832,7 +854,7 @@ CoverInitializedName:
 /* 12.2.5 Array Initialiser
  * http://www.ecma-international.org/ecma-262/6.0/#sec-array-initializer
  */
-    
+
 ElementList:
     Elision AssignmentExpression
     | AssignmentExpression
@@ -856,11 +878,11 @@ SpreadElement:
 /* 12.2.4 Literals
  * http://www.ecma-international.org/ecma-262/6.0/#sec-primary-expression-literals
  */
- 
+
 Literal:
     NullLiteral
     | BooleanLiteral
-    | NumericLiteral
+    | NumericLiteral	{$$=$1;}
     | StringLiteral
     ;
 
@@ -891,58 +913,61 @@ StringLiteral:
 
 PrimaryExpression:
     THIS
-    | IdentifierReference
-    | Literal
+    | IdentifierReference { $$ = $1; }
+    | Literal	{ $$ = $1; }
     | ArrayLiteral
     | ObjectLiteral
     ;
-    
+
 /* 12.1 Identifier
  * http://www.ecma-international.org/ecma-262/6.0/#sec-identifiers
  */
 
 IdentifierReference:
-    IDENTIFIER
+    Identifier                              { $$ = new IdentifierExpression($1); }
     ;
 
 BindingIdentifier:
-    Identifier
+    Identifier                              { $$ = new IdentifierExpression($1); }
     | YIELD
     ;
 
 LabelIdentifier:
-    Identifier
+    Identifier                              { $$ = new IdentifierExpression($1); }
     | YIELD
     ;
-    
+
 Identifier:
-    IdentifierName 
+    IdentifierName                          { $$ = $1; }
     ;
-    
+
 /* 11.8.3 Numeric Literals
  * http://www.ecma-international.org/ecma-262/6.0/#sec-literals-numeric-literals
  */
- 
+
 NumericLiteral:
-    DecimalLiteral
+    DecimalLiteral	                         { $$ = $1; }
     ;
 
 DecimalLiteral:
-    DecimalIntegerLiteral
+    DecimalIntegerLiteral	                   { $$ = $1; }
     ;
 
 DecimalIntegerLiteral:
-    VALUE_INTEGER
+    VALUE_INTEGER	                           { $$ = new IntegerLiteralExpression($1); }
     ;
 
 /* 11.6 Name and Keywords
  * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
  */
-  
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
+ IdentifierName:
+     /*IdentifierStart
+     | IdentifierName IdentifierPart*/
+     IDENTIFIER                              { $$ = $1 }
+     ;
+
+/*
+
 
 IdentifierStart:
     "$"
@@ -954,11 +979,11 @@ IdentifierPart:
     "$"
     | "_"
     | IDENTIFIER
-    ;
+    ;*/
 /* 11.3 Line Terminators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
  */
-     
+
 /*LineTerminator:
     LINE_FEED
     | CARRIAGE_RETURN

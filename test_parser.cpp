@@ -9,11 +9,11 @@
 
 extern FILE *yyin;
 int yyparse(void);
-extern ScriptBody *root;
+extern ScriptBody* root;
 
 int main(int argc, char* argv[])
 {
     yyin = fopen(argv[1], "r");
     yyparse();
-    root->dump(0);
+  //  root->dump(0);
 }

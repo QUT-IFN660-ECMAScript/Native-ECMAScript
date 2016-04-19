@@ -2,6 +2,8 @@ CC ?= $(shell command -v gcc)
 CXX ?= $(shell command -v g++)
 BABEL ?= $(shell command -v babel)
 
+CXX_FLAGS := -x c++ -Wno-write-strings
+
 SHELL := $(shell echo $$SHELL)
 .DEFAULT_GOAL := all
 
@@ -35,7 +37,9 @@ clean: .clean_prod
 test_all: .checkdep .checkbabeldep clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
 test_lexer: .checkdep clean .setup_tests .run_lexer_tests .teardown_tests
 test_parser: .checkdep clean .setup_tests .run_parser_tests .teardown_tests
+simple: .checkdep clean .run_simple
 test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_tests
+generate: .bison .flex
 
 .bison:
 	@bison -d grammar.y
@@ -47,14 +51,14 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 .clean_prod:
 	@rm -f grammar.tab.* && rm -f lex.yy.* && rm -f compiler
 .build_prod: .bison .flex
-	@$(CXX) -x c++ lex.yy.c grammar.tab.c utils.c main.cpp -o compiler -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c main.cpp -o compiler -ll -ly
 	$(info Build Success)
 
 .build_lexer_test: .bison .flex
-	@$(CC) lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c test_lex.c -o tests/test_lex -ll -ly
 	$(info Build Lexer Success)
 .build_parser_test: .bison .flex
-	@$(CC) lex.yy.c grammar.tab.c utils.c test_parser.c -o tests/test_parser -ll -ly
+	@$(CXX) $(CXX_FLAGS) lex.yy.c grammar.tab.c utils.c test_parser.cpp -o tests/test_parser -ll -ly
 	$(info Build Parser Success)
 
 # remove any previous ERROR_LOG and TEMP_ERROR_LOG, create new ERROR_LOG
@@ -100,13 +104,13 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 .run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
-		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 		if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
 			cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
 		)\
 	)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
-		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser < $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
 			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
 				echo $(t) >> $(PARSER_ERROR_LOG); \
 				cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
@@ -115,3 +119,7 @@ test: .checkdep clean .setup_tests .run_lexer_tests .run_parser_tests .teardown_
 			 $(warning $(t) is parseable, consider moving it to /parseable/)\
 		)\
 	)
+
+.run_simple: .build_prod
+	$(info Running Simple Test)
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js
