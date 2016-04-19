@@ -12,3 +12,4 @@ node_modules/
 grammar.output
 grammar.dot
 *.ps
+compiler
