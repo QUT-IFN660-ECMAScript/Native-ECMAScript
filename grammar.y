@@ -963,7 +963,7 @@ DecimalIntegerLiteral:
  IdentifierName:
      /*IdentifierStart
      | IdentifierName IdentifierPart*/
-     IDENTIFIER                              { $$ = $1 }
+     IDENTIFIER                              { $$ = $1; }
      ;
 
 /*
