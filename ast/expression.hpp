@@ -37,7 +37,7 @@ public:
 
 class IdentifierExpression:public Expression{
 private:
-    char *name;
+    char* name;
 public:
     IdentifierExpression(char *name){
         this->name = name;

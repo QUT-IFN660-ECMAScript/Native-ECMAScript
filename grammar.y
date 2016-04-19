@@ -154,7 +154,8 @@ using namespace std;
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier
+%type <sval> Identifier IdentifierName
 
 %%
 
@@ -883,21 +884,21 @@ PrimaryExpression:
  */
 
 IdentifierReference:
-    IDENTIFIER  { $$ = new IdentifierExpression($1); }
+    Identifier                              { $$ = new IdentifierExpression($1); }
     ;
 
 BindingIdentifier:
-    Identifier
+    Identifier                              { $$ = new IdentifierExpression($1); }
     | YIELD
     ;
 
 LabelIdentifier:
-    Identifier
+    Identifier                              { $$ = new IdentifierExpression($1); }
     | YIELD
     ;
 
 Identifier:
-    IdentifierName
+    IdentifierName                          { $$ = $1; }
     ;
 
 /* 11.8.3 Numeric Literals
@@ -905,25 +906,28 @@ Identifier:
  */
 
 NumericLiteral:
-    DecimalLiteral	{$$ = $1; }
+    DecimalLiteral	                         { $$ = $1; }
     ;
 
 DecimalLiteral:
-    DecimalIntegerLiteral	{$$ = $1; }
+    DecimalIntegerLiteral	                   { $$ = $1; }
     ;
 
 DecimalIntegerLiteral:
-    VALUE_INTEGER	{ $$ = new IntegerLiteralExpression($1); }
+    VALUE_INTEGER	                           { $$ = new IntegerLiteralExpression($1); }
     ;
 
 /* 11.6 Name and Keywords
  * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
  */
+ IdentifierName:
+     /*IdentifierStart
+     | IdentifierName IdentifierPart*/
+     IDENTIFIER                              { $$ = $1 }
+     ;
 
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
+/*
+
 
 IdentifierStart:
     "$"
@@ -935,7 +939,7 @@ IdentifierPart:
     "$"
     | "_"
     | IDENTIFIER
-    ;
+    ;*/
 /* 11.3 Line Terminators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
  */
