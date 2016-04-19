@@ -134,6 +134,7 @@ using namespace std;
     int ival;
     double fval;
     char* sval;
+    char* str;
 }
 
 %error-verbose
@@ -154,7 +155,7 @@ using namespace std;
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
 %type <sval> Identifier IdentifierName
 
 %%
@@ -883,7 +884,7 @@ Literal:
     NullLiteral
     | BooleanLiteral
     | NumericLiteral	{$$=$1;}
-    | StringLiteral
+    | StringLiteral		{$$=$1;}
     ;
 
 ArrayLiteral:
@@ -904,7 +905,7 @@ BooleanLiteral:
     ;
 
 StringLiteral:
-    VALUE_STRING
+    VALUE_STRING			 { $$ = new StringLiteralExpression($1); }
     ;
 
 /* 12.2 Primary Expression

@@ -122,4 +122,5 @@ generate: .bison .flex
 
 .run_simple: .build_prod
 	$(info Running Simple Test)
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/string.js
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js
