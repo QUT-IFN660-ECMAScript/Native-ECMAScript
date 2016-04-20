@@ -46,3 +46,15 @@ public:
         label(indent, "IdentifierExpression: %s\n", name);
     }
 };
+
+class StringLiteralExpression: public Expression {
+private:
+	char* val;
+public:
+	StringLiteralExpression(char* val) {
+		this->val = val;
+	};
+	void dump(int indent) {
+		label(indent, "StringLiteralExpression: %s\n", val);
+	}
+};
