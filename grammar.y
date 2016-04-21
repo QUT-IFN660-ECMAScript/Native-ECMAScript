@@ -342,13 +342,16 @@ TryStatement:
     ;
 
 Catch:
-    /* TODO Replace IDENTIFIER with CatchParameter */
-    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    CATCH LEFT_PAREN CatchParameter RIGHT_PAREN Block
     ;
 
 Finally:
     FINALLY Block
     ;
+
+CatchParameter:
+	BindingIdentifier
+	| BindingPattern
 
 /* 13.13 Labelled Statements
  * http://www.ecma-international.org/ecma-262/6.0/#sec-labelled-statements
