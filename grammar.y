@@ -149,7 +149,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -328,7 +328,7 @@ DebuggerStatement:
  */
 
 ThrowStatement:
-    THROW Expression SEMICOLON
+    THROW Expression SEMICOLON { $$ = new ThrowStatement($2); }
     ;
 
 /* 13.13 The try Statement

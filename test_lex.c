@@ -204,6 +204,9 @@ int main(int argc, char* argv[])
             case FINALLY:
                 printf("FINALLY\n");
                 break;
+			case THROW:
+				printf("THROW\n");
+				break;
 
 // line terminators, print nothing
             // case LINE_FEED:

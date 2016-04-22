@@ -125,3 +125,15 @@ public:
 		statement->dump(indent);
 	}
 };
+
+class ThrowStatement: public Statement{
+private:
+	Expression* expr;
+public:
+	ThrowStatement(Expression* expr):
+		expr(expr) {};
+	void dump(int indent){
+		label(indent, "ThrowStatement\n");
+		expr->dump(indent+1);
+	}
+};
