@@ -1,0 +1,21 @@
+TRY
+{
+IDENTIFIER (x)
+=
+VALUE_INTEGER (42)
+;
+}
+CATCH
+(
+IDENTIFIER (e)
+)
+{
+}
+FINALLY
+{
+IDENTIFIER (x)
+=
+VALUE_INTEGER (42)
+;
+}
+END_OF_FILE

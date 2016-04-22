@@ -134,6 +134,7 @@ using namespace std;
     int ival;
     double fval;
     char* sval;
+    char* str;
 }
 
 %error-verbose
@@ -148,13 +149,13 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter
 %type <sval> Identifier IdentifierName
 
 %%
@@ -331,7 +332,7 @@ DebuggerStatement:
  */
 
 ThrowStatement:
-    THROW Expression SEMICOLON
+    THROW Expression SEMICOLON { $$ = new ThrowStatement($2); }
     ;
 
 /* 13.13 The try Statement
@@ -339,19 +340,22 @@ ThrowStatement:
  */
 
 TryStatement:
-    TRY Block Catch
-    | TRY Block Finally
-    | TRY Block Catch Finally
+    TRY Block Catch 	{$$ = new TryStatement($2, $3, NULL);}
+    | TRY Block Finally 	{$$ = new TryStatement($2, NULL, $3);}
+    | TRY Block Catch Finally 	{$$ = new TryStatement($2, $3, $4);}
     ;
 
 Catch:
-    /* TODO Replace IDENTIFIER with CatchParameter */
-    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
+    CATCH LEFT_PAREN CatchParameter RIGHT_PAREN Block {$$ = new CatchStatement($3, $5);}
     ;
 
 Finally:
-    FINALLY Block
+    FINALLY Block 	{$$ = new FinallyStatement($2);}
     ;
+
+CatchParameter:
+	BindingIdentifier	{$$ = $1;}
+	| BindingPattern
 
 /* 13.13 Labelled Statements
  * http://www.ecma-international.org/ecma-262/6.0/#sec-labelled-statements
@@ -551,8 +555,9 @@ BlockStatement:
     ;
 
 Block:
-    LEFT_BRACE StatementListOptional RIGHT_BRACE
-    ;    
+    LEFT_BRACE StatementList RIGHT_BRACE 	{$$ = new BlockStatement($2);}
+    | LEFT_BRACE RIGHT_BRACE 				{$$ = new BlockStatement();}
+    ;
 
 
 StatementList:
@@ -881,7 +886,7 @@ Literal:
     NullLiteral
     | BooleanLiteral
     | NumericLiteral	{$$=$1;}
-    | StringLiteral
+    | StringLiteral		{$$=$1;}
     ;
 
 ArrayLiteral:
@@ -902,7 +907,7 @@ BooleanLiteral:
     ;
 
 StringLiteral:
-    VALUE_STRING
+    VALUE_STRING			 { $$ = new StringLiteralExpression($1); }
     ;
 
 /* 12.2 Primary Expression
