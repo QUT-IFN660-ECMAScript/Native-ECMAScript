@@ -13,3 +13,4 @@ grammar.output
 grammar.dot
 *.ps
 compiler
+*.output
