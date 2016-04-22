@@ -235,6 +235,7 @@ StrictFormalParameters:
 YieldExpression:
     YIELD
     | YIELD AssignmentExpression
+    | YIELD MULTIPLY AssignmentExpression
     ;
 
 /* 14.3 Method Definitions
@@ -266,6 +267,9 @@ ArrowParameters:
 
 CoverParenthesizedExpressionAndArrowParameterList:
     LEFT_PAREN Expression RIGHT_PAREN
+    | LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ELLIPSIS BindingIdentifier RIGHT_PAREN
+    | LEFT_PAREN Expression COMMA ELLIPSIS BindingIdentifier RIGHT_PAREN
     ;
 
 ConciseBody:
@@ -457,11 +461,8 @@ ForDeclaration:
     ;
 
 ForBinding:
-    IDENTIFIER
-    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
     BindingIdentifier
     | BindingPattern
-    */
     ;
 
 /* 13.6 If Statement
@@ -509,7 +510,7 @@ BindingElement:
  */
 
 VariableStatement:
-    VAR VariableDeclarationList
+    VAR VariableDeclarationList SEMICOLON
     ;
 
 VariableDeclarationList:
@@ -527,8 +528,7 @@ VariableDeclaration:
  */
 
 LexicalDeclaration:
-    LetOrConst BindingList
-    // TODO not implemented yet | BindingList
+    LetOrConst BindingList SEMICOLON
     ;
 
 LetOrConst:
@@ -542,9 +542,7 @@ BindingList:
     ;
 
 LexicalBinding:
-    BindingIdentifier
-    | BindingIdentifier Initialiser
-    | BindingPattern
+    BindingIdentifier Initialiser
     | BindingPattern Initialiser
     ;
 
@@ -560,6 +558,7 @@ Block:
     LEFT_BRACE StatementList RIGHT_BRACE 	{$$ = new BlockStatement($2);}
     | LEFT_BRACE RIGHT_BRACE 				{$$ = new BlockStatement();}
     ;
+
 
 StatementList:
     StatementListItem                   { $$ = new vector<Statement*>; $$->push_back($1); }
@@ -621,9 +620,8 @@ BreakableStatement:
  */
 
 Expression:
-    AssignmentExpression    {$$ = $1;}
-    | PrimaryExpression
-    | EqualityExpression
+    AssignmentExpression					 {$$ = $1;}
+    | Expression COMMA AssignmentExpression
     ;
 
 ExpressionOptional:
@@ -782,13 +780,14 @@ MemberExpression:
     ;
 
 NewExpression:
-    MemberExpression	{ $$ = $1; }
+    MemberExpression 				{ $$ = $1; }
+    | NEW NewExpression
     ;
 
 CallExpression:
     SuperCall
-    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
-    | CallExpression FULL_STOP IdentifierName
+    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
+    | CallExpression FULL_STOP Identifier
     ;
 
 SuperCall:
@@ -820,14 +819,14 @@ PropertyName:
     ;
 
 LiteralPropertyName:
-    IdentifierName
+    Identifier
     | StringLiteral
     | NumericLiteral
     ;
 
 Initialiser:
-  ASSIGNMENT AssignmentExpression
-  ;
+    ASSIGNMENT AssignmentExpression
+    ;
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE
@@ -921,6 +920,7 @@ PrimaryExpression:
     | Literal	{ $$ = $1; }
     | ArrayLiteral
     | ObjectLiteral
+    | CoverParenthesizedExpressionAndArrowParameterList
     ;
 
 /* 12.1 Identifier
@@ -928,7 +928,7 @@ PrimaryExpression:
  */
 
 IdentifierReference:
-    Identifier                              { $$ = new IdentifierExpression($1); }
+    Identifier								 { $$ = new IdentifierExpression($1); }
     ;
 
 BindingIdentifier:
@@ -942,7 +942,7 @@ LabelIdentifier:
     ;
 
 Identifier:
-    IdentifierName                          { $$ = $1; }
+    IdentifierName 							{$$ = $1; }						
     ;
 
 /* 11.8.3 Numeric Literals
@@ -960,6 +960,7 @@ DecimalLiteral:
 DecimalIntegerLiteral:
     VALUE_INTEGER	                           { $$ = new IntegerLiteralExpression($1); }
     ;
+
 
 /* 11.6 Name and Keywords
  * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
@@ -984,6 +985,7 @@ IdentifierPart:
     | "_"
     | IDENTIFIER
     ;*/
+
 /* 11.3 Line Terminators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
  */
