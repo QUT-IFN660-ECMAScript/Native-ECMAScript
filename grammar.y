@@ -149,13 +149,13 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter
 %type <sval> Identifier IdentifierName
 
 %%
@@ -336,21 +336,21 @@ ThrowStatement:
  */
 
 TryStatement:
-    TRY Block Catch
-    | TRY Block Finally
-    | TRY Block Catch Finally
+    TRY Block Catch 	{$$ = new TryStatement($2, $3, NULL);}
+    | TRY Block Finally 	{$$ = new TryStatement($2, NULL, $3);}
+    | TRY Block Catch Finally 	{$$ = new TryStatement($2, $3, $4);}
     ;
 
 Catch:
-    CATCH LEFT_PAREN CatchParameter RIGHT_PAREN Block
+    CATCH LEFT_PAREN CatchParameter RIGHT_PAREN Block {$$ = new CatchStatement($3, $5);}
     ;
 
 Finally:
-    FINALLY Block
+    FINALLY Block 	{$$ = new FinallyStatement($2);}
     ;
 
 CatchParameter:
-	BindingIdentifier
+	BindingIdentifier	{$$ = $1;}
 	| BindingPattern
 
 /* 13.13 Labelled Statements
@@ -557,8 +557,8 @@ BlockStatement:
     ;
 
 Block:
-    LEFT_BRACE StatementList RIGHT_BRACE
-    | LEFT_BRACE RIGHT_BRACE
+    LEFT_BRACE StatementList RIGHT_BRACE 	{$$ = new BlockStatement($2);}
+    | LEFT_BRACE RIGHT_BRACE 				{$$ = new BlockStatement();}
     ;
 
 StatementList:
