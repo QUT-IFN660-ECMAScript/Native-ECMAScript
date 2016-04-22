@@ -1,41 +1,28 @@
+#pragma once
+#include <cstdarg>
+#include <cstdio>
+#include <iostream>
 //
 // Created by Harry Scells on 18/04/2016.
 //
-
-#include <string>
+using namespace std;
 
 class Node {
-//public:
-    //Node(){}
-    //virtual
-};
-
-class Expression:public Node{
-};
-
-class AssignmentExpression:public Expression{
-private:
-    Expression *lhs, *rhs;
-public: AssignmentExpression(Expression *lhs, Expression *rhs){
-        this->lhs = lhs;
-        this->rhs = rhs;
-    }
-};
-
-class IntegerLiteralExpression:public Expression{
-private:
-    int value;
 public:
-    IntegerLiteralExpression(int value){
-        this->value = value;
-    }
-};
-
-class IndentifierExpression:public Expression{
-private:
-    std::string *name;
-public:
-    IndentifierExpression(std::string *name){
-        this->name = name;
-    }
+	virtual void dump(int indent)=0;
+	void indent(int N) {
+		for (int i = 0; i < N; i++)
+			printf("    ");
+	}
+	void label(int i, char const* fmt, ...) {
+		indent(i);
+		va_list args;
+		va_start(args, fmt);
+		vprintf(fmt, args);
+		va_end(args);
+	}
+	void dump(int i, char const* name) {
+		label(i, "%s:\n", name);
+		dump(i + 1);
+	}
 };
