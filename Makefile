@@ -1,6 +1,6 @@
 CC ?= $(shell command -v gcc)
 CXX ?= $(shell command -v g++)
-BABEL ?= $(shell command -v babel)
+JSINTERP ?= $(shell command -v node)
 
 CXX_FLAGS := -x c++ -Wno-write-strings
 
@@ -24,17 +24,17 @@ endif
 ifndef CXX
 	$(error g++ not installed)
 endif
-ifndef BABEL
+ifndef JSINTERP
 	$(warning babel not installed, test_all will not run)
 endif
 .checkbabeldep:
-ifndef BABEL
-	$(error)
+ifndef JSINTERP
+	$(error babel not installed, test_all will not run)
 endif
 
 all: .checkdep clean .build_prod
 clean: .clean_prod
-test_all: .checkdep .checkbabeldep clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
+test_all: .checkdep .checkbabeldep clean .setup_tests .run_js_tests .run_lexer_tests .run_parser_tests .teardown_tests
 test_lexer: .checkdep clean .setup_tests .run_lexer_tests .teardown_tests
 test_parser: .checkdep clean .setup_tests .run_parser_tests .teardown_tests
 simple: .checkdep clean .run_simple
@@ -80,9 +80,9 @@ generate: .bison .flex
 	)
 
 # run babel transpiler on js files, if js file is invalid, it writes all stderr to ERROR_LOG
-.run_babel_tests:
+.run_js_tests:
 	$(foreach t, $(TESTS), \
-		$(shell $(BABEL) $(t) >> /dev/null 2>>$(ERROR_LOG);))
+		$(shell $(JSINTERP) $(t) >> /dev/null 2>>$(ERROR_LOG);))
 		$(if $(shell if [ -s "./$(ERROR_LOG)" ]; then echo not empty; fi),\
 		 	$(error $(shell cat $(ERROR_LOG))),\
 		  $(info All JS files are valid))

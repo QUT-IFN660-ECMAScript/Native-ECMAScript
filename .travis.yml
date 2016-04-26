@@ -22,6 +22,7 @@ addons:
       - libtool
       - flex
 before_script:
+  - node --version
   - npm install
   - export BISON=./node_modules/.bin/babel
   - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
