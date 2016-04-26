@@ -9,6 +9,7 @@ SHELL := $(shell echo $$SHELL)
 
 TESTS_PATH := test
 LEXER_ASSERTS_PATH := lexer-assert
+PARSER_ASSERTS_PATH := parser-assert
 
 TESTS_ROOT := tests
 TESTS := $(wildcard $(TESTS_ROOT)/**/$(TESTS_PATH)/*.js)
@@ -99,24 +100,37 @@ generate: .bison .flex
 		)\
 	)
 
-# test parseable tests, log any error to ERROR_LOG
+# test parseable tests, and create ast dump, log any error to ERROR_LOG
+# if ast dump test is empty, show warning to indicate tests are not present
 # test unparseable tests, if tests are parseable, show warning to indicate tests are parseable
 .run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
-		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
-		if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
-			cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
+		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(PARSER_ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
+		$(if \
+			$(shell \
+				if [ -s "./$(ASSERT_FILE)" ]; then echo not empty; fi;\
+			),\
+			$(shell \
+				diff $(ASSERT_FILE) <(./tests/test_parser -d $(t))>> $(TEMP_ERROR_LOG) 2>&1;\
+					if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
+						cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; \
+						rm -f $(TEMP_ERROR_LOG);\
+			),\
+			$(warning $(ASSERT_FILE) is empty, write a test!)\
 		)\
 	)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
-		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
-			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
-				echo $(t) >> $(PARSER_ERROR_LOG); \
-				cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
-				rm -f $(TEMP_ERROR_LOG);\
+		$(if \
+			$(shell \
+				touch $(TEMP_ERROR_LOG);\
+				./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+				if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
+					echo $(t) >> $(PARSER_ERROR_LOG); \
+					cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
+					rm -f $(TEMP_ERROR_LOG);\
 			),,\
-			 $(warning $(t) is parseable, consider moving it to /parseable/)\
+			$(warning $(t) is parseable, consider moving it to /parseable/, and write a test!)\
 		)\
 	)
 
