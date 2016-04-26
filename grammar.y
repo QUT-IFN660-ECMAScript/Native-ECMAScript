@@ -495,56 +495,59 @@ EmptyStatement:
  * http://www.ecma-international.org/ecma-262/6.0/#sec-destructuring-binding-patterns
  */
 
-
 BindingPattern:
-    ObjectBindingPattern
-	| ArrayBindingPattern
+	ObjectBindingPattern
+    | ArrayBindingPattern
+	;
+
+ObjectBindingPattern:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
+    ;
+    
+ArrayBindingPattern:
+    LEFT_BRACKET ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA ElisionOptional BindingRestElementOptional RIGHT_BRACKET
     ;
 
-ObjectBindingPattern :
-	LEFT_BRACE RIGHT_BRACE
-	| LEFT_BRACE BindingPropertyList RIGHT_BRACE
-	| LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
-	;
-
-ArrayBindingPattern :
-	LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
-	| LEFT_BRACKET BindingElementList RIGHT_BRACKET
-	| LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
-	;
-
-BindingPropertyList :
-	BindingProperty
-	| BindingPropertyList COMMA BindingProperty
-	;
-
-BindingElementList :
-	BindingElisionElement
-	| BindingElementList COMMA BindingElisionElement
-	;
+BindingPropertyList:
+    BindingProperty
+    | BindingPropertyList COMMA BindingProperty
+    ;
+    
+BindingElementList:
+    BindingElisionElement
+    | BindingElementList COMMA BindingElisionElement
+    ;
 
 BindingElisionElement:
-	Elision BindingElement
-	;
-
-BindingProperty :
-	SingleNameBinding
-	| PropertyName COLON BindingElement
-	;
-
-
-BindingElement:
-    BindingPattern
-    | BindingPattern Initialiser
+    ElisionOptional BindingElement
     ;
 
-SingleNameBinding :
-	BindingIdentifier Initialiser
-	;
+BindingProperty:
+    SingleNameBinding
+    | PropertyName COLON BindingElement
+    ;
+
+BindingElement:
+    SingleNameBinding
+    | BindingPattern InitialiserOptional
+    ;
+
+SingleNameBinding:
+    BindingIdentifier InitialiserOptional
+    ;
 
 BindingRestElement:
-	ELLIPSIS BindingIdentifier
-	;
+    ELLIPSIS BindingIdentifier
+    ;
+    
+BindingRestElementOptional:
+    BindingRestElement
+    |
+    ;
 
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
@@ -562,7 +565,6 @@ VariableDeclarationList:
 VariableDeclaration:
     BindingIdentifier
     | BindingIdentifier Initialiser
-	| BindingPattern Initialiser
     ;
 
 /* 13.3.1 let and const Declaration
@@ -745,7 +747,7 @@ BitwiseORExpression:
 
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
-	| EqualityExpression EQUAL RelationalExpression
+    | EqualityExpression EQUAL RelationalExpression
 	| EqualityExpression NOT_EQUAL RelationalExpression
 	| EqualityExpression EXACTLY_EQUAL RelationalExpression
 	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
@@ -788,8 +790,6 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression	{$$ = $1;}
-	| AdditiveExpression ADD MultiplicativeExpression
-	| AdditiveExpression SUBTRACT MultiplicativeExpression
     ;
 
 /* 12.6 Multiplicative Operators
@@ -890,6 +890,11 @@ LiteralPropertyName:
 Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
+    
+InitialiserOptional:
+    Initialiser
+    |
+    ;
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE
@@ -935,6 +940,11 @@ ElementList:
 Elision:
     COMMA
     | Elision COMMA
+    ;
+    
+ElisionOptional:
+    Elision
+    |
     ;
 
 SpreadElement:
