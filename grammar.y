@@ -191,13 +191,13 @@ ClassDeclaration:
     CLASS BindingIdentifier ClassTail
     | CLASS ClassTail
     ;
-/*
+
 ClassExpression:
-     CLASS BindingIdentifier ClassTail
+    CLASS BindingIdentifier ClassTail
      ;
-*/
+
 ClassTail:
-    ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+    ClassHeritage LEFT_BRACE ClassBody RIGHT_BRACE
     ;
 
 ClassHeritage:
@@ -288,11 +288,11 @@ FunctionDeclaration:
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
-/*
+
 FunctionExpression:
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
-*/
+
 
 FormalParameters:
     FormalParameterList
@@ -990,7 +990,23 @@ PrimaryExpression:
     | Literal	{ $$ = $1; }
     | ArrayLiteral
     | ObjectLiteral     {$$ = $1;}
+    | FunctionExpression
+    | ClassExpression
+    | GeneratorExpression
+//    | RegularExpressionLiteral
+//    | TemplateLiteral
     | CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+/* A.4 Functions and Classes
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-functions_and_classes
+ */
+GeneratorExpression :
+    FUNCTION MULTIPLY BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
+GeneratorBody:
+    FunctionBody
     ;
 
 /* 12.1 Identifier
