@@ -495,15 +495,56 @@ EmptyStatement:
  * http://www.ecma-international.org/ecma-262/6.0/#sec-destructuring-binding-patterns
  */
 
+
 BindingPattern:
-    "todo"
-    /* to do */
+    ObjectBindingPattern
+	| ArrayBindingPattern
     ;
+
+ObjectBindingPattern :
+	LEFT_BRACE RIGHT_BRACE
+	| LEFT_BRACE BindingPropertyList RIGHT_BRACE
+	| LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
+	;
+
+ArrayBindingPattern :
+	LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
+	| LEFT_BRACKET BindingElementList RIGHT_BRACKET
+	| LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
+	;
+
+BindingPropertyList :
+	BindingProperty
+	| BindingPropertyList COMMA BindingProperty
+	;
+
+BindingElementList :
+	BindingElisionElement
+	| BindingElementList COMMA BindingElisionElement
+	;
+
+BindingElisionElement:
+	Elision BindingElement
+	;
+
+BindingProperty :
+	SingleNameBinding
+	| PropertyName COLON BindingElement
+	;
+
 
 BindingElement:
     BindingPattern
     | BindingPattern Initialiser
     ;
+
+SingleNameBinding :
+	BindingIdentifier Initialiser
+	;
+
+BindingRestElement:
+	ELLIPSIS BindingIdentifier
+	;
 
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
@@ -521,6 +562,7 @@ VariableDeclarationList:
 VariableDeclaration:
     BindingIdentifier
     | BindingIdentifier Initialiser
+	| BindingPattern Initialiser
     ;
 
 /* 13.3.1 let and const Declaration
@@ -703,6 +745,10 @@ BitwiseORExpression:
 
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
+	| EqualityExpression EQUAL RelationalExpression
+	| EqualityExpression NOT_EQUAL RelationalExpression
+	| EqualityExpression EXACTLY_EQUAL RelationalExpression
+	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
     ;
 
 /* 12.9 Relational Operators
@@ -711,6 +757,12 @@ EqualityExpression:
 
 RelationalExpression:
     ShiftExpression	{$$ = $1;}
+	| RelationalExpression LESS_THAN ShiftExpression
+	| RelationalExpression GREATER_THAN ShiftExpression
+	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression INSTANCEOF ShiftExpression
+	| LEFT_BRACKET ADD IN RIGHT_BRACKET RelationalExpression IN ShiftExpression
     /*
     | Expression EQUAL Expression
     | Expression NOT_EQUAL Expression
@@ -736,6 +788,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression	{$$ = $1;}
+	| AdditiveExpression ADD MultiplicativeExpression
+	| AdditiveExpression SUBTRACT MultiplicativeExpression
     ;
 
 /* 12.6 Multiplicative Operators
