@@ -117,7 +117,7 @@ generate: .bison .flex
 						cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; \
 						rm -f $(TEMP_ERROR_LOG);\
 			),\
-			$(warning $(ASSERT_FILE) is empty, write a test!)\
+			$(warning $(ASSERT_FILE) is missing, write a test!)\
 		)\
 	)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
