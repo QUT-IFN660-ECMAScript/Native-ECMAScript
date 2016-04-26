@@ -507,9 +507,9 @@ ObjectBindingPattern:
     ;
     
 ArrayBindingPattern:
-    LEFT_BRACKET ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
     | LEFT_BRACKET BindingElementList RIGHT_BRACKET
-    | LEFT_BRACKET BindingElementList COMMA ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
     ;
 
 BindingPropertyList:
@@ -533,11 +533,11 @@ BindingProperty:
 
 BindingElement:
     SingleNameBinding
-    | BindingPattern InitialiserOptional
+    | BindingPattern Initialiser
     ;
 
 SingleNameBinding:
-    BindingIdentifier InitialiserOptional
+    BindingIdentifier Initialiser
     ;
 
 BindingRestElement:
