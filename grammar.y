@@ -496,13 +496,57 @@ EmptyStatement:
  */
 
 BindingPattern:
-    "todo"
-    /* to do */
+	ObjectBindingPattern
+    | ArrayBindingPattern
+	;
+
+ObjectBindingPattern:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
+    ;
+    
+ArrayBindingPattern:
+    LEFT_BRACKET ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    ;
+
+BindingPropertyList:
+    BindingProperty
+    | BindingPropertyList COMMA BindingProperty
+    ;
+    
+BindingElementList:
+    BindingElisionElement
+    | BindingElementList COMMA BindingElisionElement
+    ;
+
+BindingElisionElement:
+    ElisionOptional BindingElement
+    ;
+
+BindingProperty:
+    SingleNameBinding
+    | PropertyName COLON BindingElement
     ;
 
 BindingElement:
-    BindingPattern
-    | BindingPattern Initialiser
+    SingleNameBinding
+    | BindingPattern InitialiserOptional
+    ;
+
+SingleNameBinding:
+    BindingIdentifier InitialiserOptional
+    ;
+
+BindingRestElement:
+    ELLIPSIS BindingIdentifier
+    ;
+    
+BindingRestElementOptional:
+    BindingRestElement
+    |
     ;
 
 /* 13.3.2 Variable Statement
@@ -827,6 +871,11 @@ LiteralPropertyName:
 Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
+    
+InitialiserOptional:
+    Initialiser
+    |
+    ;
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE
@@ -872,6 +921,11 @@ ElementList:
 Elision:
     COMMA
     | Elision COMMA
+    ;
+    
+ElisionOptional:
+    Elision
+    |
     ;
 
 SpreadElement:
