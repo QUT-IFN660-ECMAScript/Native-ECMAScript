@@ -509,9 +509,9 @@ ObjectBindingPattern:
     ;
     
 ArrayBindingPattern:
-    LEFT_BRACKET ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
     | LEFT_BRACKET BindingElementList RIGHT_BRACKET
-    | LEFT_BRACKET BindingElementList COMMA ElisionOptional BindingRestElementOptional RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
     ;
 
 BindingPropertyList:
@@ -525,7 +525,7 @@ BindingElementList:
     ;
 
 BindingElisionElement:
-    ElisionOptional BindingElement
+    Elision BindingElement
     ;
 
 BindingProperty:
@@ -535,22 +535,22 @@ BindingProperty:
 
 BindingElement:
     SingleNameBinding
-    | BindingPattern InitialiserOptional
+    | BindingPattern Initialiser
     ;
 
 SingleNameBinding:
-    BindingIdentifier InitialiserOptional
+    BindingIdentifier Initialiser
     ;
 
 BindingRestElement:
     ELLIPSIS BindingIdentifier
     ;
     
-BindingRestElementOptional:
+/*BindingRestElementOptional:
     BindingRestElement
     |
     ;
-
+*/
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
  */
@@ -749,6 +749,10 @@ BitwiseORExpression:
 
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
+    | EqualityExpression EQUAL RelationalExpression
+	| EqualityExpression NOT_EQUAL RelationalExpression
+	| EqualityExpression EXACTLY_EQUAL RelationalExpression
+	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
     ;
 
 /* 12.9 Relational Operators
@@ -757,6 +761,12 @@ EqualityExpression:
 
 RelationalExpression:
     ShiftExpression	{$$ = $1;}
+	| RelationalExpression LESS_THAN ShiftExpression
+	| RelationalExpression GREATER_THAN ShiftExpression
+	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression INSTANCEOF ShiftExpression
+	| LEFT_BRACKET ADD IN RIGHT_BRACKET RelationalExpression IN ShiftExpression
     /*
     | Expression EQUAL Expression
     | Expression NOT_EQUAL Expression
@@ -884,10 +894,7 @@ Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
     
-InitialiserOptional:
-    Initialiser
-    |
-    ;
+
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE 									{$$ = new ObjectLiteralExpression();}
@@ -935,10 +942,7 @@ Elision:
     | Elision COMMA
     ;
     
-ElisionOptional:
-    Elision
-    |
-    ;
+
 
 SpreadElement:
     ELLIPSIS AssignmentExpression
