@@ -130,6 +130,7 @@ using namespace std;
     vector<Statement* >* statementList;
     Expression* expression;
     Statement* statement;
+    vector<Expression*>* propertyDefinitionList;
 
     int ival;
     double fval;
@@ -155,8 +156,9 @@ using namespace std;
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral
 %type <sval> Identifier IdentifierName
+%type <propertyDefinitionList> PropertyDefinitionList
 
 %%
 
@@ -877,14 +879,15 @@ LeftHandSideExpression:
  */
 
 PropertyName:
-    LiteralPropertyName
-    | ComputedPropertyName
+    LiteralPropertyName 	{$$ = $1;}
+    | ComputedPropertyName 	{$$ = $1;}
     ;
 
 LiteralPropertyName:
-    Identifier
-    | StringLiteral
-    | NumericLiteral
+    Identifier 			{IdentifierExpression* idExp = new IdentifierExpression($1); 
+    						$$ = new LiteralPropertyNameExpression(idExp);}
+    | StringLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
+    | NumericLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
     ;
 
 Initialiser:
@@ -897,25 +900,25 @@ InitialiserOptional:
     ;
 
 ObjectLiteral:
-	LEFT_BRACE RIGHT_BRACE
-	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE
-	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE
+	LEFT_BRACE RIGHT_BRACE 									{$$ = new ObjectLiteralExpression();}
+	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE 		{$$ = new ObjectLiteralExpression($2);}
+	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE 	{$$ = new ObjectLiteralExpression($2);}
 	;
 
 PropertyDefinitionList:
-	PropertyDefinition
-	| PropertyDefinitionList COMMA PropertyDefinition
+	PropertyDefinition 	{$$ = new vector<Expression*>; $$->push_back($1);}
+	| PropertyDefinitionList COMMA PropertyDefinition 	{$$ = $1; $$->push_back($3);}
 	;
 
 PropertyDefinition:
-	IdentifierReference
-	| CoverInitializedName
-	| PropertyName COLON AssignmentExpression
-	| MethodDefinition
+	IdentifierReference 	{$$ = new PropertyDefinitionExpression($1, NULL);}
+	| CoverInitializedName /*Cannot find real code of this use case*/
+	| PropertyName COLON AssignmentExpression 	{$$ = new PropertyDefinitionExpression($1, $3);}
+	| MethodDefinition /*Method Definition has not been done*/
 	;
 
 ComputedPropertyName:
-	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET
+	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET 	{$$ = new ComputedPropertyNameExpression($2);}
 	;
 
 CoverInitializedName:
@@ -992,7 +995,7 @@ PrimaryExpression:
     | IdentifierReference { $$ = $1; }
     | Literal	{ $$ = $1; }
     | ArrayLiteral
-    | ObjectLiteral
+    | ObjectLiteral     {$$ = $1;}
     | CoverParenthesizedExpressionAndArrowParameterList
     ;
 
