@@ -58,3 +58,78 @@ public:
 		label(indent, "StringLiteralExpression: %s\n", val);
 	}
 };
+
+class ObjectLiteralExpression : public Expression {
+private:
+    vector<Expression*> *propertyDefinitionList;
+public:
+    //No parameter constructor
+    ObjectLiteralExpression(){};
+    ObjectLiteralExpression(vector<Expression*> *propertyDefinitionList) {
+        this->propertyDefinitionList = propertyDefinitionList;
+    };
+
+    void dump(int indent) {
+        label(indent, "ObjectLiteralExpression\n");
+
+        if(propertyDefinitionList != NULL) {
+            for (vector<Expression*>::iterator iter = propertyDefinitionList->begin(); iter != propertyDefinitionList->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+    }
+};
+
+class PropertyDefinitionExpression : public Expression {
+private:
+    Expression *key;
+    Expression *value;
+
+public:
+    PropertyDefinitionExpression(Expression *key, Expression *value) {
+        this->key = key;
+        this->value = value;
+    };
+
+    void dump(int indent) {
+        label(indent, "PropertyDefinitionExpression\n");
+        indent++;
+        label(indent, "Key\n");
+        key->dump(indent + 1);
+        label(indent, "Value\n");
+        if(value != NULL) {
+            value->dump(indent + 1);
+        } else {
+            label(indent + 1, "[UNDEFINED]\n");
+        }
+    }
+};
+
+class LiteralPropertyNameExpression : public Expression {
+private:
+    Expression *literalExpression;
+public:
+    LiteralPropertyNameExpression(Expression *literalExpression) {
+        this->literalExpression = literalExpression;
+    };
+
+    void dump (int indent) {
+        label(indent, "LiteralPropertyNameExpression\n");
+        indent++;
+        literalExpression->dump(indent);
+    }
+};
+
+class ComputedPropertyNameExpression : public Expression {
+private:
+    Expression *computedExpression;
+public:
+    ComputedPropertyNameExpression (Expression *computedExpression) {
+        this->computedExpression = computedExpression;
+    };
+
+    void dump(int indent) {
+        label(indent, "ComputedPropertyNameExpression\n");
+        indent++;
+        computedExpression->dump(indent);
+    }
+};
