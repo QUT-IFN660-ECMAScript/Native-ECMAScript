@@ -1,0 +1,12 @@
+IF
+(
+IDENTIFIER (x)
+)
+IDENTIFIER (y)
+=
+true
+ELSE
+IDENTIFIER (y)
+=
+false
+END_OF_FILE
