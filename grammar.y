@@ -744,7 +744,16 @@ AdditiveExpression:
 
 MultiplicativeExpression:
     UnaryExpression	{ $$ = $1; }
+	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
     ;
+
+/* 12.6 Multiplicative Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-multiplicative-operators
+ */
+
+MultiplicativeOperator:
+	MULTIPLY DIVIDE MODULO
+	;
 
 /* 12.5 Unary Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators
