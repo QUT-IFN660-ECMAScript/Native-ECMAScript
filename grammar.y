@@ -139,7 +139,7 @@ using namespace std;
 
 %error-verbose
 
-%right ELSE
+%nonassoc ELSE
 
 %nonassoc EQUAL
 %nonassoc NOT_EQUAL

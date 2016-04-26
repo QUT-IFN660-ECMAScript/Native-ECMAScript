@@ -1,0 +1,20 @@
+IF
+(
+IDENTIFIER (x)
+)
+IDENTIFIER (y)
+=
+true
+;
+ELSE
+{
+IDENTIFIER (y)
+=
+false
+;
+IDENTIFIER (x)
+=
+false
+;
+}
+END_OF_FILE
