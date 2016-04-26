@@ -525,7 +525,7 @@ BindingElementList:
     ;
 
 BindingElisionElement:
-    ElisionOptional BindingElement
+    Elision BindingElement
     ;
 
 BindingProperty:
@@ -546,11 +546,11 @@ BindingRestElement:
     ELLIPSIS BindingIdentifier
     ;
     
-BindingRestElementOptional:
+/*BindingRestElementOptional:
     BindingRestElement
     |
     ;
-
+*/
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
  */
@@ -894,10 +894,7 @@ Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
     
-InitialiserOptional:
-    Initialiser
-    |
-    ;
+
 
 ObjectLiteral:
 	LEFT_BRACE RIGHT_BRACE 									{$$ = new ObjectLiteralExpression();}
@@ -945,10 +942,7 @@ Elision:
     | Elision COMMA
     ;
     
-ElisionOptional:
-    Elision
-    |
-    ;
+
 
 SpreadElement:
     ELLIPSIS AssignmentExpression
