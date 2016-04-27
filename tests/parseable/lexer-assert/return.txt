@@ -1,0 +1,6 @@
+RETURN
+;
+RETURN
+VALUE_STRING ("return test")
+;
+END_OF_FILE

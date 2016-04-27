@@ -1,0 +1,5 @@
+ScriptBody
+    ReturnStatement
+        [Empty]
+    ReturnStatement
+        StringLiteralExpression: "return test"
