@@ -150,7 +150,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -416,8 +416,8 @@ WithStatement:
  */
 
 BreakStatement:
-    BREAK SEMICOLON
-    | BREAK LabelIdentifier SEMICOLON
+    BREAK SEMICOLON                         { $$ = new BreakStatement(); }
+    | BREAK LabelIdentifier SEMICOLON       { $$ = new BreakStatement($2); }
     ;
 
 /* 13.8 The continue Statement
@@ -434,8 +434,8 @@ ContinueStatement:
  */
 
 ReturnStatement:
-    RETURN SEMICOLON
-    | RETURN Expression SEMICOLON
+    RETURN SEMICOLON                        { $$ = new ReturnStatement(); }
+    | RETURN Expression SEMICOLON           { $$ = new ReturnStatement($2); }
     ;
 
 /* 13.7 Iteration Statement
