@@ -137,3 +137,48 @@ public:
 		expr->dump(indent+1);
 	}
 };
+
+class ReturnStatement: public Statement {
+private:
+	Expression* expr;
+
+public:
+	ReturnStatement(){
+		this->expr = NULL;
+	}
+	ReturnStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "ReturnStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+};
+
+
+class BreakStatement: public Statement {
+private:
+	Expression* expr;
+
+public:
+	BreakStatement(){
+		this->expr = NULL;
+	}
+	BreakStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "BreakStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+};
