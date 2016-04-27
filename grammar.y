@@ -1,10 +1,19 @@
 %{
-#include <stdio.h>
+#include <cstdio>
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "lex.yy.h"
+
+
+int yylex();
+
+ScriptBody *root;
+
+using namespace std;
+
 %}
 
-%token END_OF_FILE
+%token END_OF_FILE 0
 %token BREAK
 %token CASE
 %token CATCH
@@ -106,16 +115,27 @@
 %token SEMICOLON                          // ;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
-%token VALUE_INTEGER
-%token VALUE_FLOAT
-%token VALUE_STRING
-%token IDENTIFIER
+%token <ival> VALUE_INTEGER
+%token <fval> VALUE_FLOAT
+%token <sval> VALUE_STRING
+%token <sval> IDENTIFIER
+%token LINE_FEED
+%token CARRIAGE_RETURN
+%token LINE_SEPARATOR
+%token PARAGRAPH_SEPARATOR
 
 
 %union {
+    ScriptBody* scriptBody;
+    vector<Statement* >* statementList;
+    Expression* expression;
+    Statement* statement;
+    vector<Expression*>* propertyDefinitionList;
+
     int ival;
     double fval;
     char* sval;
+    char* str;
 }
 
 %error-verbose
@@ -128,120 +148,300 @@
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
 
+%type <scriptBody> ScriptBody
+%type <statementList> StatementList
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
+%type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
+  Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
+  PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
+  ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+  ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral
+%type <sval> Identifier IdentifierName
+%type <propertyDefinitionList> PropertyDefinitionList
+
 %%
 
+/* 15.1 Scripts
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-scripts
+ */
+
 Script:
-    ScriptBody
+    ScriptBody                                  { root = $1; }
     ;
 
 ScriptBody:
+    StatementList                               { $$ = new ScriptBody($1);  }
+    ;
+
+/* 15.2.3 Exports
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-exports
+ */
+
+ /*ExportDeclaration:
+    EXPORT VariableStatement
+    ;*/
+
+/* 14.5 Class Declarations
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-class-declarations
+ */
+
+
+ClassDeclaration:
+    CLASS BindingIdentifier ClassTail
+    | CLASS ClassTail
+    ;
+
+ClassExpression:
+    CLASS BindingIdentifier ClassTail
+     ;
+
+ClassTail:
+    ClassHeritage LEFT_BRACE ClassBody RIGHT_BRACE
+    ;
+
+ClassHeritage:
+    EXTENDS LeftHandSideExpression
+    ;
+
+ClassBody:
+    ClassElementList
+    ;
+
+ClassElementList:
+    ClassElement
+    | ClassElementList ClassElement
+    ;
+
+ClassElement:
+    MethodDefinition
+    | "static" MethodDefinition
+    | SEMICOLON
+    ;
+
+StrictFormalParameters:
+    FormalParameters
+    ;
+
+
+/* Required for ArrowFormalParameters
+StrictFormalParameters:
+    FormalParameters
+    ;
+*/
+
+/* 14.4 Generator Function Definitions
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-generator-function-definitions
+ */
+
+YieldExpression:
+    YIELD
+    | YIELD AssignmentExpression
+    | YIELD MULTIPLY AssignmentExpression
+    ;
+
+/* 14.3 Method Definitions
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-method-definitions
+ */
+
+MethodDefinition:
+    PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
+ /* | GeneratorMethod */
+    | "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+PropertySetParameterList:
+    FormalParameter
+    ;
+
+/* 14.2 Arrow Function Definitions
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-arrow-function-definitions
+ */
+
+ArrowFunction:
+    ArrowParameters ARROW_FUNCTION ConciseBody
+    ;
+
+ArrowParameters:
+    CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+CoverParenthesizedExpressionAndArrowParameterList:
+    LEFT_PAREN Expression RIGHT_PAREN
+    | LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ELLIPSIS BindingIdentifier RIGHT_PAREN
+    | LEFT_PAREN Expression COMMA ELLIPSIS BindingIdentifier RIGHT_PAREN
+    ;
+
+ConciseBody:
+    AssignmentExpression
+    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
+    ;
+
+/* 14.1 Function Definitions
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-function-definitions
+ */
+
+FunctionDeclaration:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+
+FunctionExpression:
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    ;
+
+
+FormalParameters:
+    FormalParameterList
+    ;
+
+FormalParameterList:
+    /* incomplete */
+    FormalsList
+    | FormalsList COMMA FormalParameter
+    ;
+
+FormalsList:
+    FormalParameter
+    | FormalsList COMMA FormalParameter
+    ;
+
+FormalParameter:
+    BindingElement
+    ;
+
+FunctionBody:
+    FunctionStatementList
+    ;
+
+FunctionStatementList:
     StatementList
     ;
 
-StatementList:
-    StatementListItem
-    | StatementList StatementListItem
-    ;
-    
-StatementListOptional:
-    StatementList
-    | 
+/* 13.16 The debugger Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-debugger-statement
+ */
+
+DebuggerStatement:
+    DEBUGGER SEMICOLON
     ;
 
-StatementListItem:
+/* 13.14 The throw Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-throw-statement
+ */
+
+ThrowStatement:
+    THROW Expression SEMICOLON { $$ = new ThrowStatement($2); }
+    ;
+
+/* 13.13 The try Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-try-statement
+ */
+
+TryStatement:
+    TRY Block Catch 	{$$ = new TryStatement($2, $3, NULL);}
+    | TRY Block Finally 	{$$ = new TryStatement($2, NULL, $3);}
+    | TRY Block Catch Finally 	{$$ = new TryStatement($2, $3, $4);}
+    ;
+
+Catch:
+    CATCH LEFT_PAREN CatchParameter RIGHT_PAREN Block {$$ = new CatchStatement($3, $5);}
+    ;
+
+Finally:
+    FINALLY Block 	{$$ = new FinallyStatement($2);}
+    ;
+
+CatchParameter:
+	BindingIdentifier	{$$ = $1;}
+	| BindingPattern
+
+/* 13.13 Labelled Statements
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-labelled-statements
+ */
+
+LabelledStatement:
+    LabelIdentifier COLON LabelledItem
+    ;
+
+LabelledItem:
     Statement
-    | Declaration
+    | FunctionDeclaration
     ;
 
-Declaration:
-    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
-    HoistableDeclaration
-	| ClassDeclaration
- /*   | LexicalDeclaration
-    */
+/* 13.12 The switch Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-switch-statement
+ */
+
+SwitchStatement:
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
     ;
 
-HoistableDeclaration:
-	FunctionDeclaration
-/*	| GeneratorDeclaration */
-	;	
-
-Statement:
-    BlockStatement
-    | VariableStatement
-    | EmptyStatement
-    | ExpressionStatement
-    | IfStatement
-    | BreakableStatement
-    | ContinueStatement
-    | BreakStatement
-    | ReturnStatement
-    | WithStatement
-    | LabelledStatement
-    | ThrowStatement
-    | TryStatement
-    | DebuggerStatement
+CaseBlock:
+    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
+    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
     ;
 
-BlockStatement:
-    Block
-    ;
-    
-Block:
-    LEFT_BRACE StatementList RIGHT_BRACE
-    | LEFT_BRACE RIGHT_BRACE
+CaseClauses:
+    CaseClause
+    | CaseClauses CaseClause
     ;
 
-VariableStatement:
-    VAR VariableDeclarationList
+CaseClausesOptional:
+    CaseClauses
+    |
     ;
 
-VariableDeclarationList:
-    VariableDeclaration
-    | VariableDeclarationList COMMA VariableDeclaration
+CaseClause:
+    CASE Expression COLON StatementListOptional
     ;
 
-VariableDeclaration:
-	BindingIdentifier
-	| BindingIdentifier Initialiser
-    ;
-    
-BindingIdentifier:
-	Identifier
-	| YIELD
-	;
-
-LabelIdentifier:
-    Identifier
-    | YIELD
-    ;
-	
-Identifier:
-	IdentifierName 
-	;
-
-Initialiser:
-  ASSIGNMENT AssignmentExpression
-  ;
-
-EmptyStatement:
-    SEMICOLON
+DefaultClause:
+    DEFAULT COLON StatementListOptional
     ;
 
-ExpressionStatement:
-    Expression SEMICOLON
+/* 13.11 The with Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-with-statement
+ */
+
+WithStatement:
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
     ;
 
-IfStatement:
-    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
-    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+/* 13.9 The break Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-break-statement
+ */
+
+BreakStatement:
+    BREAK SEMICOLON
+    | BREAK LabelIdentifier SEMICOLON
     ;
 
-BreakableStatement:
-    IterationStatement
-    | SwitchStatement
+/* 13.8 The continue Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-continue-statement
+ */
+
+ContinueStatement:
+    CONTINUE SEMICOLON
+    | CONTINUE LabelIdentifier SEMICOLON
     ;
-    
+
+/* 13.7 The return Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-return-statement
+ */
+
+ReturnStatement:
+    RETURN SEMICOLON
+    | RETURN Expression SEMICOLON
+    ;
+
+/* 13.7 Iteration Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-iteration-statements
+ */
+
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
@@ -257,244 +457,234 @@ IterationStatement:
     | FOR LEFT_PAREN ForDeclaration OF AssignmentExpression RIGHT_PAREN Statement
     ;
 
-ContinueStatement:
-    CONTINUE SEMICOLON
-    | CONTINUE LabelIdentifier SEMICOLON
-    ;
-
-BreakStatement:
-    BREAK SEMICOLON
-    | BREAK LabelIdentifier SEMICOLON
-    ;
-
-ReturnStatement:
-    RETURN SEMICOLON
-    | RETURN LabelIdentifier SEMICOLON
-    ;
-
-WithStatement:
-    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
-    ;
-
-LabelledStatement:
-    LabelIdentifier COLON LabelledItem
-    ;
-
-LabelledItem:
-    Statement
-    | FunctionDeclaration
-    ;
-
-ThrowStatement:
-    THROW Expression SEMICOLON
-    ;
-
-DebuggerStatement:
-    DEBUGGER SEMICOLON
-    ;
-
-ExpressionOptional:
-    Expression
-    | 
-    ;
-    
-LexicalDeclaration:
-    LetOrConst BindingList
-    // TODO not implemented yet | BindingList
-    ;
-    
 ForDeclaration:
-    LetOrConst 
+    LetOrConst
     | ForBinding
     ;
-    
+
 ForBinding:
-    IDENTIFIER
-    /* TODO this is a temp matching with IDENTIFIER, commented out rules match ES6 spec
     BindingIdentifier
     | BindingPattern
-    */
+    ;
+
+/* 13.6 If Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
+ */
+
+IfStatement:
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+    ;
+
+ /* 13.5 Expression Statement
+  * http://www.ecma-international.org/ecma-262/6.0/#sec-expression-statement
+  */
+
+ExpressionStatement:
+    Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
+    ;
+
+/* 13.4 Empty Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-empty-statement
+ */
+
+EmptyStatement:
+    SEMICOLON
+    ;
+
+
+/* 13.3.3 Destructuting Binding Patterns
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-destructuring-binding-patterns
+ */
+
+BindingPattern:
+	ObjectBindingPattern
+    | ArrayBindingPattern
+	;
+
+ObjectBindingPattern:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
+    ;
+    
+ArrayBindingPattern:
+    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
+    ;
+
+BindingPropertyList:
+    BindingProperty
+    | BindingPropertyList COMMA BindingProperty
+    ;
+    
+BindingElementList:
+    BindingElisionElement
+    | BindingElementList COMMA BindingElisionElement
+    ;
+
+BindingElisionElement:
+    Elision BindingElement
+    ;
+
+BindingProperty:
+    SingleNameBinding
+    | PropertyName COLON BindingElement
+    ;
+
+BindingElement:
+    SingleNameBinding
+    | BindingPattern Initialiser
+    ;
+
+SingleNameBinding:
+    BindingIdentifier Initialiser
+    ;
+
+BindingRestElement:
+    ELLIPSIS BindingIdentifier
+    ;
+    
+/*BindingRestElementOptional:
+    BindingRestElement
+    |
+    ;
+*/
+/* 13.3.2 Variable Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
+ */
+
+VariableStatement:
+    VAR VariableDeclarationList SEMICOLON
+    ;
+
+VariableDeclarationList:
+    VariableDeclaration
+    | VariableDeclarationList COMMA VariableDeclaration
+    ;
+
+VariableDeclaration:
+    BindingIdentifier
+    | BindingIdentifier Initialiser
+    ;
+
+/* 13.3.1 let and const Declaration
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-let-and-const-declarations
+ */
+
+LexicalDeclaration:
+    LetOrConst BindingList SEMICOLON
     ;
 
 LetOrConst:
     LET
     | CONST
     ;
-    
+
 BindingList:
-	LexicalBinding
-	| BindingList COMMA LexicalBinding
-	;
-	
+    LexicalBinding
+    | BindingList COMMA LexicalBinding
+    ;
+
 LexicalBinding:
-	BindingIdentifier 
-	| BindingIdentifier Initialiser
-	| BindingPattern 
-	| BindingPattern Initialiser
-	;
-	
-	
-IdentifierName:
-    IdentifierStart
-    | IdentifierName IdentifierPart
-    ;
-	
-BindingPattern:
-	"todo"
-	/* to do */
-	;
-    
-    
-
-SwitchStatement:
-    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
-    ;
-    
-CaseBlock:
-    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
-    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    BindingIdentifier Initialiser
+    | BindingPattern Initialiser
     ;
 
-CaseClauses:
-    CaseClause
-    | CaseClauses CaseClause
+/* 13.2 Block
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-block
+ */
+
+BlockStatement:
+    Block
     ;
 
-CaseClausesOptional:
-    CaseClauses
-    | 
+Block:
+    LEFT_BRACE StatementList RIGHT_BRACE 	{$$ = new BlockStatement($2);}
+    | LEFT_BRACE RIGHT_BRACE 				{$$ = new BlockStatement();}
     ;
-    
-CaseClause:
-    CASE Expression COLON StatementListOptional
+
+
+StatementList:
+    StatementListItem                   { $$ = new vector<Statement*>; $$->push_back($1); }
+    | StatementList StatementListItem   { $$ = $1; $$->push_back($2); }
     ;
-    
-DefaultClause:
-    DEFAULT COLON StatementListOptional
+
+StatementListOptional:
+    StatementList
+    |
     ;
+
+StatementListItem:
+    Statement               { $$ = $1; }
+    | Declaration
+    ;
+
+/* 13 Statements and Declations
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-statements-and-declarations
+ */
+
+Statement:
+    BlockStatement
+    | VariableStatement
+    | EmptyStatement
+    | ExpressionStatement   { $$ = $1; }
+    | IfStatement
+    | BreakableStatement
+    | ReturnStatement
+    | ContinueStatement
+    | BreakStatement
+    | WithStatement
+    | LabelledStatement
+    | ThrowStatement
+    | TryStatement
+    | DebuggerStatement
+    ;
+
+ Declaration:
+    /* TODO The below are not implemented yet, see: section 13 of spec for implementation details */
+    HoistableDeclaration
+    | ClassDeclaration
+ /*   | LexicalDeclaration
+    */
+    /*| ExportDeclaration -- where is this from?*/
+    ;
+
+ HoistableDeclaration:
+    FunctionDeclaration
+/*  | GeneratorDeclaration */
+    ;
+
+BreakableStatement:
+    IterationStatement
+    | SwitchStatement
+    ;
+
+/* 12.15 Comma Operator
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-comma-operator
+ */
 
 Expression:
-    AssignmentExpression
-    | PrimaryExpression
-    | EqualityExpression
+    AssignmentExpression					 {$$ = $1;}
+    | Expression COMMA AssignmentExpression
     ;
 
-Literal:
-    NullLiteral
-    | BooleanLiteral
-    | NumericLiteral
-    | StringLiteral
+ExpressionOptional:
+    Expression
+    |
     ;
 
-NullLiteral:
-    LITERAL_NULL
-    ;
-
-BooleanLiteral:
-    LITERAL_TRUE
-    | LITERAL_FALSE
-    ;
-
-NumericLiteral:
-    DecimalLiteral
-    ;
-    
-DecimalLiteral:
-    DecimalIntegerLiteral
-    ;
-    
-DecimalIntegerLiteral:
-    VALUE_INTEGER
-    ;
-
-StringLiteral:
-    VALUE_STRING
-    ;
+/* 12.14 AssignmentOperator
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-assignment-operators
+ */
 
 AssignmentExpression:
-    ConditionalExpression
+    ConditionalExpression	{$$ = $1;}
     | YieldExpression
     | ArrowFunction
-    | LeftHandSideExpression ASSIGNMENT AssignmentExpression
+    | LeftHandSideExpression ASSIGNMENT AssignmentExpression {$$ = new AssignmentExpression($1, $3);}
     | LeftHandSideExpression AssignmentOperator AssignmentExpression
-    ;
-    
-ConditionalExpression:
-    LogicalORExpression
-    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
-    ;
-    
-LogicalORExpression:
-    LogicalANDExpression
-    | LogicalORExpression LOGICAL_OR LogicalANDExpression
-    ;
-    
-LogicalANDExpression:
-    BitwiseORExpression
-    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
-    ;
-    
-BitwiseORExpression:
-    BitwiseXORExpression
-    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
-    ;
-   
-BitwiseXORExpression:
-    BitwiseANDExpression
-    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
-    ;
-    
-BitwiseANDExpression:
-    EqualityExpression
-    | BitwiseANDExpression BITWISE_AND EqualityExpression
-    ;
-
-EqualityExpression:
-    RelationalExpression
-    ;
-    
-RelationalExpression:
-    ShiftExpression
-    /*
-    | Expression EQUAL Expression
-    | Expression NOT_EQUAL Expression
-    | Expression EXACTLY_EQUAL Expression
-    | Expression NOT_EXACTLY_EQUAL Expression
-    */
-    ;
-    
-ShiftExpression:
-    AdditiveExpression
-    ;
-    
-AdditiveExpression:
-    MultiplicativeExpression
-    ;
-    
-MultiplicativeExpression:
-    UnaryExpression
-    ;
-    
-UnaryExpression:
-    PostfixExpression
-    ;
-    
-PostfixExpression:
-    LeftHandSideExpression
-    ;
-
-NewExpression:
-    MemberExpression
-    ;
-    
-MemberExpression:
-    PrimaryExpression
-    ;
-    
-PrimaryExpression:
-    THIS
-    | IdentifierReference
-    | Literal
     ;
 
 AssignmentOperator:
@@ -511,21 +701,363 @@ AssignmentOperator:
     | BITWISE_OR_ASSIGNMENT
     ;
 
-LeftHandSideExpression:
-    CallExpression
-    | NewExpression
+/* 12.13 Conditional Operator
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-conditional-operator
+ */
+
+ConditionalExpression:
+    LogicalORExpression	{$$ = $1;}
+    | LogicalORExpression QUESTION_MARK AssignmentExpression COLON AssignmentExpression
+    ;
+
+/* 12.12 Binary Logic Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-binary-logical-operators
+ */
+
+LogicalANDExpression:
+    BitwiseORExpression	{$$ = $1;}
+    | LogicalANDExpression LOGICAL_AND BitwiseORExpression
+    ;
+
+LogicalORExpression:
+    LogicalANDExpression	{$$ = $1;}
+    | LogicalORExpression LOGICAL_OR LogicalANDExpression
+    ;
+
+/* 12.11 Binary Bitwise Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-binary-bitwise-operators
+ */
+
+BitwiseANDExpression:
+    EqualityExpression {$$ = $1;}
+    | BitwiseANDExpression BITWISE_AND EqualityExpression
+    ;
+
+BitwiseXORExpression:
+    BitwiseANDExpression {$$ = $1;}
+    | BitwiseXORExpression BITWISE_XOR BitwiseANDExpression
+    ;
+
+BitwiseORExpression:
+    BitwiseXORExpression	{$$ = $1;}
+    | BitwiseORExpression BITWISE_OR BitwiseXORExpression
+    ;
+
+/* 12.10 Equality Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-equality-operators
+ */
+
+EqualityExpression:
+    RelationalExpression	{$$ = $1;}
+    | EqualityExpression EQUAL RelationalExpression
+	| EqualityExpression NOT_EQUAL RelationalExpression
+	| EqualityExpression EXACTLY_EQUAL RelationalExpression
+	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
+    ;
+
+/* 12.9 Relational Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-relational-operators
+ */
+
+RelationalExpression:
+    ShiftExpression	{$$ = $1;}
+	| RelationalExpression LESS_THAN ShiftExpression
+	| RelationalExpression GREATER_THAN ShiftExpression
+	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression INSTANCEOF ShiftExpression
+	| LEFT_BRACKET ADD IN RIGHT_BRACKET RelationalExpression IN ShiftExpression
+    /*
+    | Expression EQUAL Expression
+    | Expression NOT_EQUAL Expression
+    | Expression EXACTLY_EQUAL Expression
+    | Expression NOT_EXACTLY_EQUAL Expression
+    */
+    ;
+
+/* 12.8 Bitwise Shift Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-bitwise-shift-operators
+ */
+
+ShiftExpression:
+    AdditiveExpression	{$$ = $1;}
+	| ShiftExpression LEFT_SHIFT AdditiveExpression
+	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
+	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
+    ; 
+
+/* 12.7 Additive Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-additive-operators
+ */
+
+AdditiveExpression:
+    MultiplicativeExpression	{$$ = $1;}
+    ;
+
+/* 12.6 Multiplicative Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-multiplicative-operators
+ */
+
+MultiplicativeExpression:
+    UnaryExpression	{ $$ = $1; }
+	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
+    ;
+
+/* 12.6 Multiplicative Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-multiplicative-operators
+ */
+
+MultiplicativeOperator:
+	MULTIPLY DIVIDE MODULO
+	;
+
+/* 12.5 Unary Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators
+ */
+
+UnaryExpression:
+    PostfixExpression	{ $$ = $1; }
+	| DELETE UnaryExpression
+	| VOID UnaryExpression
+	| TYPEOF UnaryExpression
+	| UNARY_ADD UnaryExpression
+	| UNARY_SUBTRACT UnaryExpression
+	/* | ADD UnaryExpression 		
+	| SUBTRACT UnaryExpression */
+	| BITWISE_NOT UnaryExpression
+	| LOGICAL_NOT UnaryExpression
+    ;
+
+/* 12.4 Postfix Expression
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-postifx-expression
+ */
+
+PostfixExpression:
+    LeftHandSideExpression	{ $$ = $1; }
+    ;
+
+/* 12.3 Left-Hand-Side Expressions
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-left-hand-side-expressions
+ */
+
+MemberExpression:
+    PrimaryExpression	{ $$ = $1; }
+    ;
+
+NewExpression:
+    MemberExpression 				{ $$ = $1; }
+    | NEW NewExpression
     ;
 
 CallExpression:
     SuperCall
-    | CallExpression RIGHT_BRACE Expression LEFT_BRACE
-    | CallExpression FULL_STOP IdentifierName
+    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
+    | CallExpression FULL_STOP Identifier
     ;
+
+SuperCall:
+    SUPER Arguments
+    ;
+
+Arguments:
+    LEFT_PAREN RIGHT_PAREN
+    | LEFT_PAREN ArgumentList RIGHT_PAREN
+    ;
+
+ArgumentList:
+    AssignmentExpression
+    | ArgumentList COMMA AssignmentExpression
+    ;
+
+LeftHandSideExpression:
+    NewExpression	{ $$ = $1; }
+    | CallExpression
+    ;
+
+/* 12.2.6 Object Initialiser
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-object-initialiser
+ */
+
+PropertyName:
+    LiteralPropertyName 	{$$ = $1;}
+    | ComputedPropertyName 	{$$ = $1;}
+    ;
+
+LiteralPropertyName:
+    Identifier 			{IdentifierExpression* idExp = new IdentifierExpression($1); 
+    						$$ = new LiteralPropertyNameExpression(idExp);}
+    | StringLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
+    | NumericLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
+    ;
+
+Initialiser:
+    ASSIGNMENT AssignmentExpression
+    ;
+    
+
+
+ObjectLiteral:
+	LEFT_BRACE RIGHT_BRACE 									{$$ = new ObjectLiteralExpression();}
+	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE 		{$$ = new ObjectLiteralExpression($2);}
+	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE 	{$$ = new ObjectLiteralExpression($2);}
+	;
+
+PropertyDefinitionList:
+	PropertyDefinition 	{$$ = new vector<Expression*>; $$->push_back($1);}
+	| PropertyDefinitionList COMMA PropertyDefinition 	{$$ = $1; $$->push_back($3);}
+	;
+
+PropertyDefinition:
+	IdentifierReference 	{$$ = new PropertyDefinitionExpression($1, NULL);}
+	| CoverInitializedName /*Cannot find real code of this use case*/
+	| PropertyName COLON AssignmentExpression 	{$$ = new PropertyDefinitionExpression($1, $3);}
+	| MethodDefinition /*Method Definition has not been done*/
+	;
+
+ComputedPropertyName:
+	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET 	{$$ = new ComputedPropertyNameExpression($2);}
+	;
+
+CoverInitializedName:
+	IdentifierReference Initialiser
+	;
+
+/* 12.2.5 Array Initialiser
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-array-initializer
+ */
+
+ElementList:
+    Elision AssignmentExpression
+    | AssignmentExpression
+    | Elision SpreadElement
+    | SpreadElement
+    | ElementList COMMA Elision AssignmentExpression
+    | ElementList COMMA AssignmentExpression
+    | ElementList COMMA Elision SpreadElement
+    | ElementList COMMA SpreadElement
+    ;
+
+Elision:
+    COMMA
+    | Elision COMMA
+    ;
+    
+
+
+SpreadElement:
+    ELLIPSIS AssignmentExpression
+    ;
+
+/* 12.2.4 Literals
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-primary-expression-literals
+ */
+
+Literal:
+    NullLiteral
+    | BooleanLiteral
+    | NumericLiteral	{$$=$1;}
+    | StringLiteral		{$$=$1;}
+    ;
+
+ArrayLiteral:
+    LEFT_BRACKET RIGHT_BRACKET
+    | LEFT_BRACKET Elision RIGHT_BRACKET
+    | LEFT_BRACKET ElementList RIGHT_BRACKET
+    | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
+    | LEFT_BRACKET ElementList COMMA RIGHT_BRACKET
+    ;
+
+NullLiteral:
+    LITERAL_NULL
+    ;
+
+BooleanLiteral:
+    LITERAL_TRUE
+    | LITERAL_FALSE
+    ;
+
+StringLiteral:
+    VALUE_STRING			 { $$ = new StringLiteralExpression($1); }
+    ;
+
+/* 12.2 Primary Expression
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-primary-expression
+ */
+
+PrimaryExpression:
+    THIS
+    | IdentifierReference { $$ = $1; }
+    | Literal	{ $$ = $1; }
+    | ArrayLiteral
+    | ObjectLiteral     {$$ = $1;}
+    | FunctionExpression
+    | ClassExpression
+    | GeneratorExpression
+//    | RegularExpressionLiteral
+//    | TemplateLiteral
+    | CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+/* A.4 Functions and Classes
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-functions_and_classes
+ */
+GeneratorExpression :
+    FUNCTION MULTIPLY BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
+GeneratorBody:
+    FunctionBody
+    ;
+
+/* 12.1 Identifier
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-identifiers
+ */
 
 IdentifierReference:
-    IDENTIFIER
+    Identifier								 { $$ = new IdentifierExpression($1); }
     ;
 
+BindingIdentifier:
+    Identifier                              { $$ = new IdentifierExpression($1); }
+    | YIELD
+    ;
+
+LabelIdentifier:
+    Identifier                              { $$ = new IdentifierExpression($1); }
+    | YIELD
+    ;
+
+Identifier:
+    IdentifierName 							{$$ = $1; }						
+    ;
+
+/* 11.8.3 Numeric Literals
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-literals-numeric-literals
+ */
+
+NumericLiteral:
+    DecimalLiteral	                         { $$ = $1; }
+    ;
+
+DecimalLiteral:
+    DecimalIntegerLiteral	                   { $$ = $1; }
+    ;
+
+DecimalIntegerLiteral:
+    VALUE_INTEGER	                           { $$ = new IntegerLiteralExpression($1); }
+    ;
+
+
+/* 11.6 Name and Keywords
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords
+ */
+ IdentifierName:
+     /*IdentifierStart
+     | IdentifierName IdentifierPart*/
+     IDENTIFIER                              { $$ = $1; }
+     ;
+
+/*
 
 
 IdentifierStart:
@@ -538,167 +1070,24 @@ IdentifierPart:
     "$"
     | "_"
     | IDENTIFIER
+    ;*/
+
+/* 11.3 Line Terminators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-line-terminators
+ */
+
+/*LineTerminator:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
     ;
 
-SuperCall:
-    SUPER Arguments
-    ;
-
-Arguments:
-    LEFT_PAREN RIGHT_PAREN
-    | LEFT_PAREN ArgumentList RIGHT_PAREN
-    ;
-   
-ArgumentList:
- 	AssignmentExpression
- 	| ArgumentList COMMA AssignmentExpression
- 	;
-
-YieldExpression:
-    YIELD
-    | YIELD AssignmentExpression
-    ;
-
-ArrowFunction:
-    ArrowParameters ARROW_FUNCTION ConciseBody
-    ;
-
-ArrowParameters:
-    CoverParenthesizedExpressionAndArrowParameterList
-    ;
-
-CoverParenthesizedExpressionAndArrowParameterList:
-    LEFT_PAREN Expression RIGHT_PAREN
-    ;
-
-ConciseBody:
-    AssignmentExpression
-    | RIGHT_BRACKET FunctionBody LEFT_BRACKET
-    ;
-    
-/* Function Definitions ECMA 14.1 */
-
-/* Second function declaration anonymous function */
-FunctionDeclaration:
-	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	| FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
-
-/*
-FunctionExpression:
-	FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
-*/
-
-/* Required for ArrowFormalParameters	
-StrictFormalParameters:
-	FormalParameters
-	;
-*/
-
-FormalParameters:
-	FormalParameterList
-	;
-	
-FormalParameterList:
-	/* incomplete */
-	FormalsList
-	| FormalsList COMMA FormalParameter
-	;
-	
-FormalsList:
-	FormalParameter
-	| FormalsList COMMA FormalParameter
-	;
-	
-FormalParameter:
-	BindingElement
-	;
-/* Addition Productions required for Function Definitions */
-
-BindingElement:
-	BindingPattern
-	| BindingPattern Initialiser
-	;
-
-
-FunctionBody:
-    FunctionStatementList
-    ;
-
-FunctionStatementList:
-    StatementList
-    ;
-    
-ClassDeclaration: 
-	CLASS BindingIdentifier ClassTail
-	| CLASS ClassTail
-	;
-/*	
-ClassExpression:
-	 CLASS BindingIdentifier ClassTail
-	 ;
-*/	 
-ClassTail:
-	ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
-	;
-	
-ClassHeritage:
-	EXTENDS LeftHandSideExpression
-	;
-	
-ClassBody:
-	ClassElementList
-	;
-	
-ClassElementList:
-	ClassElement
-	| ClassElementList ClassElement
-	;
-	
-ClassElement:
-	MethodDefinition
-	| "static" MethodDefinition
-    | SEMICOLON
-    ;
-
-PropertyName:
-	LiteralPropertyName
-	;
-	
-LiteralPropertyName:
-	IdentifierName
-	| StringLiteral
-	| NumericLiteral
-	;
-
-StrictFormalParameters:
-	FormalParameters
-	;
-
-MethodDefinition:
-	PropertyName LEFT_PAREN StrictFormalParameters RIGHT_PAREN RIGHT_BRACE FunctionBody LEFT_BRACE
- /*	| GeneratorMethod */
-	| "get" PropertyName LEFT_PAREN RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	| "set" PropertyName LEFT_PAREN PropertySetParameterList RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-	;
-
-PropertySetParameterList:
-	FormalParameter
-	;
-
-TryStatement:
-    TRY Block Catch
-    | TRY Block Finally
-    | TRY Block Catch Finally
-    ;
-
-Catch:
-    CATCH LEFT_PAREN IDENTIFIER RIGHT_PAREN Block
-    ;
-
-Finally:
-    FINALLY Block
-    ;
-
+LineTerminatorSequence:
+    LINE_FEED
+    | CARRIAGE_RETURN
+    | LINE_SEPARATOR
+    | PARAGRAPH_SEPARATOR
+    | CARRIAGE_RETURN LINE_FEED
+    ;*/
 %%

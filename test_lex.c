@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include "lex.yy.h"
 
@@ -203,7 +204,19 @@ int main(int argc, char* argv[])
             case FINALLY:
                 printf("FINALLY\n");
                 break;
+			case THROW:
+				printf("THROW\n");
+				break;
 
+// line terminators, print nothing
+            // case LINE_FEED:
+            //     break;
+            // case CARRIAGE_RETURN:
+            //     break;
+            // case LINE_SEPARATOR:
+            //     break;
+            // case PARAGRAPH_SEPARATOR:
+            //     break;
 // end of file
             case END_OF_FILE:
                 printf("END_OF_FILE\n");

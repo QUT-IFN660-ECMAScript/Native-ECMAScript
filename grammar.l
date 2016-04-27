@@ -1,6 +1,7 @@
 %{
 
 #include "y.tab.h"
+#include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include <stdbool.h>
 
@@ -17,8 +18,9 @@ CHAR                                [$_a-zA-Z]
 %x MULTILINE_STRING
 
 %%
-"/*"                                { comment(); }
-"//".*                              { /* multi-line comment //one-line one*/ }
+
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/] { /* Multiline comment */ }
+"//".*                              { /* one-line one */ }
 
 break                               { return BREAK; }
 case                                { return CASE; }
@@ -142,7 +144,8 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 
 \`                                  {
                                       BEGIN(MULTILINE_STRING);
-                                      stringbuffer = dynamic_strcat(NULL, "");
+                                      // string cat the memory needed for a char
+                                      stringbuffer = dynamic_strcat(NULL, (char*) malloc(sizeof(char*)));
                                     }
 <MULTILINE_STRING>\`                {
                                       BEGIN(INITIAL);
@@ -156,29 +159,10 @@ L?\'(\\.|[^\\"])*\'                 { yylval.sval = strdup(yytext); return VALUE
 
 {CHAR}({DIGIT}|{CHAR})*             { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
-[ \t\n]                             /* do nothing */
+"\n"                                //  { return LINE_FEED; }
+"\r"                                //  { return CARRIAGE_RETURN; }
+
+[ \t]                               /* spaces and tabs, do nothing */
 <<EOF>>                             { return END_OF_FILE; }
 .                                   { yyerror("Unknown character"); }
 %%
-extern FILE * yyin;
-
-static void comment(void)
-{
-    int character;
-    while ((character = input()) != 0)
-    {
-	if (character == '*')
-        {
-            while ((character = input()) == '*');
-            if (character == '/')
-            {
-                return;
-            }
-            if (character == 0)
-            {
-                break;
-            }
-        }
-    }
-    yyerror("unterminated comment");
-}

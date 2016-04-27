@@ -18,7 +18,7 @@ char* dynamic_strcat(char* str, char* s2) {
     if (str != NULL)
         len = strlen(str);
     len += strlen(s2) + 1 * sizeof(*s2);
-    s = realloc(str, len);
+    s = (char*) realloc(str, len);
     strcat(s, s2);
     return s;
 }
