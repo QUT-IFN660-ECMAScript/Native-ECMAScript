@@ -1,0 +1,6 @@
+BREAK
+;
+BREAK
+IDENTIFIER (labelmark)
+;
+END_OF_FILE
