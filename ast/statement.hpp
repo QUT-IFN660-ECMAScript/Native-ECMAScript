@@ -167,7 +167,7 @@ public:
 		indent++;
 		expression->dump(indent);
 		statement->dump(indent);
-		if (elseStatement != nullptr) {
+		if (elseStatement) {
 			elseStatement->dump(indent);
 		}
 	}
