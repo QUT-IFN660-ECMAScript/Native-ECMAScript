@@ -139,7 +139,6 @@ using namespace std;
 
 %error-verbose
 
-%nonassoc ORDER_ELSE
 %nonassoc ELSE
 
 %nonassoc EQUAL
@@ -149,7 +148,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement IfStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -470,8 +469,8 @@ ForBinding:
  */
 
 IfStatement:
-    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
-    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement     { $$ = new IfStatement($3, $5, $7); }
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement                  { $$ = new IfStatement($3, $5); }
     ;
 
  /* 13.5 Expression Statement
@@ -480,6 +479,7 @@ IfStatement:
 
 ExpressionStatement:
     Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
+    | Expression          { $$ = new ExpressionStatement($1); }
     ;
 
 /* 13.4 Empty Statement
@@ -584,7 +584,7 @@ Statement:
     | VariableStatement
     | EmptyStatement
     | ExpressionStatement   { $$ = $1; }
-    | IfStatement
+    | IfStatement           { $$ = $1; }
     | BreakableStatement
     | ReturnStatement
     | ContinueStatement

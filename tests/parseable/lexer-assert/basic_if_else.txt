@@ -4,5 +4,9 @@ IDENTIFIER (x)
 )
 IDENTIFIER (y)
 =
+false
+ELSE
+IDENTIFIER (y)
+=
 true
 END_OF_FILE
