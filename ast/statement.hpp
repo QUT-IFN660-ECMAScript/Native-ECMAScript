@@ -139,24 +139,69 @@ public:
 	}
 };
 
+class ReturnStatement: public Statement {
+private:
+	Expression* expr;
+
+public:
+	ReturnStatement(){
+		this->expr = NULL;
+	}
+	ReturnStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "ReturnStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+};
+
+
+class BreakStatement: public Statement {
+private:
+	Expression* expr;
+
+public:
+	BreakStatement(){
+		this->expr = NULL;
+	}
+	BreakStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "BreakStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+};
+
 /* 13.6 If Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
  */
 class IfStatement: public Statement {
 private:
-	Expression* expression;
-	Statement* statement;
-	Statement* elseStatement;
+	Expression *expression;
+	Statement *statement;
+	Statement *elseStatement;
 public:
 
 	// if (expression) { statement }
-	IfStatement(Expression* expression, Statement* statement) {
+	IfStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
 
 	// if (expression) { statement } else { elseStatement }
-	IfStatement(Expression* expression, Statement* statement, Statement* elseStatement) {
+	IfStatement(Expression *expression, Statement *statement, Statement *elseStatement) {
 		this->expression = expression;
 		this->statement = statement;
 		this->elseStatement = elseStatement;

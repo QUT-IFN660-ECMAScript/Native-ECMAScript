@@ -1,4 +1,5 @@
 VALUE_STRING ()
++
 VALUE_STRING (this is valid)
 ;
 VALUE_STRING (this is a valid string)

@@ -1,3 +1,6 @@
+VAR
+IDENTIFIER (x)
+;
 IF
 (
 IDENTIFIER (x)
