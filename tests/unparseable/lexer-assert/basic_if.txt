@@ -1,8 +1,0 @@
-IF
-(
-IDENTIFIER (x)
-)
-IDENTIFIER (y)
-=
-true
-END_OF_FILE

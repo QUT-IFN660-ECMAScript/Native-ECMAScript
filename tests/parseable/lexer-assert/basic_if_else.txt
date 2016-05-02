@@ -4,17 +4,9 @@ IDENTIFIER (x)
 )
 IDENTIFIER (y)
 =
-true
-;
+false
 ELSE
-{
 IDENTIFIER (y)
 =
-false
-;
-IDENTIFIER (x)
-=
-false
-;
-}
+true
 END_OF_FILE

@@ -479,6 +479,7 @@ IfStatement:
 
 ExpressionStatement:
     Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
+    | Expression          { $$ = new ExpressionStatement($1); }
     ;
 
 /* 13.4 Empty Statement
@@ -583,7 +584,7 @@ Statement:
     | VariableStatement
     | EmptyStatement
     | ExpressionStatement   { $$ = $1; }
-    | IfStatement
+    | IfStatement           { $$ = $1; }
     | BreakableStatement
     | ReturnStatement
     | ContinueStatement
