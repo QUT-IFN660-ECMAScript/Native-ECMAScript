@@ -1,0 +1,31 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: obj
+            rhs:
+                ObjectLiteralExpression
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: obj
+            rhs:
+                ObjectLiteralExpression
+                    PropertyDefinitionExpression
+                        Key
+                            LiteralPropertyNameExpression
+                                IdentifierExpression: one
+                        Value
+                            StringLiteralExpression: "1"
+                    PropertyDefinitionExpression
+                        Key
+                            LiteralPropertyNameExpression
+                                StringLiteralExpression: "one"
+                        Value
+                            IntegerLiteralExpression: 1
+                    PropertyDefinitionExpression
+                        Key
+                            ComputedPropertyNameExpression
+                                StringLiteralExpression: "computed property name"
+                        Value
+                            IntegerLiteralExpression: 2
