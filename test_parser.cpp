@@ -11,9 +11,11 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody* root;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     yyin = fopen(argv[1], "r");
     yyparse();
-  //  root->dump(0);
+    if (root != NULL) {
+        root->resolveNames(NULL);
+        //  root->dump(0);
+    }
 }

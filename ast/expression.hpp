@@ -8,7 +8,70 @@ using namespace std;
 class Expression:public Node{
 };
 
-class AssignmentExpression:public Expression{
+class IntegerLiteralExpression:public Expression{
+private:
+    int value;
+public:
+    IntegerLiteralExpression(int value){
+        this->value = value;
+    };
+
+    int getValue() {
+        return value;
+    }
+
+    void dump(int indent){
+        label(indent, "IntegerLiteralExpression: %d\n", value);
+    }
+    bool resolveNames(LexicalScope* scope) {
+        return true;
+    }
+};
+
+class IdentifierExpression:public Expression{
+private:
+    std::string name;
+    Declaration* declaration;
+public:
+    IdentifierExpression(std::string name){
+        this->name = name;
+        this->declaration = NULL;
+    };
+
+    std::string getName() {
+        return name;
+    }
+
+    void dump(int indent){
+        label(indent, "IdentifierExpression: %s\n", name.c_str());
+    }
+    bool resolveNames(LexicalScope* scope) {
+        if (scope != NULL) {
+            declaration = scope->resolve(name);
+        }
+        if (declaration == NULL) {
+            fprintf(stderr, "Error: Undeclared identifier: %s\n", name.c_str());
+        }
+        return declaration != NULL;
+    }
+};
+
+class StringLiteralExpression: public Expression {
+private:
+	std::string val;
+public:
+	StringLiteralExpression(const char* val) {
+		this->val = std::string(val);
+	};
+	void dump(int indent) {
+		label(indent, "StringLiteralExpression: %s\n", val.c_str());
+	}
+    bool resolveNames(LexicalScope* scope) {
+        return true;
+    }
+};
+
+class AssignmentExpression:public Expression, Declaration {
 private:
     Expression *lhs, *rhs;
 public:
@@ -21,40 +84,21 @@ public:
         lhs->dump(indent+1, "lhs");
         rhs->dump(indent+1, "rhs");
     }
-};
 
-class IntegerLiteralExpression:public Expression{
-private:
-    int value;
-public:
-    IntegerLiteralExpression(int value){
-        this->value = value;
-    };
-    void dump(int indent){
-        label(indent, "IntegerLiteralExpression: %d\n", value);
+    std::string getName() {
+        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*> (lhs);
+        if (identifier != NULL) {
+            return identifier->getName();
+        }
+        return NULL;
     }
-};
 
-class IdentifierExpression:public Expression{
-private:
-    char* name;
-public:
-    IdentifierExpression(char *name){
-        this->name = name;
-    };
-    void dump(int indent){
-        label(indent, "IdentifierExpression: %s\n", name);
+    bool resolveNames(LexicalScope* scope) {
+        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*> (lhs);
+        if (identifier != NULL) {
+            // not sure `this` in this context is what we are after, but whatever
+            scope->addToSymbolTable(identifier->getName(), this);
+        }
+        return lhs->resolveNames(scope) && rhs->resolveNames(scope);
     }
-};
-
-class StringLiteralExpression: public Expression {
-private:
-	char* val;
-public:
-	StringLiteralExpression(char* val) {
-		this->val = val;
-	};
-	void dump(int indent) {
-		label(indent, "StringLiteralExpression: %s\n", val);
-	}
 };

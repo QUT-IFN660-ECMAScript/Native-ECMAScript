@@ -20,4 +20,13 @@ public:
       (*iter)->dump(indent+1);
     }
   }
+    bool resolveNames(LexicalScope* scope) {
+        bool scoped = true;
+        for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); it++) {
+            if (!(*it)->resolveNames(scope)) {
+                scoped = false;
+            }
+        }
+        return scoped;
+    }
 };

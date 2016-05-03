@@ -26,9 +26,12 @@ public:
     label(indent, "ExpressionStatement\n");
     expr->dump(indent+1);
   }
+	bool resolveNames(LexicalScope* scope) {
+		return expr->resolveNames(scope);
+	}
 };
 
-class StatementList: public Node {
+class StatementList: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
@@ -39,6 +42,24 @@ public:
     for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
       (*iter)->dump(indent+1);
   }
+	bool resolveNames(LexicalScope* scope) {
+
+		bool scoped = true;
+		this->parentScope = scope;
+
+		for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); it++) {
+
+			Declaration* declaration = dynamic_cast<Declaration*>(*it);
+			if (declaration != NULL) {
+				symbolTable[declaration->getName()] = declaration;
+			}
+
+			if (!(*it)->resolveNames(scope)) {
+				scoped = false;
+			}
+		}
+		return scoped;
+	}
 };
 
 //13.2 Block
@@ -62,6 +83,10 @@ public:
 		} else {
 			label(indent, "[EMPTY]\n");
 		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return statementList->resolveNames(scope);
 	}
 };
 
@@ -90,6 +115,10 @@ public:
 			finallyStatement->dump(indent);
 		}
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return tryStatement->resolveNames(scope) && catchStatement->resolveNames(scope) && finallyStatement->resolveNames(scope);
+	}
 };
 
 class CatchStatement : public Statement {
@@ -109,6 +138,10 @@ public:
 		expression->dump(indent);
 		statement->dump(indent);
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return expression->resolveNames(scope) && statement->resolveNames(scope);
+	}
 };
 
 class FinallyStatement : public Statement {
@@ -125,6 +158,10 @@ public:
 		indent++;
 		statement->dump(indent);
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return statement->resolveNames(scope);
+	}
 };
 
 class ThrowStatement: public Statement{
@@ -136,6 +173,10 @@ public:
 	void dump(int indent){
 		label(indent, "ThrowStatement\n");
 		expr->dump(indent+1);
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return expr->resolveNames(scope);
 	}
 };
 
@@ -170,5 +211,9 @@ public:
 		if (elseStatement) {
 			elseStatement->dump(indent);
 		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		return expression->resolveNames(scope) && statement->resolveNames(scope) && elseStatement->resolveNames(scope);
 	}
 };
