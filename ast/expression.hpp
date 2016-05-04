@@ -75,30 +75,131 @@ class AssignmentExpression:public Expression, Declaration {
 private:
     Expression *lhs, *rhs;
 public:
-    AssignmentExpression(Expression *lhs, Expression *rhs){
+    AssignmentExpression(Expression *lhs, Expression *rhs) {
         this->lhs = lhs;
         this->rhs = rhs;
     };
-    void dump(int indent){
+
+    void dump(int indent) {
         label(indent, "AssignmentExpression\n");
-        lhs->dump(indent+1, "lhs");
-        rhs->dump(indent+1, "rhs");
+        lhs->dump(indent + 1, "lhs");
+        rhs->dump(indent + 1, "rhs");
     }
 
     std::string getName() {
-        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*> (lhs);
+        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
         if (identifier != NULL) {
             return identifier->getName();
         }
         return NULL;
     }
 
-    bool resolveNames(LexicalScope* scope) {
-        IdentifierExpression* identifier = dynamic_cast<IdentifierExpression*> (lhs);
+    bool resolveNames(LexicalScope *scope) {
+//        return true;
+        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression*> (lhs);
         if (identifier != NULL) {
             // not sure `this` in this context is what we are after, but whatever
             scope->addToSymbolTable(identifier->getName(), this);
         }
         return lhs->resolveNames(scope) && rhs->resolveNames(scope);
     }
+};
+
+class ObjectLiteralExpression : public Expression {
+private:
+    vector<Expression*> *propertyDefinitionList;
+public:
+    //No parameter constructor
+    ObjectLiteralExpression(){};
+    ObjectLiteralExpression(vector<Expression*> *propertyDefinitionList) {
+        this->propertyDefinitionList = propertyDefinitionList;
+    };
+
+    void dump(int indent) {
+        label(indent, "ObjectLiteralExpression\n");
+
+        if(propertyDefinitionList != NULL) {
+            for (vector<Expression*>::iterator iter = propertyDefinitionList->begin(); iter != propertyDefinitionList->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+    }
+
+    bool resolveNames(LexicalScope* scope) {
+        bool scoped = true;
+        for (vector<Expression*>::iterator it = propertyDefinitionList->begin(); it != propertyDefinitionList->end(); ++it) {
+            if (!(*it)->resolveNames(scope)) {
+                scoped = false;
+            }
+        }
+        return scoped;
+    }
+
+};
+
+class PropertyDefinitionExpression : public Expression {
+private:
+    Expression *key;
+    Expression *value;
+
+public:
+    PropertyDefinitionExpression(Expression *key, Expression *value) {
+        this->key = key;
+        this->value = value;
+    };
+
+    void dump(int indent) {
+        label(indent, "PropertyDefinitionExpression\n");
+        indent++;
+        label(indent, "Key\n");
+        key->dump(indent + 1);
+        label(indent, "Value\n");
+        if (value != NULL) {
+            value->dump(indent + 1);
+        } else {
+            label(indent + 1, "[UNDEFINED]\n");
+        }
+    }
+
+    bool resolveNames(LexicalScope *scope) {
+        return key->resolveNames(scope) && value->resolveNames(scope);
+    };
+};
+
+class LiteralPropertyNameExpression : public Expression {
+private:
+    Expression *literalExpression;
+public:
+    LiteralPropertyNameExpression(Expression *literalExpression) {
+        this->literalExpression = literalExpression;
+    };
+
+    void dump (int indent) {
+        label(indent, "LiteralPropertyNameExpression\n");
+        indent++;
+        literalExpression->dump(indent);
+    }
+
+    bool resolveNames(LexicalScope* scope) {
+        return literalExpression->resolveNames(scope);
+    }
+};
+
+class ComputedPropertyNameExpression : public Expression {
+private:
+    Expression *computedExpression;
+public:
+    ComputedPropertyNameExpression(Expression *computedExpression) {
+        this->computedExpression = computedExpression;
+    };
+
+    void dump(int indent) {
+        label(indent, "ComputedPropertyNameExpression\n");
+        indent++;
+        computedExpression->dump(indent);
+    }
+
+    bool resolveNames(LexicalScope *scope) {
+        return computedExpression->resolveNames(scope);
+    }
+
 };

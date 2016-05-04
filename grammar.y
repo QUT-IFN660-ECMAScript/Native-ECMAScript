@@ -130,6 +130,7 @@ using namespace std;
     vector<Statement* >* statementList;
     Expression* expression;
     Statement* statement;
+    vector<Expression*>* propertyDefinitionList;
 
     int ival;
     double fval;
@@ -147,14 +148,15 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement IfStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral
 %type <sval> Identifier IdentifierName
+%type <propertyDefinitionList> PropertyDefinitionList
 
 %%
 
@@ -187,13 +189,13 @@ ClassDeclaration:
     CLASS BindingIdentifier ClassTail
     | CLASS ClassTail
     ;
-/*
+
 ClassExpression:
-     CLASS BindingIdentifier ClassTail
+    CLASS BindingIdentifier ClassTail
      ;
-*/
+
 ClassTail:
-    ClassHeritage RIGHT_BRACE ClassBody LEFT_BRACE
+    ClassHeritage LEFT_BRACE ClassBody RIGHT_BRACE
     ;
 
 ClassHeritage:
@@ -284,11 +286,11 @@ FunctionDeclaration:
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
-/*
+
 FunctionExpression:
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
-*/
+
 
 FormalParameters:
     FormalParameterList
@@ -412,8 +414,8 @@ WithStatement:
  */
 
 BreakStatement:
-    BREAK SEMICOLON
-    | BREAK LabelIdentifier SEMICOLON
+    BREAK SEMICOLON                         { $$ = new BreakStatement(); }
+    | BREAK LabelIdentifier SEMICOLON       { $$ = new BreakStatement($2); }
     ;
 
 /* 13.8 The continue Statement
@@ -430,8 +432,8 @@ ContinueStatement:
  */
 
 ReturnStatement:
-    RETURN SEMICOLON
-    | RETURN Expression SEMICOLON
+    RETURN SEMICOLON                        { $$ = new ReturnStatement(); }
+    | RETURN Expression SEMICOLON           { $$ = new ReturnStatement($2); }
     ;
 
 /* 13.7 Iteration Statement
@@ -495,15 +497,59 @@ EmptyStatement:
  */
 
 BindingPattern:
-    "todo"
-    /* to do */
+	ObjectBindingPattern
+    | ArrayBindingPattern
+	;
+
+ObjectBindingPattern:
+    LEFT_BRACE RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList RIGHT_BRACE
+    | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
+    ;
+    
+ArrayBindingPattern:
+    LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList RIGHT_BRACKET
+    | LEFT_BRACKET BindingElementList COMMA Elision BindingRestElement RIGHT_BRACKET
+    ;
+
+BindingPropertyList:
+    BindingProperty
+    | BindingPropertyList COMMA BindingProperty
+    ;
+    
+BindingElementList:
+    BindingElisionElement
+    | BindingElementList COMMA BindingElisionElement
+    ;
+
+BindingElisionElement:
+    Elision BindingElement
+    ;
+
+BindingProperty:
+    SingleNameBinding
+    | PropertyName COLON BindingElement
     ;
 
 BindingElement:
-    BindingPattern
+    SingleNameBinding
     | BindingPattern Initialiser
     ;
 
+SingleNameBinding:
+    BindingIdentifier Initialiser
+    ;
+
+BindingRestElement:
+    ELLIPSIS BindingIdentifier
+    ;
+    
+/*BindingRestElementOptional:
+    BindingRestElement
+    |
+    ;
+*/
 /* 13.3.2 Variable Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-variable-statement
  */
@@ -702,6 +748,10 @@ BitwiseORExpression:
 
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
+    | EqualityExpression EQUAL RelationalExpression
+	| EqualityExpression NOT_EQUAL RelationalExpression
+	| EqualityExpression EXACTLY_EQUAL RelationalExpression
+	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
     ;
 
 /* 12.9 Relational Operators
@@ -710,6 +760,12 @@ EqualityExpression:
 
 RelationalExpression:
     ShiftExpression	{$$ = $1;}
+	| RelationalExpression LESS_THAN ShiftExpression
+	| RelationalExpression GREATER_THAN ShiftExpression
+	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression INSTANCEOF ShiftExpression
+	| LEFT_BRACKET ADD IN RIGHT_BRACKET RelationalExpression IN ShiftExpression
     /*
     | Expression EQUAL Expression
     | Expression NOT_EQUAL Expression
@@ -743,7 +799,16 @@ AdditiveExpression:
 
 MultiplicativeExpression:
     UnaryExpression	{ $$ = $1; }
+	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
     ;
+
+/* 12.6 Multiplicative Operators
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-multiplicative-operators
+ */
+
+MultiplicativeOperator:
+	MULTIPLY DIVIDE MODULO
+	;
 
 /* 12.5 Unary Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators
@@ -813,40 +878,43 @@ LeftHandSideExpression:
  */
 
 PropertyName:
-    LiteralPropertyName
-    | ComputedPropertyName
+    LiteralPropertyName 	{$$ = $1;}
+    | ComputedPropertyName 	{$$ = $1;}
     ;
 
 LiteralPropertyName:
-    Identifier
-    | StringLiteral
-    | NumericLiteral
+    Identifier 			{IdentifierExpression* idExp = new IdentifierExpression($1); 
+    						$$ = new LiteralPropertyNameExpression(idExp);}
+    | StringLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
+    | NumericLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
     ;
 
 Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
+    
+
 
 ObjectLiteral:
-	LEFT_BRACE RIGHT_BRACE
-	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE
-	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE
+	LEFT_BRACE RIGHT_BRACE 									{$$ = new ObjectLiteralExpression();}
+	| LEFT_BRACE PropertyDefinitionList RIGHT_BRACE 		{$$ = new ObjectLiteralExpression($2);}
+	| LEFT_BRACE PropertyDefinitionList COMMA RIGHT_BRACE 	{$$ = new ObjectLiteralExpression($2);}
 	;
 
 PropertyDefinitionList:
-	PropertyDefinition
-	| PropertyDefinitionList COMMA PropertyDefinition
+	PropertyDefinition 	{$$ = new vector<Expression*>; $$->push_back($1);}
+	| PropertyDefinitionList COMMA PropertyDefinition 	{$$ = $1; $$->push_back($3);}
 	;
 
 PropertyDefinition:
-	IdentifierReference
-	| CoverInitializedName
-	| PropertyName COLON AssignmentExpression
-	| MethodDefinition
+	IdentifierReference 	{$$ = new PropertyDefinitionExpression($1, NULL);}
+	| CoverInitializedName /*Cannot find real code of this use case*/
+	| PropertyName COLON AssignmentExpression 	{$$ = new PropertyDefinitionExpression($1, $3);}
+	| MethodDefinition /*Method Definition has not been done*/
 	;
 
 ComputedPropertyName:
-	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET
+	LEFT_BRACKET AssignmentExpression RIGHT_BRACKET 	{$$ = new ComputedPropertyNameExpression($2);}
 	;
 
 CoverInitializedName:
@@ -872,6 +940,8 @@ Elision:
     COMMA
     | Elision COMMA
     ;
+    
+
 
 SpreadElement:
     ELLIPSIS AssignmentExpression
@@ -918,8 +988,24 @@ PrimaryExpression:
     | IdentifierReference { $$ = $1; }
     | Literal	{ $$ = $1; }
     | ArrayLiteral
-    | ObjectLiteral
+    | ObjectLiteral     {$$ = $1;}
+    | FunctionExpression
+    | ClassExpression
+    | GeneratorExpression
+//    | RegularExpressionLiteral
+//    | TemplateLiteral
     | CoverParenthesizedExpressionAndArrowParameterList
+    ;
+
+/* A.4 Functions and Classes
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-functions_and_classes
+ */
+GeneratorExpression :
+    FUNCTION MULTIPLY BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE GeneratorBody RIGHT_BRACE
+    ;
+
+GeneratorBody:
+    FunctionBody
     ;
 
 /* 12.1 Identifier

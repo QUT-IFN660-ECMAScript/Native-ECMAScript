@@ -22,7 +22,8 @@ public:
   }
     bool resolveNames(LexicalScope* scope) {
         bool scoped = true;
-        for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); it++) {
+        for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
+            (*it)->dump(0);
             if (!(*it)->resolveNames(scope)) {
                 scoped = false;
             }

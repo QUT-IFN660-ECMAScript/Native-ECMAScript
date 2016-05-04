@@ -1,7 +1,7 @@
 /**
  * Created by harryscells on 25/03/2016.
  */
-x = true;
+var x, y;
 if (x)
     y = false
 else

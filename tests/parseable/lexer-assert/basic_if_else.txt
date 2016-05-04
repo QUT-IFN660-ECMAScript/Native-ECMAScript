@@ -1,6 +1,7 @@
+VAR
 IDENTIFIER (x)
-=
-true
+,
+IDENTIFIER (y)
 ;
 IF
 (

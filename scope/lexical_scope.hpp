@@ -13,6 +13,7 @@ protected:
 
 public:
     LexicalScope() {
+        printf("test\n");
         parentScope = NULL;
         symbolTable.clear();
     }
@@ -26,6 +27,7 @@ public:
     }
 
     Declaration* resolve(std::string symbol) {
+        printf("%s\n", symbol.c_str());
         Declaration* local = resolveHere(symbol);
         if (local != NULL) {
             return local;

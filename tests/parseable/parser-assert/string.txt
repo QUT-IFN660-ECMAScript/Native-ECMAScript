@@ -1,0 +1,7 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: str
+            rhs:
+                StringLiteralExpression: "Test string"
