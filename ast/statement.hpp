@@ -25,6 +25,10 @@ public:
     label(indent, "ExpressionStatement\n");
     expr->dump(indent+1);
   }
+
+  bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+	}	
 };
 
 class StatementList: public Node {
@@ -37,6 +41,10 @@ public:
     label(indent, "StatementList\n");
     for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
       (*iter)->dump(indent+1);
+  }
+
+  bool resolveName(LexicalScope* scope) {
+  	return false; //not implemented
   }
 };
 
@@ -62,6 +70,10 @@ public:
 			label(indent, "[EMPTY]\n");
 		}
 	}
+
+  bool resolveName(LexicalScope* scope) {
+  	return true; //not implemented
+  }
 };
 
 // 13.13 The try Statement
@@ -89,6 +101,10 @@ public:
 			finallyStatement->dump(indent);
 		}
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+	  }
 };
 
 class CatchStatement : public Statement {
@@ -108,6 +124,10 @@ public:
 		expression->dump(indent);
 		statement->dump(indent);
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
 };
 
 class FinallyStatement : public Statement {
@@ -124,6 +144,10 @@ public:
 		indent++;
 		statement->dump(indent);
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
 };
 
 class ThrowStatement: public Statement{
@@ -136,6 +160,10 @@ public:
 		label(indent, "ThrowStatement\n");
 		expr->dump(indent+1);
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
 };
 
 class ReturnStatement: public Statement {
@@ -158,6 +186,10 @@ public:
 			label(indent, "[Empty]\n");
 		}
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
 };
 
 
@@ -181,4 +213,8 @@ public:
 			label(indent, "[Empty]\n");
 		}
 	}
+
+	bool resolveName(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
 };

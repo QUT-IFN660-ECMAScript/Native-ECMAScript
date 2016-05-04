@@ -21,6 +21,10 @@ public:
         lhs->dump(indent+1, "lhs");
         rhs->dump(indent+1, "rhs");
     }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
+    }
 };
 
 class IntegerLiteralExpression:public Expression{
@@ -32,6 +36,10 @@ public:
     };
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
+    }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
     }
 };
 
@@ -45,6 +53,10 @@ public:
     void dump(int indent){
         label(indent, "IdentifierExpression: %s\n", name);
     }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
+    }
 };
 
 class StringLiteralExpression: public Expression {
@@ -57,6 +69,10 @@ public:
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val);
 	}
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
+    }
 };
 
 class ObjectLiteralExpression : public Expression {
@@ -76,6 +92,10 @@ public:
             for (vector<Expression*>::iterator iter = propertyDefinitionList->begin(); iter != propertyDefinitionList->end(); ++iter)
                 (*iter)->dump(indent+1);
         }
+    }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
     }
 };
 
@@ -102,6 +122,10 @@ public:
             label(indent + 1, "[UNDEFINED]\n");
         }
     }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
+    }
 };
 
 class LiteralPropertyNameExpression : public Expression {
@@ -117,6 +141,10 @@ public:
         indent++;
         literalExpression->dump(indent);
     }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
+    }
 };
 
 class ComputedPropertyNameExpression : public Expression {
@@ -131,5 +159,9 @@ public:
         label(indent, "ComputedPropertyNameExpression\n");
         indent++;
         computedExpression->dump(indent);
+    }
+
+    bool resolveName(LexicalScope* scope) {
+        return true; //not implemented
     }
 };

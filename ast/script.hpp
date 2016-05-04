@@ -20,4 +20,8 @@ public:
       (*iter)->dump(indent+1);
     }
   }
+
+  bool resolveName(LexicalScope* scope) {
+    return true;//not implemented
+  }
 };
