@@ -217,3 +217,24 @@ public:
 		}
 	}
 };
+
+
+class IterationStatement : public Statement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+	IterationStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		label(indent, "WhileStatement\n");
+		indent++;
+		expression->dump(indent);
+		statement->dump(indent);
+	}
+};
