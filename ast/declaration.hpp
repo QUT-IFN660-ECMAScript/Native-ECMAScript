@@ -4,5 +4,6 @@
 using namespace std;
 
 class Declaration {
-	virtual string getName();
+public:
+	virtual string getName() = 0;
 };

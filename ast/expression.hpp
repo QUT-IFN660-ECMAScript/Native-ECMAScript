@@ -8,24 +8,7 @@ using namespace std;
 class Expression:public Node{
 };
 
-class AssignmentExpression:public Expression{
-private:
-    Expression *lhs, *rhs;
-public:
-    AssignmentExpression(Expression *lhs, Expression *rhs){
-        this->lhs = lhs;
-        this->rhs = rhs;
-    };
-    void dump(int indent){
-        label(indent, "AssignmentExpression\n");
-        lhs->dump(indent+1, "lhs");
-        rhs->dump(indent+1, "rhs");
-    }
 
-    bool resolveName(LexicalScope* scope) {
-        return true; //not implemented
-    }
-};
 
 class IntegerLiteralExpression:public Expression{
 private:
@@ -46,6 +29,7 @@ public:
 class IdentifierExpression:public Expression{
 private:
     char* name;
+    Declaration* declaration;//Store the pointer where the identifer is declared
 public:
     IdentifierExpression(char *name){
         this->name = name;
@@ -56,6 +40,10 @@ public:
 
     bool resolveName(LexicalScope* scope) {
         return true; //not implemented
+    }
+
+    char* getIdentifierName() {
+        return name;
     }
 };
 
@@ -163,5 +151,38 @@ public:
 
     bool resolveName(LexicalScope* scope) {
         return true; //not implemented
+    }
+};
+
+class AssignmentExpression:public Expression, public Declaration{
+private:
+    Expression *lhs, *rhs;
+public:
+    AssignmentExpression(Expression *lhs, Expression *rhs){
+        this->lhs = lhs;
+        this->rhs = rhs;
+    };
+
+    void dump(int indent){
+        IdentifierExpression* iden = dynamic_cast<IdentifierExpression*>(lhs);
+        if(iden) {
+            label(indent, "%p: VariableDeclaration %s\n", (Declaration*)this, iden->getIdentifierName());
+        }
+        label(indent, "AssignmentExpression\n");
+        lhs->dump(indent+1, "lhs");
+        rhs->dump(indent+1, "rhs");
+    }
+
+    std::string getName() {
+        // static_cast<IdentifierExpression*>(lhs)->getIdentifierName();
+        IdentifierExpression* iden = dynamic_cast<IdentifierExpression*>(lhs);
+        if(iden) {
+            return iden->getIdentifierName();
+        }
+        return "";
+    }
+
+    bool resolveName(LexicalScope* scope) {
+        return lhs->resolveName(scope) && rhs->resolveName(scope);
     }
 };

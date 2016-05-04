@@ -4,7 +4,7 @@
 
 using namespace std;
 class LexicalScope {
-private:
+protected:
 	LexicalScope* parentScope;
 	map<string, Declaration*> symbol_table;
 

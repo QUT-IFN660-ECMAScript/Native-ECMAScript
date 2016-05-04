@@ -4,10 +4,11 @@
 #include <iostream>
 #include "node.hpp"
 #include "statement.hpp"
+#include "declaration.hpp"
 
 using namespace std;
 
-class ScriptBody: public Node {
+class ScriptBody: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
@@ -22,6 +23,25 @@ public:
   }
 
   bool resolveName(LexicalScope* scope) {
-    return true;//not implemented
+
+    this->parentScope = scope;
+    bool allOk = true;
+    //Add local variable declarations to the symbol_table for this lexical scope
+    for(vector<Statement*>::iterator iter = stmts->begin(); 
+      iter != stmts->end(); ++iter) {
+      Declaration *declaration = dynamic_cast<Declaration*>(*iter);
+      if(declaration != NULL) {
+        symbol_table[declaration->getName()] = declaration;
+      }
+    }
+
+    for(vector<Statement*>::iterator iter = stmts->begin(); 
+      iter != stmts->end(); ++iter) {
+      if ((*iter)->resolveName(this) == false) {
+        allOk = false;
+      }
+    }
+
+    return allOk;//not implemented
   }
 };

@@ -11,9 +11,14 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
 
+bool SemanticAnalysis (Node* r) {
+	return r->resolveName(NULL);
+}
+
 int main(int argc, char* argv[])
 {
     yyin = fopen(argv[1], "r");
     yyparse();
+    SemanticAnalysis(root);
     root->dump(0);
 }
