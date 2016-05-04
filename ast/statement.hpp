@@ -233,8 +233,7 @@ class IterationStatement : public Statement {
 	
 	void dump(int indent) {
 		label(indent, "WhileStatement\n");
-		indent++;
-		expression->dump(indent);
-		statement->dump(indent);
+		expression->dump(indent+ 1);
+		statement->dump(indent + 1);
 	}
 };

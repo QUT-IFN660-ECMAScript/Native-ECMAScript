@@ -1,3 +1,3 @@
 /* Anthony Gough */
-var x;
+x=0;
 while (x) y=4;
