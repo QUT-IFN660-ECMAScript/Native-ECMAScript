@@ -238,3 +238,44 @@ class IterationStatement : public Statement {
 		statement->dump(indent + 2);
 	}
 };
+
+
+class DoWhileIterationStatement : public Statement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+	DoWhileIterationStatement(Statement *statement,Expression *expression) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "DoWhileStatement\n");
+		statement->dump(indent + 1);
+		expression->dump(indent+ 2);
+		
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
