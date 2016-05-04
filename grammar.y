@@ -149,7 +149,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement IterationStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement IterationStatement DoWhileIterationStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression

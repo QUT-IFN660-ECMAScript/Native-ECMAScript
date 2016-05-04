@@ -255,8 +255,9 @@ class DoWhileIterationStatement : public Statement {
 	void dump(int indent) {
 		indent++;
 		label(indent, "DoWhileStatement\n");
-		statement->dump(indent + 1);
 		expression->dump(indent+ 2);
+		statement->dump(indent + 1);
+		
 		
 	}
 };
