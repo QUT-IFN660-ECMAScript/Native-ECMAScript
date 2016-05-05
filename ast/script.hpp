@@ -22,26 +22,31 @@ public:
     }
   }
 
-  bool resolveName(LexicalScope* scope) {
-
+  bool resolveNames(LexicalScope* scope) {
     this->parentScope = scope;
     bool allOk = true;
+
     //Add local variable declarations to the symbol_table for this lexical scope
     for(vector<Statement*>::iterator iter = stmts->begin(); 
       iter != stmts->end(); ++iter) {
-      Declaration *declaration = dynamic_cast<Declaration*>(*iter);
-      if(declaration != NULL) {
-        symbol_table[declaration->getName()] = declaration;
+      ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(*iter);
+
+      if(expressionStatement != NULL) {
+        Declaration *declaration = dynamic_cast<Declaration*>(expressionStatement->getExpression());
+        if(declaration != NULL) {
+          symbol_table[declaration->getName()] = declaration;
+        }
       }
     }
 
     for(vector<Statement*>::iterator iter = stmts->begin(); 
       iter != stmts->end(); ++iter) {
-      if ((*iter)->resolveName(this) == false) {
+      bool b = (*iter)->resolveNames(this);
+      if (b == false) {
         allOk = false;
       }
     }
 
-    return allOk;//not implemented
+    return allOk;
   }
 };

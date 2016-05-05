@@ -12,11 +12,12 @@ int yyparse(void);
 extern ScriptBody *root;
 
 bool SemanticAnalysis (Node* r) {
-	return r->resolveName(NULL);
+	return r->resolveNames(NULL);
 }
 
 int main(int argc, char* argv[])
 {
+	printNameResolution = true;
     yyin = fopen(argv[1], "r");
     yyparse();
     SemanticAnalysis(root);

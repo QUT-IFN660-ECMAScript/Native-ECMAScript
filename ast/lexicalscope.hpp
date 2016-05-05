@@ -19,7 +19,7 @@ public:
 	}
 
 	Declaration* resolve (string symbol) {
-		Declaration* declaration = resolveHere (symbol);
+		Declaration* declaration = resolveHere(symbol);
 		if(declaration != NULL) {
 			return declaration;
 		} else if (parentScope != NULL) {

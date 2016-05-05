@@ -9,8 +9,9 @@ int yylex();
 
 ScriptBody *root;
 
-using namespace std;
+bool printNameResolution = false;
 
+using namespace std;
 %}
 
 %token END_OF_FILE 0

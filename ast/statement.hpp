@@ -26,12 +26,16 @@ public:
     expr->dump(indent+1);
   }
 
-  bool resolveName(LexicalScope* scope) {
-	  	return true; //not implemented
+  bool resolveNames(LexicalScope* scope) {
+	  	return expr->resolveNames(scope); //not implemented
 	}	
+
+	Expression* getExpression() {
+		return expr;
+	}
 };
 
-class StatementList: public Node {
+class StatementList: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
@@ -43,8 +47,27 @@ public:
       (*iter)->dump(indent+1);
   }
 
-  bool resolveName(LexicalScope* scope) {
-  	return false; //not implemented
+    bool resolveNames(LexicalScope* scope) {
+
+    this->parentScope = scope;
+    bool allOk = true;
+    //Add local variable declarations to the symbol_table for this lexical scope
+    for(vector<Statement*>::iterator iter = stmts->begin(); 
+      iter != stmts->end(); ++iter) {
+      Declaration *declaration = dynamic_cast<Declaration*>(*iter);
+      if(declaration != NULL) {
+        symbol_table[declaration->getName()] = declaration;
+      }
+    }
+
+    for(vector<Statement*>::iterator iter = stmts->begin(); 
+      iter != stmts->end(); ++iter) {
+      if ((*iter)->resolveNames(this) == false) {
+        allOk = false;
+      }
+    }
+
+    return allOk;//not implemented
   }
 };
 
@@ -71,7 +94,7 @@ public:
 		}
 	}
 
-  bool resolveName(LexicalScope* scope) {
+  bool resolveNames(LexicalScope* scope) {
   	return true; //not implemented
   }
 };
@@ -102,7 +125,7 @@ public:
 		}
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
 	  }
 };
@@ -125,7 +148,7 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
   	}
 };
@@ -145,7 +168,7 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
   	}
 };
@@ -161,7 +184,7 @@ public:
 		expr->dump(indent+1);
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
   	}
 };
@@ -187,7 +210,7 @@ public:
 		}
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
   	}
 };
@@ -214,7 +237,7 @@ public:
 		}
 	}
 
-	bool resolveName(LexicalScope* scope) {
+	bool resolveNames(LexicalScope* scope) {
 	  	return true; //not implemented
   	}
 };

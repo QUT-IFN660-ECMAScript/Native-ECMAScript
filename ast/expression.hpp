@@ -2,7 +2,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include "node.hpp"
-
+extern bool printNameResolution;
 using namespace std;
 
 class Expression:public Node{
@@ -21,7 +21,7 @@ public:
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -34,12 +34,24 @@ public:
     IdentifierExpression(char *name){
         this->name = name;
     };
-    void dump(int indent){
-        label(indent, "IdentifierExpression: %s\n", name);
+    void dump(int indent){ 
+        if(printNameResolution == true) {
+            label(indent, "IdentifierExpression: %s\t, declaration: %p\n", name, declaration);
+        } else {
+            label(indent, "IdentifierExpression: %s\n", name);
+        }
     }
 
-    bool resolveName(LexicalScope* scope) {
-        return true; //not implemented
+    bool resolveNames(LexicalScope* scope) {
+        if(scope != NULL) {
+            std::string str (name);
+            declaration = scope->resolve(str);
+        }
+
+        if( declaration == NULL) {
+            fprintf(stderr, "Error: undelcared identifer %s\n", name);
+        }
+        return declaration != NULL; //not implemented
     }
 
     char* getIdentifierName() {
@@ -58,7 +70,7 @@ public:
 		label(indent, "StringLiteralExpression: %s\n", val);
 	}
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -82,7 +94,7 @@ public:
         }
     }
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -111,7 +123,7 @@ public:
         }
     }
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -130,7 +142,7 @@ public:
         literalExpression->dump(indent);
     }
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -149,7 +161,7 @@ public:
         computedExpression->dump(indent);
     }
 
-    bool resolveName(LexicalScope* scope) {
+    bool resolveNames(LexicalScope* scope) {
         return true; //not implemented
     }
 };
@@ -164,9 +176,13 @@ public:
     };
 
     void dump(int indent){
-        IdentifierExpression* iden = dynamic_cast<IdentifierExpression*>(lhs);
-        if(iden) {
-            label(indent, "%p: VariableDeclaration %s\n", (Declaration*)this, iden->getIdentifierName());
+
+        if(printNameResolution) {
+            IdentifierExpression* iden = dynamic_cast<IdentifierExpression*>(lhs);
+        
+            if(iden) {
+                label(indent, "%p: VariableDeclaration %s\n", (Declaration*)this, iden->getIdentifierName());
+            }
         }
         label(indent, "AssignmentExpression\n");
         lhs->dump(indent+1, "lhs");
@@ -182,7 +198,7 @@ public:
         return "";
     }
 
-    bool resolveName(LexicalScope* scope) {
-        return lhs->resolveName(scope) && rhs->resolveName(scope);
+    bool resolveNames(LexicalScope* scope) {
+        return lhs->resolveNames(scope) && rhs->resolveNames(scope);
     }
 };
