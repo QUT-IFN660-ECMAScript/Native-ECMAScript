@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdarg>
 #include <cstdio>
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -235,6 +236,69 @@ public:
 		} else {
 			label(indent, "[Empty]\n");
 		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
+};
+
+/* 13.6 If Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
+ */
+class IfStatement: public Statement {
+private:
+	Expression *expression;
+	Statement *statement;
+	Statement *elseStatement;
+public:
+
+	// if (expression) { statement }
+	IfStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+
+	// if (expression) { statement } else { elseStatement }
+	IfStatement(Expression *expression, Statement *statement, Statement *elseStatement) {
+		this->expression = expression;
+		this->statement = statement;
+		this->elseStatement = elseStatement;
+	}
+
+	void dump(int indent) {
+		label(indent, "IfStatement\n");
+		indent++;
+		expression->dump(indent);
+		statement->dump(indent);
+		if (elseStatement) {
+			elseStatement->dump(indent);
+		}
+	}
+
+		bool resolveNames(LexicalScope* scope) {
+	  	return true; //not implemented
+  	}
+};
+
+
+class IterationStatement : public Statement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+	IterationStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "WhileStatement\n");
+		expression->dump(indent+ 1);
+		statement->dump(indent + 2);
 	}
 
 	bool resolveNames(LexicalScope* scope) {

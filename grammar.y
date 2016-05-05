@@ -141,7 +141,6 @@ using namespace std;
 
 %error-verbose
 
-%nonassoc ORDER_ELSE
 %nonassoc ELSE
 
 %nonassoc EQUAL
@@ -151,7 +150,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement IterationStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -446,7 +445,7 @@ ReturnStatement:
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
-    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						{ $$ = new IterationStatement($3, $5); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
@@ -473,8 +472,8 @@ ForBinding:
  */
 
 IfStatement:
-    IF LEFT_PAREN Expression RIGHT_PAREN Statement %prec ORDER_ELSE
-    | IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement
+    IF LEFT_PAREN Expression RIGHT_PAREN Statement ELSE Statement     { $$ = new IfStatement($3, $5, $7); }
+    | IF LEFT_PAREN Expression RIGHT_PAREN Statement                  { $$ = new IfStatement($3, $5); }
     ;
 
  /* 13.5 Expression Statement
@@ -483,6 +482,7 @@ IfStatement:
 
 ExpressionStatement:
     Expression SEMICOLON  { $$ = new ExpressionStatement($1); }
+    | Expression          { $$ = new ExpressionStatement($1); }
     ;
 
 /* 13.4 Empty Statement
@@ -631,7 +631,7 @@ Statement:
     | VariableStatement
     | EmptyStatement
     | ExpressionStatement   { $$ = $1; }
-    | IfStatement
+    | IfStatement           { $$ = $1; }
     | BreakableStatement
     | ReturnStatement
     | ContinueStatement

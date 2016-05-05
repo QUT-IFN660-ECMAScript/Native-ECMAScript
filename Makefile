@@ -138,3 +138,7 @@ generate: .bison .flex
 	$(info Running Simple Test)
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/string.js
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/basic_if.js
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/while_basic_statement.js
+	
+	

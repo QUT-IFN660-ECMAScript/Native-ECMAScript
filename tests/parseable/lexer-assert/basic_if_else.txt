@@ -1,10 +1,16 @@
 VAR
 IDENTIFIER (x)
+,
+IDENTIFIER (y)
 ;
 IF
 (
 IDENTIFIER (x)
 )
+IDENTIFIER (y)
+=
+false
+ELSE
 IDENTIFIER (y)
 =
 true
