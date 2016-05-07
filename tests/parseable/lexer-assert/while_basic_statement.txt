@@ -2,7 +2,7 @@ IDENTIFIER (x)
 =
 VALUE_INTEGER (0)
 ;
-IF
+WHILE
 (
 IDENTIFIER (x)
 )

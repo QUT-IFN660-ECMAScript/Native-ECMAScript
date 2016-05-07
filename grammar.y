@@ -148,7 +148,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement IterationStatement
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -443,7 +443,7 @@ ReturnStatement:
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON
-    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						{ $$ = new IterationStatement($3, $5); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement

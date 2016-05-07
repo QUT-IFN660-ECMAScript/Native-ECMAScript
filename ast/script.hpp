@@ -49,7 +49,7 @@ public:
         for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
             if (*it) {
                 if (!(*it)->resolveNames(this)) {
-                //     scoped = false;
+                    scoped = false;
                 }
             }
         }
