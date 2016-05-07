@@ -95,13 +95,16 @@ public:
     }
 
     bool resolveNames(LexicalScope *scope) {
+        if (lhs && rhs) {
 //        return true;
-        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression*> (lhs);
-        if (identifier != NULL) {
-            // not sure `this` in this context is what we are after, but whatever
-            scope->addToSymbolTable(identifier->getName(), this);
+            IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
+            if (identifier != NULL) {
+                // not sure `this` in this context is what we are after, but whatever
+                scope->addToSymbolTable(identifier->getName(), this);
+            }
+            return lhs->resolveNames(scope) && rhs->resolveNames(scope);
         }
-        return lhs->resolveNames(scope) && rhs->resolveNames(scope);
+        return false;
     }
 };
 
@@ -127,8 +130,10 @@ public:
     bool resolveNames(LexicalScope* scope) {
         bool scoped = true;
         for (vector<Expression*>::iterator it = propertyDefinitionList->begin(); it != propertyDefinitionList->end(); ++it) {
-            if (!(*it)->resolveNames(scope)) {
-                scoped = false;
+            if (*it) {
+                if (!(*it)->resolveNames(scope)) {
+                    scoped = false;
+                }
             }
         }
         return scoped;
@@ -161,7 +166,10 @@ public:
     }
 
     bool resolveNames(LexicalScope *scope) {
-        return key->resolveNames(scope) && value->resolveNames(scope);
+        if (key && value) {
+            return key->resolveNames(scope) && value->resolveNames(scope);
+        }
+        return false;
     };
 };
 
@@ -180,7 +188,10 @@ public:
     }
 
     bool resolveNames(LexicalScope* scope) {
-        return literalExpression->resolveNames(scope);
+        if (literalExpression) {
+            return literalExpression->resolveNames(scope);
+        }
+        return false;
     }
 };
 
@@ -199,7 +210,10 @@ public:
     }
 
     bool resolveNames(LexicalScope *scope) {
-        return computedExpression->resolveNames(scope);
+        if (computedExpression) {
+            return computedExpression->resolveNames(scope);
+        }
+        return false;
     }
 
 };

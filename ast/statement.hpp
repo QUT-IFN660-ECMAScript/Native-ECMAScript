@@ -27,7 +27,10 @@ public:
     expr->dump(indent+1);
   }
 	bool resolveNames(LexicalScope* scope) {
-		return expr->resolveNames(scope);
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -49,12 +52,16 @@ public:
 
 		for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
 
-			Declaration* declaration = dynamic_cast<Declaration*>(*it);
-			if (declaration != NULL) {
-				symbolTable[declaration->getName()] = declaration;
-			}
+			if (*it) {
+				Declaration *declaration = dynamic_cast<Declaration *>(*it);
+				if (declaration != NULL) {
+					symbolTable[declaration->getName()] = declaration;
+				}
 
-			if (!(*it)->resolveNames(scope)) {
+				if (!(*it)->resolveNames(scope)) {
+					scoped = false;
+				}
+			} else {
 				scoped = false;
 			}
 		}
@@ -86,7 +93,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return statementList->resolveNames(scope);
+		if (statementList) {
+			return statementList->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -117,7 +127,17 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return tryStatement->resolveNames(scope) && catchStatement->resolveNames(scope) && finallyStatement->resolveNames(scope);
+		bool scoped = true;
+		if (tryStatement && !tryStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (catchStatement && !catchStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (finallyStatement && !finallyStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
 	}
 };
 
@@ -140,7 +160,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return expression->resolveNames(scope) && statement->resolveNames(scope);
+		if (expression && statement) {
+			return expression->resolveNames(scope) && statement->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -160,7 +183,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return statement->resolveNames(scope);
+		if (statement) {
+			return statement->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -176,7 +202,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return expr->resolveNames(scope);
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -203,7 +232,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope *scope) {
-		return expr->resolveNames(scope);
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
 	};
 
 };
@@ -230,7 +262,10 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return expr->resolveNames(scope);
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -268,6 +303,16 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		return expression->resolveNames(scope) && statement->resolveNames(scope) && elseStatement->resolveNames(scope);
+		bool scoped = true;
+		if (expression && !expression->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (statement && !statement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (elseStatement && !elseStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
 	}
 };
