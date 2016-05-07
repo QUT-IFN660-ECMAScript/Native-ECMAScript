@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     yyin = fopen(argv[1], "r");
     yyparse();
     if (root != NULL) {
-        // root->resolveNames(NULL);
+        root->resolveNames(NULL);
         root->dump(0);
     }
     return 0;
