@@ -5,11 +5,3 @@ ScriptBody
                 IdentifierExpression: x
             rhs:
                 IntegerLiteralExpression: 42
-
-< ScriptBody
-<     ExpressionStatement
-<         AssignmentExpression
-<             lhs:
-<                 IdentifierExpression: x
-<             rhs:
-<                 IntegerLiteralExpression: 42

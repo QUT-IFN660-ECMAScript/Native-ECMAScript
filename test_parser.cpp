@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
         yyin = fopen(filename, "r");
         yyparse();
         if(root != NULL) {
-          root->resolveNames(NULL);
+//          root->resolveNames(NULL);
           root->dump(0);
         }
         fclose(yyin);

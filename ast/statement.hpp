@@ -50,22 +50,25 @@ public:
 		bool scoped = true;
 		this->parentScope = scope;
 
-		for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
-
-			if (*it) {
-				Declaration *declaration = dynamic_cast<Declaration *>(*it);
-				if (declaration != NULL) {
-					symbolTable[declaration->getName()] = declaration;
-				}
-
-				if (!(*it)->resolveNames(scope)) {
-					scoped = false;
-				}
-			} else {
-				scoped = false;
+		if (stmts) {
+			for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
+	//			return true;
+	//			if (*it) {
+	//				Declaration *declaration = dynamic_cast<Declaration *>(*it);
+	//				if (declaration != NULL) {
+	//					symbolTable[declaration->getName()] = declaration;
+	//				}
+	//
+	//				if (!(*it)->resolveNames(scope)) {
+	//					scoped = false;
+	//				}
+	//			} else {
+	//				scoped = false;
+	//			}
 			}
+			return scoped;
 		}
-		return scoped;
+		return false;
 	}
 };
 

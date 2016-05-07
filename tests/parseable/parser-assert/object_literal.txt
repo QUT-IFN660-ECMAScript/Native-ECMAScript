@@ -20,12 +20,6 @@ ScriptBody
                     PropertyDefinitionExpression
                         Key
                             LiteralPropertyNameExpression
-                                StringLiteralExpression: "one"
-                        Value
-                            IntegerLiteralExpression: 1
-                    PropertyDefinitionExpression
-                        Key
-                            ComputedPropertyNameExpression
-                                StringLiteralExpression: "computed property name"
+                                StringLiteralExpression: "two"
                         Value
                             IntegerLiteralExpression: 2

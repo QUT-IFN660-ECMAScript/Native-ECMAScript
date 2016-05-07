@@ -129,14 +129,18 @@ public:
 
     bool resolveNames(LexicalScope* scope) {
         bool scoped = true;
-        for (vector<Expression*>::iterator it = propertyDefinitionList->begin(); it != propertyDefinitionList->end(); ++it) {
-            if (*it) {
-                if (!(*it)->resolveNames(scope)) {
-                    scoped = false;
+        if (propertyDefinitionList) {
+            for (vector<Expression *>::iterator it = propertyDefinitionList->begin();
+                 it != propertyDefinitionList->end(); ++it) {
+                if (*it) {
+                    if (!(*it)->resolveNames(scope)) {
+                        scoped = false;
+                    }
                 }
             }
+            return scoped;
         }
-        return scoped;
+        return false;
     }
 
 };

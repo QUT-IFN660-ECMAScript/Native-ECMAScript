@@ -10,13 +10,7 @@ IDENTIFIER (one)
 :
 VALUE_STRING ("1")
 ,
-VALUE_STRING ("one")
-:
-VALUE_INTEGER (1)
-,
-[
-VALUE_STRING ("computed property name")
-]
+VALUE_STRING ("two")
 :
 VALUE_INTEGER (2)
 }
