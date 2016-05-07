@@ -239,15 +239,15 @@ class IterationStatement : public Statement {
 	}
 };
 
-
-class DoWhileIterationStatement : public Statement {
+/*
+class DoWhileIterationStatement : public Statement, public IterationStatement {
 	private:
 		Expression *expression;
 		Statement *statement;
 		
 	public:
 	/* while expression statement */
-	DoWhileIterationStatement(Statement *statement,Expression *expression) {
+/*	DoWhileIterationStatement(Statement *statement,Expression *expression) {
 		this->expression = expression;
 		this->statement = statement;
 	}
@@ -261,7 +261,7 @@ class DoWhileIterationStatement : public Statement {
 		
 	}
 };
-
+*/
 
 
 
