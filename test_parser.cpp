@@ -25,7 +25,10 @@ int main(int argc, char* argv[])
       if (access(filename, F_OK) != -1) {
         yyin = fopen(filename, "r");
         yyparse();
-        root->dump(0);
+        if(root != NULL) {
+//          root->resolveNames(NULL);
+          root->dump(0);
+        }
         fclose(yyin);
         return 0;
       }

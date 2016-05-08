@@ -134,8 +134,7 @@ using namespace std;
 
     int ival;
     double fval;
-    char* sval;
-    char* str;
+    const char* sval;
 }
 
 %error-verbose
