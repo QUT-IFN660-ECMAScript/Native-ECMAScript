@@ -7,3 +7,6 @@
 #include "script.hpp"
 #include "statement.hpp"
 #include "expression.hpp"
+#include "../type/type.hpp"
+#include "../builtin/core.hpp"
+#include "../builtin/console.hpp"

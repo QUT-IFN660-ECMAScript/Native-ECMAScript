@@ -13,6 +13,11 @@ extern ScriptBody *root;
 
 int main(int argc, char* argv[])
 {
+
+    ESValue* x = new Number(42);
+    ESValue* y = Core::Plus(x, new Number(4));
+    Console::log(y);
+
     yyin = fopen(argv[1], "r");
     yyparse();
     if (root != NULL) {
