@@ -338,8 +338,8 @@ class IterationStatement : public Statement {
 		expression->dump(indent+ 1);
 		statement->dump(indent + 2);
 	}
-
-	bool resolveNames(LexicalScope* scope) {
+	
+		bool resolveNames(LexicalScope* scope) {
 		bool scoped = true;
 		if (expression && !expression->resolveNames(scope)) {
 			scoped = false;
@@ -349,4 +349,34 @@ class IterationStatement : public Statement {
 		}
 		return scoped;
 	}
+
 };
+
+/*
+class DoWhileIterationStatement : public Statement, public IterationStatement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+/*	DoWhileIterationStatement(Statement *statement,Expression *expression) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "DoWhileStatement\n");
+		expression->dump(indent+ 2);
+		statement->dump(indent + 1);
+		
+		
+	}
+};
+*/
+
+
+
+
+
