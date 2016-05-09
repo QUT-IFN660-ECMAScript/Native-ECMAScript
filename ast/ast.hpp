@@ -8,5 +8,5 @@
 #include "statement.hpp"
 #include "expression.hpp"
 #include "../type/type.hpp"
-#include "../builtin/core.hpp"
-#include "../builtin/console.hpp"
+#include "../runtime/core.hpp"
+#include "../runtime/console.hpp"
