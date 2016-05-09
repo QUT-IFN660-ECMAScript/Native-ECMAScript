@@ -161,14 +161,15 @@ public:
      * Returns true if Type(base) is Boolean, String, Symbol, or Number.
      */
     bool hasPrimitiveBase() {
-        return getBase()->isPrimitive();
+        Type baseType = getBase()->getType();
+        return baseType == boolean || baseType == string_ || baseType == symbol || baseType == number;
     }
 
     /**
      * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
      */
     bool isPropertyReference() {
-        if (getBase()->getType() == object || getBase()->isPrimitive()) {
+        if (getBase()->getType() == object || hasPrimitiveBase()) {
             return true;
         }
         return false;
