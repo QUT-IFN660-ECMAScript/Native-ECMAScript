@@ -208,7 +208,10 @@ private:
     vector<Expression*> *propertyDefinitionList;
 public:
     //No parameter constructor
-    ObjectLiteralExpression(){};
+    ObjectLiteralExpression(){
+        // assign empty propertylist
+        this->propertyDefinitionList = new vector<Expression*>;
+    };
     ObjectLiteralExpression(vector<Expression*> *propertyDefinitionList) {
         this->propertyDefinitionList = propertyDefinitionList;
     };
