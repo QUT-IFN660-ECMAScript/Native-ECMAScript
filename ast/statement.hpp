@@ -53,9 +53,9 @@ public:
 		if (stmts) {
 			for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
 				if (*it) {
-					Declaration *declaration = dynamic_cast<Declaration *>(*it);
-					if (declaration != NULL) {
-						symbolTable[declaration->getName()] = declaration;
+					Reference *reference = dynamic_cast<Reference *>(*it);
+					if (reference != NULL) {
+						symbolTable[reference->getReferencedName()] = reference;
 					}
 
 					if (!(*it)->resolveNames(scope)) {
