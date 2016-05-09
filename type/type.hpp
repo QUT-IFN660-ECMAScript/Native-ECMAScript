@@ -3,22 +3,25 @@
 #include <map>
 #include <sstream>
 
-
-enum TypeName {
-    UNDEFINED,
-    ES_NULL,
-    BOOLEAN,
-    STRING,
-    SYMBOL,
-    NUMBER,
-    OBJECT
+/**
+ * This is really annoying, we need to append something like `_` because Type::string is c++11 and using just `string`
+ * causes ambiguity errors with std::string
+ */
+enum Type {
+    undefined,
+    null,
+    boolean,
+    string_,
+    symbol,
+    number,
+    object
 };
 
 class String;
 
 class ESValue {
 public:
-    virtual TypeName getType() = 0;
+    virtual Type getType() = 0;
     virtual bool isPrimitive() = 0;
     /**
      * 7.1.12 ToString ( argument )
@@ -51,8 +54,8 @@ public:
         this->value = std::string();
     }
 
-    TypeName getType() {
-        return STRING;
+    Type getType() {
+        return string_;
     }
 
     std::string getValue() {
@@ -75,8 +78,8 @@ class Undefined : public Primitive<int> {
 public:
     Undefined() {}
 
-    TypeName getType() {
-        return UNDEFINED;
+    Type getType() {
+        return undefined;
     }
 
     int getValue() {
@@ -95,19 +98,19 @@ public:
 /**
  * For now, Null also has a value of 0
  */
-class Null : public Primitive<int> {
+class Null : public Primitive<Type> {
 public:
     Null() {}
 
-    TypeName getType() {
-        return ES_NULL;
+    Type getType() {
+        return null;
     }
 
-    int getValue() {
-        return 0;
+    Type getValue() {
+        return null;
     }
 
-    void setValue(int value) {
+    void setValue(Type value) {
         return;
     }
 
@@ -124,8 +127,8 @@ public:
         this->value = value;
     }
 
-    TypeName getType() {
-        return BOOLEAN;
+    Type getType() {
+        return boolean;
     }
 
     bool getValue() {
@@ -149,8 +152,8 @@ public:
         this->value = value;
     }
 
-    TypeName getType() {
-        return SYMBOL;
+    Type getType() {
+        return symbol;
     }
 
     std::string getValue() {
@@ -174,8 +177,8 @@ public:
         this->value = value;
     }
 
-    TypeName getType() {
-        return NUMBER;
+    Type getType() {
+        return number;
     }
 
     double getValue() {
@@ -195,8 +198,8 @@ public:
 
 class Object : public ESValue {
 public:
-    TypeName getType() {
-        return OBJECT;
+    Type getType() {
+        return object;
     }
 
     bool isPrimitive() {
@@ -220,10 +223,11 @@ public:
             return prototype[key->getValue()];
         }
         fprintf(stderr, "ya blew it!\n");
-        return new Null();
+        return new Undefined();
     }
 
-    void set(String* key, ESValue* value) {
+    void set(ESValue* key_ref, ESValue* value) {
+        String* key = key_ref->toString();
         prototype[key->getValue()] = value;
     }
 
@@ -233,12 +237,31 @@ public:
 };
 
 class ESObject : public Object {
+private:
+    std::map<std::string, ESValue*> properties;
 public:
     Prototype* prototype;
 
     ESObject() {
         this->prototype = new Prototype();
+        properties.clear();
     }
+
+    ESValue* get(ESValue* key_ref) {
+        String* key = key_ref->toString();
+        std::map<std::string, ESValue*>::iterator it = properties.find(key->getValue());
+        if (it != properties.end()) {
+            return properties[key->getValue()];
+        }
+        fprintf(stderr, "ya blew it!\n");
+        return new Undefined();
+    }
+
+    void set(ESValue* key_ref, ESValue* value) {
+        String* key = key_ref->toString();
+        properties[key->getValue()] = value;
+    }
+
 
     String* toString() {
         return new String();

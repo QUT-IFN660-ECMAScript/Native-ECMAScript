@@ -14,7 +14,7 @@ public:
      * TODO: comply with the spec, maybe even rename the variable names?
      */
     static ESValue* plus(ESValue* x_in, ESValue* y_in) {
-        if (x_in->getType() == NUMBER && y_in->getType() == NUMBER) {
+        if (x_in->getType() == number && y_in->getType() == number) {
 
             Number* x = dynamic_cast<Number *> (x_in);
             Number* y = dynamic_cast<Number *> (y_in);

@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 //    Console::log(y);
 
     ESObject* global = new ESObject();
-    global->prototype->set(new String("x"), new Number(42));
-    global->prototype->set(new String("y"), Core::plus(global->prototype->get(new String("x")), new Number(4)));
-    Console::log(global->prototype->get(new String("y")));
+    global->set(new Number(1), new Number(42));
+    global->set(new String("y"), Core::plus(global->get(new Number(1)), new Number(4)));
+    Console::log(global->get(new String("y")));
 
     yyin = fopen(argv[1], "r");
     yyparse();

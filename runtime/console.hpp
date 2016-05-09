@@ -18,13 +18,13 @@ public:
      */
     static void log(ESValue* value) {
         if (value->isPrimitive()) {
-            if (value->getType() == UNDEFINED) {
+            if (value->getType() == undefined) {
                 fprintf(stdout, "undefined\n");
                 return;
-            } else if (value->getType() == ES_NULL) {
+            } else if (value->getType() == null) {
                 fprintf(stdout, "null\n");
                 return;
-            } else if (value->getType() == BOOLEAN) {
+            } else if (value->getType() == boolean) {
                 Boolean* boolean = dynamic_cast<Boolean*>(value);
                 if (boolean != NULL) {
                     if (boolean->getValue()) {
@@ -36,7 +36,7 @@ public:
                     fprintf(stderr, "unloggable type (failed to cast to bool)\n");
                 }
                 return;
-            } else if (value->getType() == STRING) {
+            } else if (value->getType() == string_) {
                 String* string = dynamic_cast<String*>(value);
                 if (string != NULL) {
                     fprintf(stdout, "%s\n", string->getValue().c_str());
@@ -44,7 +44,7 @@ public:
                     fprintf(stderr, "unloggable type (failed to cast to string)\n");
                 }
                 return;
-            } else if (value->getType() == SYMBOL) {
+            } else if (value->getType() == symbol) {
                 Symbol *symbol = dynamic_cast<Symbol *>(value);
                 if (symbol != NULL) {
                     fprintf(stdout, "%s\n", symbol->getValue().c_str());
@@ -52,7 +52,7 @@ public:
                     fprintf(stderr, "unloggable type (failed to cast to symbol)\n");
                 }
                 return;
-            } else if (value->getType() == NUMBER) {
+            } else if (value->getType() == number) {
                 Number *number = dynamic_cast<Number *>(value);
                 if (number != NULL) {
                     fprintf(stdout, "%f\n", number->getValue());
@@ -60,7 +60,7 @@ public:
                     fprintf(stderr, "unloggable type (failed to cast to number)\n");
                 }
                 return;
-            } else if (value->getType() == OBJECT) {
+            } else if (value->getType() == object) {
                 fprintf(stdout, "Object[object]\n");
                 return;
             }

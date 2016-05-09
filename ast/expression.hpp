@@ -168,7 +168,7 @@ public:
      * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
      */
     bool isPropertyReference() {
-        if (getBase()->getType() == OBJECT || getBase()->isPrimitive()) {
+        if (getBase()->getType() == object || getBase()->isPrimitive()) {
             return true;
         }
         return false;
@@ -178,7 +178,7 @@ public:
      * Returns true if the base value is undefined and false otherwise.
      */
     bool isUnresolvableReference() {
-        return getBase()->getType() == UNDEFINED;
+        return getBase()->getType() == undefined;
     }
 
     /**
