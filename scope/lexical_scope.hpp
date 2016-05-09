@@ -4,12 +4,12 @@
 #pragma once
 
 #include <map>
-#include "declaration.hpp"
+#include "reference.hpp"
 
 class LexicalScope {
 protected:
     LexicalScope* parentScope;
-    std::map<std::string, Declaration*> symbolTable;
+    std::map<std::string, Reference*> symbolTable;
 
 public:
     LexicalScope() {
@@ -18,17 +18,17 @@ public:
         symbolTable.clear();
     }
 
-    Declaration* resolveHere(std::string symbol) {
-        std::map<std::string, Declaration*>::iterator it = symbolTable.find(symbol);
+    Reference* resolveHere(std::string symbol) {
+        std::map<std::string, Reference*>::iterator it = symbolTable.find(symbol);
         if (it != symbolTable.end()) {
             return it->second;
         }
         return NULL;
     }
 
-    Declaration* resolve(std::string symbol) {
+    Reference* resolve(std::string symbol) {
         // printf("%s\n", symbol.c_str());
-        Declaration* local = resolveHere(symbol);
+        Reference* local = resolveHere(symbol);
         if (local != NULL) {
             return local;
         } else if (parentScope != NULL) {
@@ -37,7 +37,7 @@ public:
         return NULL;
     }
 
-    void addToSymbolTable(std::string symbol, Declaration* declaration) {
-        symbolTable[symbol] = declaration;
+    void addToSymbolTable(std::string symbol, Reference* reference) {
+        symbolTable[symbol] = reference;
     }
 };

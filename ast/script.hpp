@@ -23,24 +23,24 @@ public:
 
   bool resolveNames(LexicalScope* scope) {
 
-     //Add local variable declarations to the symbol_table for this lexical scope
+     //Add local variable references to the symbol_table for this lexical scope
     // for(vector<Statement*>::iterator iter = stmts->begin(); 
     //   iter != stmts->end(); ++iter) {
     //   ExpressionStatement* expressionStatement = dynamic_cast<ExpressionStatement*>(*iter);
 
     //   if(expressionStatement != NULL) {
-    //     Declaration *declaration = dynamic_cast<Declaration*>(expressionStatement->getExpression());
-    //     if(declaration != NULL) {
-    //       symbolTable[declaration->getName()] = declaration;
+    //     Reference *reference = dynamic_cast<Reference*>(expressionStatement->getExpression());
+    //     if(reference != NULL) {
+    //       symbolTable[reference->getReferencedName()] = reference;
     //     }
     //   }
     // }
 
     for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
         if (*it) {
-          Declaration *declaration = dynamic_cast<Declaration *>(*it);
-          if (declaration != NULL) {
-            symbolTable[declaration->getName()] = declaration;
+          Reference *reference = dynamic_cast<Reference *>(*it);
+          if (reference != NULL) {
+            symbolTable[reference->getReferencedName()] = reference;
           }
         } 
       }

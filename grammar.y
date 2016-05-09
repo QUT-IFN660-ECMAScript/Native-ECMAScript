@@ -116,7 +116,7 @@ using namespace std;
 %token DOUBLE_QUOTE                       // "
 %token SINGLE_QUOTE                       // '
 %token <ival> VALUE_INTEGER
-%token <fval> VALUE_FLOAT
+%token <dval> VALUE_DOUBLE
 %token <sval> VALUE_STRING
 %token <sval> IDENTIFIER
 %token LINE_FEED
@@ -133,7 +133,7 @@ using namespace std;
     vector<Expression*>* propertyDefinitionList;
 
     int ival;
-    double fval;
+    double dval;
     const char* sval;
 }
 
@@ -1039,11 +1039,13 @@ NumericLiteral:
     ;
 
 DecimalLiteral:
-    DecimalIntegerLiteral	                   { $$ = $1; }
+    DecimalIntegerLiteral                   { $$ = $1; }
+    | VALUE_DOUBLE                          { $$ = new DecimalLiteralExpression($1); }
     ;
 
 DecimalIntegerLiteral:
-    VALUE_INTEGER	                           { $$ = new IntegerLiteralExpression($1); }
+    // DecimalDigit
+    VALUE_INTEGER	                           { $$ = new DecimalIntegerLiteralExpression($1); }
     ;
 
 

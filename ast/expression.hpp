@@ -8,11 +8,11 @@ using namespace std;
 class Expression:public Node{
 };
 
-class IntegerLiteralExpression:public Expression{
+class DecimalIntegerLiteralExpression:public Expression{
 private:
     int value;
 public:
-    IntegerLiteralExpression(int value){
+    DecimalIntegerLiteralExpression(int value){
         this->value = value;
     };
 
@@ -28,17 +28,37 @@ public:
     }
 };
 
+class DecimalLiteralExpression:public Expression{
+private:
+    double value;
+public:
+    DecimalLiteralExpression(double value){
+        this->value = value;
+    };
+
+    double getValue() {
+        return value;
+    }
+
+    void dump(int indent){
+        label(indent, "IntegerLiteralExpression: %d\n", value);
+    }
+    bool resolveNames(LexicalScope* scope) {
+        return true;
+    }
+};
+
 class IdentifierExpression:public Expression{
 private:
     std::string name;
-    Declaration* declaration;
+    Reference* reference;
 public:
     IdentifierExpression(std::string name){
         this->name = name;
-        this->declaration = NULL;
+        this->reference = NULL;
     };
 
-    std::string getName() {
+    std::string getReferencedName() {
         return name;
     }
 
@@ -47,12 +67,12 @@ public:
     }
     bool resolveNames(LexicalScope* scope) {
         if (scope != NULL) {
-            declaration = scope->resolve(name);
+            reference = scope->resolve(name);
         }
-        if (declaration == NULL) {
+        if (reference == NULL) {
             fprintf(stderr, "Error: Undeclared identifier: %s\n", name.c_str());
         }
-        return declaration != NULL;
+        return reference != NULL;
     }
 };
 
@@ -63,6 +83,11 @@ public:
 	StringLiteralExpression(const char* val) {
 		this->val = std::string(val);
 	};
+
+    std::string getValue() {
+        return val;
+    }
+
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
 	}
@@ -71,7 +96,7 @@ public:
     }
 };
 
-class AssignmentExpression:public Expression, Declaration {
+class AssignmentExpression:public Expression, Reference {
 private:
     Expression *lhs, *rhs;
 public:
@@ -86,12 +111,81 @@ public:
         rhs->dump(indent + 1, "rhs");
     }
 
-    std::string getName() {
+    /**
+     * Returns the base value component of the reference
+     * TODO: This method will need to be expanded for all possible types... maybe?
+     */
+    ESValue* getBase() {
+
+        // attempt to cast to a string
+        StringLiteralExpression* stringLiteralExpression = dynamic_cast<StringLiteralExpression*>(rhs);
+        if (stringLiteralExpression) {
+            return new String(stringLiteralExpression->getValue());
+        }
+
+        // attempt to cast to an int
+        DecimalIntegerLiteralExpression* decimalIntegerLiteralExpression = dynamic_cast<DecimalIntegerLiteralExpression*>(rhs);
+        if (decimalIntegerLiteralExpression) {
+            return new Number(decimalIntegerLiteralExpression->getValue());
+        }
+
+        // attempt to cast to a double
+        DecimalLiteralExpression* decimalLiteralExpression = dynamic_cast<DecimalLiteralExpression*>(rhs);
+        if (decimalLiteralExpression) {
+            return new Number(decimalLiteralExpression->getValue());
+        }
+
+        // ??? fail!
+        return new Undefined();
+    }
+
+    /**
+     * Returns the referenced name component of the reference.
+     */
+    std::string getReferencedName() {
         IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
         if (identifier != NULL) {
-            return identifier->getName();
+            return identifier->getReferencedName();
         }
         return NULL;
+    }
+
+    /**
+     * Returns the strict reference flag component of the reference.
+     */
+    bool isStrictReference() {
+        return false;
+    }
+
+    /**
+     * Returns true if Type(base) is Boolean, String, Symbol, or Number.
+     */
+    bool hasPrimitiveBase() {
+        return getBase()->isPrimitive();
+    }
+
+    /**
+     * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
+     */
+    bool isPropertyReference() {
+        if (getBase()->getType() == OBJECT || getBase()->isPrimitive()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the base value is undefined and false otherwise.
+     */
+    bool isUnresolvableReference() {
+        return getBase()->getType() == UNDEFINED;
+    }
+
+    /**
+     * Returns true if this reference has a thisValue component
+     */
+    bool isSuperReference() {
+        return false;
     }
 
     bool resolveNames(LexicalScope *scope) {
@@ -100,7 +194,7 @@ public:
             IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
             if (identifier != NULL) {
                 // not sure `this` in this context is what we are after, but whatever
-                scope->addToSymbolTable(identifier->getName(), this);
+                scope->addToSymbolTable(identifier->getReferencedName(), this);
             }
             return lhs->resolveNames(scope) && rhs->resolveNames(scope);
         }
