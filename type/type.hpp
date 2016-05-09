@@ -207,20 +207,24 @@ public:
 
 class Prototype : public Object {
 private:
-    std::map<String*, ESValue*> prototype;
+    std::map<std::string, ESValue*> prototype;
 public:
+    Prototype() {
+        prototype.clear();
+    }
+
     ESValue* get(ESValue* key_ref) {
         String* key = key_ref->toString();
-        std::map<String*, ESValue*>::iterator it = prototype.find(key);
+        std::map<std::string, ESValue*>::iterator it = prototype.find(key->getValue());
         if (it != prototype.end()) {
-            return prototype[key];
+            return prototype[key->getValue()];
         }
         fprintf(stderr, "ya blew it!\n");
         return new Null();
     }
 
     void set(String* key, ESValue* value) {
-        prototype[key] = value;
+        prototype[key->getValue()] = value;
     }
 
     String* toString() {
