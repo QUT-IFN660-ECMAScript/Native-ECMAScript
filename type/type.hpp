@@ -2,6 +2,8 @@
 
 #include <map>
 
+class Core;
+
 enum TypeName {
     UNDEFINED,
     ES_NULL,
