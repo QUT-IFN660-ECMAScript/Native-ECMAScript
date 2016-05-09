@@ -1,8 +1,8 @@
 #pragma once
 
 #include <map>
+#include <sstream>
 
-class Core;
 
 enum TypeName {
     UNDEFINED,
@@ -14,10 +14,17 @@ enum TypeName {
     OBJECT
 };
 
+class String;
+
 class ESValue {
 public:
     virtual TypeName getType() = 0;
     virtual bool isPrimitive() = 0;
+    /**
+     * 7.1.12 ToString ( argument )
+     * The abstract operation ToString converts argument to a value of type String
+     */
+    virtual String* toString() = 0;
 };
 
 template <class T>
@@ -31,66 +38,6 @@ public:
     }
 };
 
-/**
- * For now Undefined just has a value of 0
- */
-class Undefined : public Primitive<int> {
-public:
-    Undefined() {}
-
-    TypeName getType() {
-        return UNDEFINED;
-    }
-
-    int getValue() {
-        return 0;
-    }
-
-    void setValue(int value) {
-        return;
-    }
-};
-
-/**
- * For now, Null also has a value of 0
- */
-class Null : public Primitive<int> {
-public:
-    Null() {}
-
-    TypeName getType() {
-        return ES_NULL;
-    }
-
-    int getValue() {
-        return 0;
-    }
-
-    void setValue(int value) {
-        return;
-    }
-};
-
-class Boolean : public Primitive<bool> {
-private:
-    bool value;
-public:
-    Boolean(bool value) {
-        this->value = value;
-    }
-
-    TypeName getType() {
-        return BOOLEAN;
-    }
-
-    bool getValue() {
-        return value;
-    }
-
-    void setValue(bool value) {
-        this->value = value;
-    }
-};
 
 class String : public Primitive<std::string> {
 private:
@@ -115,6 +62,83 @@ public:
     void setValue(std::string value) {
         this->value = value;
     }
+
+    String* toString() {
+        return new String(value);
+    }
+};
+
+/**
+ * For now Undefined just has a value of 0
+ */
+class Undefined : public Primitive<int> {
+public:
+    Undefined() {}
+
+    TypeName getType() {
+        return UNDEFINED;
+    }
+
+    int getValue() {
+        return 0;
+    }
+
+    void setValue(int value) {
+        return;
+    }
+
+    String* toString() {
+        return new String("undefined");
+    }
+};
+
+/**
+ * For now, Null also has a value of 0
+ */
+class Null : public Primitive<int> {
+public:
+    Null() {}
+
+    TypeName getType() {
+        return ES_NULL;
+    }
+
+    int getValue() {
+        return 0;
+    }
+
+    void setValue(int value) {
+        return;
+    }
+
+    String* toString() {
+        return new String("null");
+    }
+};
+
+class Boolean : public Primitive<bool> {
+private:
+    bool value;
+public:
+    Boolean(bool value) {
+        this->value = value;
+    }
+
+    TypeName getType() {
+        return BOOLEAN;
+    }
+
+    bool getValue() {
+        return value;
+    }
+
+    void setValue(bool value) {
+        this->value = value;
+    }
+
+    String* toString() {
+        return new String("null");
+    }
 };
 
 class Symbol : public Primitive<std::string> {
@@ -135,6 +159,10 @@ public:
 
     void setValue(std::string value) {
         this->value = value;
+    }
+
+    String* toString() {
+        return new String(this->value);
     }
 };
 
@@ -157,6 +185,12 @@ public:
     void setValue(double value) {
         this->value = value;
     }
+
+    String* toString() {
+        std::ostringstream strs;
+        strs << value;
+        return new String(strs.str());
+    }
 };
 
 class Object : public ESValue {
@@ -168,29 +202,44 @@ public:
     bool isPrimitive() {
         return false;
     }
+
 };
 
 class Prototype : public Object {
 private:
-    std::map<std::string, ESValue*> prototype;
+    std::map<String*, ESValue*> prototype;
 public:
     ESValue* get(ESValue* key_ref) {
-//        String* key = Core::toString(key);
-//        std::map<std::string, ESValue*>::iterator it = prototype.find(key->getValue());
-//        if (it != prototype.end()) {
-//            return prototype[key->getValue()];
-//        }
-        return NULL;
+        String* key = key_ref->toString();
+        std::map<String*, ESValue*>::iterator it = prototype.find(key);
+        if (it != prototype.end()) {
+            return prototype[key];
+        }
+        fprintf(stderr, "ya blew it!\n");
+        return new Null();
     }
 
-    void set(String key, ESValue* value) {
-        prototype[key.getValue()] = value;
+    void set(String* key, ESValue* value) {
+        prototype[key] = value;
+    }
+
+    String* toString() {
+        return new String();
     }
 };
 
 class ESObject : public Object {
 public:
     Prototype* prototype;
+
+    ESObject() {
+        this->prototype = new Prototype();
+    }
+
+    String* toString() {
+        return new String();
+    }
+
 };
 
 class StringObject : public Object {

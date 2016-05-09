@@ -14,10 +14,16 @@ extern ScriptBody *root;
 int main(int argc, char* argv[])
 {
 
-    ESValue* x = new Number(42);
-    ESValue* y = Core::Plus(x, new Number(4));
-    Console::log(y);
+//    ESValue* x = new Number(42);
+//    ESValue* y = Core::plus(x, new Number(4));
+//    Console::log(y);
 
+    ESObject* global = new ESObject();
+    String* x = new String("x");
+    String* y = new String("y");
+    global->prototype->set(x, new Number(42));
+    Console::log(global->prototype->get(x));
+//    global->prototype->set(y, Core::plus(global->prototype->get(x), new Number(4)));
 
     yyin = fopen(argv[1], "r");
     yyparse();
