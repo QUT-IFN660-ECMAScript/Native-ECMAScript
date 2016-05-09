@@ -33,7 +33,7 @@ public:
     static String* toString(ESValue* argument) {
         if (argument->getType() == UNDEFINED) {
             return new String("undefined");
-        } else if (argument->getType() == NULL) {
+        } else if (argument->getType() == ES_NULL) {
             return new String("null");
         } else if (argument->getType() == BOOLEAN) {
             Boolean* boolean = dynamic_cast<Boolean*>(argument);
@@ -43,16 +43,17 @@ public:
                 }
                 return new String("false");
             }
-            return new Undefined();
+            return new String();
         } else if (argument->getType() == NUMBER) { // 7.1.12.1 ToString Applied to the Number Type
             // TODO: Implement this better!
             Number* number = dynamic_cast<Number*>(argument);
             if (number != NULL) {
-                std::osstringstream strs;
+                std::ostringstream strs;
                 strs << number->getValue();
                 return new String(strs.str());
             }
         }
+        return new String();
     }
 };
 

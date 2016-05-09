@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include "../runtime/core.hpp"
 
 enum TypeName {
     UNDEFINED,
@@ -174,11 +173,12 @@ private:
     std::map<std::string, ESValue*> prototype;
 public:
     ESValue* get(ESValue* key_ref) {
-        String* key = Core::toString(key);
-        std::map<std::string, ESValue::*>::iterator it = prototype.find(key->getValue());
-        if (it != prototype.end()) {
-            return prototype[key->getValue()];
-        }
+//        String* key = Core::toString(key);
+//        std::map<std::string, ESValue*>::iterator it = prototype.find(key->getValue());
+//        if (it != prototype.end()) {
+//            return prototype[key->getValue()];
+//        }
+        return NULL;
     }
 
     void set(String key, ESValue* value) {
