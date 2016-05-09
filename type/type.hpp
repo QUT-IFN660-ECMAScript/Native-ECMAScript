@@ -3,7 +3,6 @@
 #include <map>
 #include "../runtime/core.hpp"
 
-
 enum TypeName {
     UNDEFINED,
     ES_NULL,
@@ -138,32 +137,23 @@ public:
     }
 };
 
-union NumberValue {
-    int i_value;
-    double d_value;
-};
-
-class Number : public Primitive<NumberValue> {
+class Number : public Primitive<double> {
 private:
-    NumberValue value;
+    double value;
 public:
-    Number(int value) {
-        this->value.i_value = value;
-    }
-
     Number(double value) {
-        this->value.d_value = value;
+        this->value = value;
     }
 
     TypeName getType() {
         return NUMBER;
     }
 
-    NumberValue getValue() {
+    double getValue() {
         return value;
     }
 
-    void setValue(NumberValue value) {
+    void setValue(double value) {
         this->value = value;
     }
 };

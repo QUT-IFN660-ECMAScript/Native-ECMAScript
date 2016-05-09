@@ -55,13 +55,7 @@ public:
             } else if (value->getType() == NUMBER) {
                 Number *number = dynamic_cast<Number *>(value);
                 if (number != NULL) {
-                    if (number->getValue().d_value) {
-                        fprintf(stdout, "%f\n", number->getValue().d_value);
-                    } else if (number->getValue().i_value) {
-                        fprintf(stdout, "%d\n", number->getValue().i_value);
-                    } else {
-                        fprintf(stderr, "unloggable type (number had no value)\n");
-                    }
+                    fprintf(stdout, "%f\n", number->getValue());
                 } else {
                     fprintf(stderr, "unloggable type (failed to cast to number)\n");
                 }
