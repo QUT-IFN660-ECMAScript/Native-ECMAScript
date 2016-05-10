@@ -148,13 +148,20 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList
-%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement ReturnStatement BreakStatement IfStatement IterationStatement 
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
+  ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
+  EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
+  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
-  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral
+  BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
+  CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
+  ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
+  ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
 
