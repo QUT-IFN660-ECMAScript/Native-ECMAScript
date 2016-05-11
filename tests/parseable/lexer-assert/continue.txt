@@ -38,6 +38,4 @@ IDENTIFIER (i)
 VALUE_STRING ("<br>")
 ;
 }
-;
 END_OF_FILE
-
