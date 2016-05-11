@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdarg>
 #include <cstdio>
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -25,9 +26,15 @@ public:
     label(indent, "ExpressionStatement\n");
     expr->dump(indent+1);
   }
+	bool resolveNames(LexicalScope* scope) {
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
+	}
 };
 
-class StatementList: public Node {
+class StatementList: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
@@ -38,6 +45,30 @@ public:
     for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
       (*iter)->dump(indent+1);
   }
+	bool resolveNames(LexicalScope* scope) {
+
+		bool scoped = true;
+		this->parentScope = scope;
+
+		if (stmts) {
+			for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
+				if (*it) {
+					Reference *reference = dynamic_cast<Reference *>(*it);
+					if (reference != NULL) {
+						symbolTable[reference->getReferencedName()] = reference;
+					}
+
+					if (!(*it)->resolveNames(scope)) {
+						scoped = false;
+					}
+				} else {
+					scoped = false;
+				}
+			}
+			return scoped;
+		}
+		return false;
+	}
 };
 
 //13.2 Block
@@ -61,6 +92,13 @@ public:
 		} else {
 			label(indent, "[EMPTY]\n");
 		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (statementList) {
+			return statementList->resolveNames(scope);
+		}
+		return false;
 	}
 };
 
@@ -89,6 +127,20 @@ public:
 			finallyStatement->dump(indent);
 		}
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		bool scoped = true;
+		if (tryStatement && !tryStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (catchStatement && !catchStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (finallyStatement && !finallyStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
+	}
 };
 
 class CatchStatement : public Statement {
@@ -108,6 +160,13 @@ public:
 		expression->dump(indent);
 		statement->dump(indent);
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (expression && statement) {
+			return expression->resolveNames(scope) && statement->resolveNames(scope);
+		}
+		return false;
+	}
 };
 
 class FinallyStatement : public Statement {
@@ -124,6 +183,13 @@ public:
 		indent++;
 		statement->dump(indent);
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (statement) {
+			return statement->resolveNames(scope);
+		}
+		return false;
+	}
 };
 
 class ThrowStatement: public Statement{
@@ -136,4 +202,180 @@ public:
 		label(indent, "ThrowStatement\n");
 		expr->dump(indent+1);
 	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
+	}
 };
+
+class ReturnStatement: public Statement {
+private:
+	Expression *expr;
+
+public:
+	ReturnStatement() {
+		this->expr = NULL;
+	}
+
+	ReturnStatement(Expression *expr) {
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "ReturnStatement\n");
+		if (this->expr != NULL) {
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+
+	bool resolveNames(LexicalScope *scope) {
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
+	};
+
+};
+
+class BreakStatement: public Statement {
+private:
+	Expression* expr;
+
+public:
+	BreakStatement(){
+		this->expr = NULL;
+	}
+	BreakStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "BreakStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
+	}
+};
+
+/* 13.6 If Statement
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
+ */
+class IfStatement: public Statement {
+private:
+	Expression *expression;
+	Statement *statement;
+	Statement *elseStatement;
+public:
+
+	// if (expression) { statement }
+	IfStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+
+	// if (expression) { statement } else { elseStatement }
+	IfStatement(Expression *expression, Statement *statement, Statement *elseStatement) {
+		this->expression = expression;
+		this->statement = statement;
+		this->elseStatement = elseStatement;
+	}
+
+	void dump(int indent) {
+		label(indent, "IfStatement\n");
+		indent++;
+		expression->dump(indent);
+		statement->dump(indent);
+		if (elseStatement) {
+			elseStatement->dump(indent);
+		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		bool scoped = true;
+		if (expression && !expression->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (statement && !statement->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (elseStatement && !elseStatement->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
+	}
+};
+
+
+class IterationStatement : public Statement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+	IterationStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "WhileStatement\n");
+		expression->dump(indent+ 1);
+		statement->dump(indent + 2);
+	}
+	
+		bool resolveNames(LexicalScope* scope) {
+		bool scoped = true;
+		if (expression && !expression->resolveNames(scope)) {
+			scoped = false;
+		}
+		if (statement && !statement->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
+	}
+
+};
+
+/*
+class DoWhileIterationStatement : public Statement, public IterationStatement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	DoWhileIterationStatement(Statement *statement,Expression *expression) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "DoWhileStatement\n");
+		expression->dump(indent+ 2);
+		statement->dump(indent + 1);
+		
+		
+	}
+};
+*/
+
+
+
+
+

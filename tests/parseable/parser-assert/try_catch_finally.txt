@@ -1,0 +1,25 @@
+ScriptBody
+    TryStatement
+        BlockStatement
+            StatementList
+                ExpressionStatement
+                    AssignmentExpression
+                        lhs:
+                            IdentifierExpression: x
+                        rhs:
+                            IntegerLiteralExpression: 42
+        CatchStatement
+            IdentifierExpression: e
+            BlockStatement
+                StatementList
+                    ThrowStatement
+                        IntegerLiteralExpression: 42
+        FinallyStatement
+            BlockStatement
+                StatementList
+                    ExpressionStatement
+                        AssignmentExpression
+                            lhs:
+                                IdentifierExpression: x
+                            rhs:
+                                IntegerLiteralExpression: 42

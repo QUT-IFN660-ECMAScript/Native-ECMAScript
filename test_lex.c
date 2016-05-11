@@ -23,8 +23,8 @@ int main(int argc, char* argv[])
             case VALUE_INTEGER:
                 printf("VALUE_INTEGER (%d)\n", yylval.ival);
                 break;
-            case VALUE_FLOAT:
-                printf("VALUE_FLOAT (%g)\n", yylval.fval);
+            case VALUE_DOUBLE:
+                printf("VALUE_DOUBLE (%g)\n", yylval.dval);
                 break;
             case VALUE_STRING:
                 printf("VALUE_STRING (%s)\n", yylval.sval);
@@ -206,6 +206,9 @@ int main(int argc, char* argv[])
                 break;
 			case THROW:
 				printf("THROW\n");
+				break;
+            case ELSE:
+				printf("ELSE\n");
 				break;
 
 // line terminators, print nothing

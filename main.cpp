@@ -13,7 +13,21 @@ extern ScriptBody *root;
 
 int main(int argc, char* argv[])
 {
+
+//    ESValue* x = new Number(42);
+//    ESValue* y = Core::plus(x, new Number(4));
+//    Console::log(y);
+
+    ESObject* global = new ESObject();
+    global->set(new Number(1), new Number(42));
+    global->set(new String("y"), Core::plus(global->get(new Number(1)), new Number(4)));
+    Console::log(global->get(new String("y")));
+
     yyin = fopen(argv[1], "r");
     yyparse();
-    root->dump(0);
+    if (root != NULL) {
+        root->resolveNames(NULL);
+        root->dump(0);
+    }
+    return 0;
 }

@@ -1,6 +1,6 @@
 CC ?= $(shell command -v gcc)
 CXX ?= $(shell command -v g++)
-BABEL ?= $(shell command -v babel)
+JSINTERP ?= $(shell command -v node)
 
 CXX_FLAGS := -x c++ -Wno-write-strings
 
@@ -9,6 +9,7 @@ SHELL := $(shell echo $$SHELL)
 
 TESTS_PATH := test
 LEXER_ASSERTS_PATH := lexer-assert
+PARSER_ASSERTS_PATH := parser-assert
 
 TESTS_ROOT := tests
 TESTS := $(wildcard $(TESTS_ROOT)/**/$(TESTS_PATH)/*.js)
@@ -24,17 +25,17 @@ endif
 ifndef CXX
 	$(error g++ not installed)
 endif
-ifndef BABEL
+ifndef JSINTERP
 	$(warning babel not installed, test_all will not run)
 endif
 .checkbabeldep:
-ifndef BABEL
-	$(error)
+ifndef JSINTERP
+	$(error babel not installed, test_all will not run)
 endif
 
 all: .checkdep clean .build_prod
 clean: .clean_prod
-test_all: .checkdep .checkbabeldep clean .setup_tests .run_babel_tests .run_lexer_tests .run_parser_tests .teardown_tests
+test_all: .checkdep .checkbabeldep clean .setup_tests .run_js_tests .run_lexer_tests .run_parser_tests .teardown_tests
 test_lexer: .checkdep clean .setup_tests .run_lexer_tests .teardown_tests
 test_parser: .checkdep clean .setup_tests .run_parser_tests .teardown_tests
 simple: .checkdep clean .run_simple
@@ -80,9 +81,9 @@ generate: .bison .flex
 	)
 
 # run babel transpiler on js files, if js file is invalid, it writes all stderr to ERROR_LOG
-.run_babel_tests:
+.run_js_tests:
 	$(foreach t, $(TESTS), \
-		$(shell $(BABEL) $(t) >> /dev/null 2>>$(ERROR_LOG);))
+		$(shell $(JSINTERP) $(t) >> /dev/null 2>>$(ERROR_LOG);))
 		$(if $(shell if [ -s "./$(ERROR_LOG)" ]; then echo not empty; fi),\
 		 	$(error $(shell cat $(ERROR_LOG))),\
 		  $(info All JS files are valid))
@@ -99,24 +100,37 @@ generate: .bison .flex
 		)\
 	)
 
-# test parseable tests, log any error to ERROR_LOG
+# test parseable tests, and create ast dump, log any error to ERROR_LOG
+# if ast dump test is empty, show warning to indicate tests are not present
 # test unparseable tests, if tests are parseable, show warning to indicate tests are parseable
 .run_parser_tests: .build_parser_test
 	$(info Running Parser Tests)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/*.js), \
-		$(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
-		if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
-			cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; rm -f $(TEMP_ERROR_LOG);\
+		$(eval ASSERT_FILE=$(subst /$(TESTS_PATH)/,/$(PARSER_ASSERTS_PATH)/, $(patsubst %.js, %.txt, $(t)))) \
+		$(if \
+			$(shell \
+				if [ -s "./$(ASSERT_FILE)" ]; then echo not empty; fi;\
+			),\
+			$(shell \
+				diff $(ASSERT_FILE) <(./tests/test_parser -d $(t))>> $(TEMP_ERROR_LOG) 2>&1;\
+					if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo $(t) >> $(ERROR_LOG); \
+						cat $(TEMP_ERROR_LOG) >> $(ERROR_LOG); fi; \
+						rm -f $(TEMP_ERROR_LOG);\
+			),\
+			$(warning $(ASSERT_FILE) is missing, write a test!)\
 		)\
 	)
 	$(foreach t, $(wildcard ./$(TESTS_ROOT)/unparseable/$(TESTS_PATH)/*.js), \
-		$(if $(shell touch $(TEMP_ERROR_LOG); ./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
-			if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
-				echo $(t) >> $(PARSER_ERROR_LOG); \
-				cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
-				rm -f $(TEMP_ERROR_LOG);\
+		$(if \
+			$(shell \
+				touch $(TEMP_ERROR_LOG);\
+				./tests/test_parser $(t) >> $(TEMP_ERROR_LOG) 2>&1;\
+				if [ -s "./$(TEMP_ERROR_LOG)" ]; then echo not empty; fi;\
+					echo $(t) >> $(PARSER_ERROR_LOG); \
+					cat $(TEMP_ERROR_LOG) >> $(PARSER_ERROR_LOG);\
+					rm -f $(TEMP_ERROR_LOG);\
 			),,\
-			 $(warning $(t) is parseable, consider moving it to /parseable/)\
+			$(warning $(t) is parseable, consider moving it to /parseable/, and write a test!)\
 		)\
 	)
 
@@ -124,3 +138,8 @@ generate: .bison .flex
 	$(info Running Simple Test)
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/string.js
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/basic_if.js
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/while_basic_statement.js
+	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/do_while_loop.js
+	
+	
