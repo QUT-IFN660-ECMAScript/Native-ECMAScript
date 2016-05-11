@@ -430,8 +430,8 @@ BreakStatement:
  */
 
 ContinueStatement:
-    CONTINUE SEMICOLON
-    | CONTINUE LabelIdentifier SEMICOLON
+    CONTINUE SEMICOLON						{ $$ = new ContinueStatement(); }
+    | CONTINUE LabelIdentifier SEMICOLON	{ $$ = new ContinueStatement($2); }
     ;
 
 /* 13.7 The return Statement

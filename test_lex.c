@@ -73,6 +73,9 @@ int main(int argc, char* argv[])
             case UNARY_SUBTRACT:
                 printf("--\n");
                 break;
+			case ADDITION_ASSIGNMENT:
+				printf("+=\n");
+				break;
 // compare
             case EQUAL:
                 printf("==\n");
@@ -209,6 +212,9 @@ int main(int argc, char* argv[])
 				break;
             case ELSE:
 				printf("ELSE\n");
+				break;
+			case CONTINUE:
+				printf("CONTINUE\n");
 				break;
 
 // line terminators, print nothing
