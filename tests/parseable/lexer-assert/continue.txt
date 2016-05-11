@@ -1,0 +1,43 @@
+VAR
+IDENTIFIER (text)
+=
+VALUE_STRING ("")
+VAR
+IDENTIFIER (i)
+;
+FOR
+(
+IDENTIFIER (i)
+=
+VALUE_INTEGER (0)
+;
+IDENTIFIER (i)
+<
+VALUE_INTEGER (5)
+;
+IDENTIFIER (i)
+++
+)
+{
+IF
+(
+IDENTIFIER (i)
+===
+VALUE_INTEGER (3)
+)
+{
+CONTINUE
+;
+}
+IDENTIFIER (text)
++=
+VALUE_STRING ("The number is ")
++
+IDENTIFIER (i)
++
+VALUE_STRING ("<br>")
+;
+}
+;
+END_OF_FILE
+
