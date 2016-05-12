@@ -421,8 +421,8 @@ WithStatement:
  */
 
 BreakStatement:
-    BREAK SEMICOLON                         { $$ = new BreakStatement(); }
-    | BREAK LabelIdentifier SEMICOLON       { $$ = new BreakStatement($2); }
+    BREAK SEMICOLON                         { $$ = new LabelledStatement(); }
+    | BREAK LabelIdentifier SEMICOLON       {$$ = new LabelledStatement(new LabelIdentifierExpression($2)); }
     ;
 
 /* 13.8 The continue Statement
@@ -430,8 +430,8 @@ BreakStatement:
  */
 
 ContinueStatement:
-    CONTINUE SEMICOLON						{ $$ = new ContinueStatement(); }
-    | CONTINUE LabelIdentifier SEMICOLON	{ $$ = new ContinueStatement($2); }
+    CONTINUE SEMICOLON						{ $$ = new LabelledStatement(); }
+    | CONTINUE LabelIdentifier SEMICOLON	{$$ = new LabelledStatement(new LabelIdentifierExpression($2)); }
     ;
 
 /* 13.7 The return Statement

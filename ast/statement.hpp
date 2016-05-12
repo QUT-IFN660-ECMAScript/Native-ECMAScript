@@ -242,6 +242,38 @@ public:
 
 };
 
+class LabelledStatement: public Statement {
+private:
+	LabelIdentifierExpression* expr;
+public:
+    LabelledStatement() {
+        this->expr = NULL;
+    };
+    LabelledStatement(LabelIdentifierExpression *expr) {
+        this->expr = expr;
+    };
+    // LabelledItemStatement(LabelIdentifierExpression *expr, Statement *stmt) {
+    //     this->expr = expr;
+    //     this->stmt = stmt;
+    // };
+
+	void dump(int indent) {
+		label(indent++, "LabelledStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+
+	bool resolveNames(LexicalScope* scope) {
+		if (expr) {
+			return expr->resolveNames(scope);
+		}
+		return false;
+	}
+};
+
 class BreakStatement: public Statement {
 private:
 	Expression* expr;
