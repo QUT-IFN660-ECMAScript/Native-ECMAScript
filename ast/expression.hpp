@@ -76,27 +76,6 @@ public:
     }
 };
 
-class LabelIdentifierExpression : public Expression {
-private:
-    Expression *expr;
-public:
-    LabelIdentifierExpression(Expression *expr) {
-        this->expr = expr;
-    };
-
-    void dump (int indent) {
-        label(indent++, "LabelIdentifierExpression\n");
-        expr->dump(indent);
-    }
-
-    bool resolveNames(LexicalScope* scope) {
-        if (expr) {
-            return expr->resolveNames(scope);
-        }
-        return false;
-    }
-};
-
 class StringLiteralExpression: public Expression {
 private:
 	std::string val;

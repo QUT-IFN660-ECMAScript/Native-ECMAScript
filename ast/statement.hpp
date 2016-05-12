@@ -242,20 +242,60 @@ public:
 
 };
 
+class LabelledItemStatement: public Statement {
+private:
+	Statement *stmt;
+	//FunctionDeclarationStatement *funcStmt;
+public:
+    LabelledItemStatement() {
+        this->stmt = NULL;
+    };
+    LabelledItemStatement(Statement *stmt) {
+        this->stmt = stmt;
+    };
+    // LabelledItemStatement(Statement *stmt, FunctionDeclarationStatement *funcStmt) {
+    //     this->funcStmt = funcStmt;
+    // };
+
+	void dump(int indent) {
+		label(indent++, "LabelledItemStatement\n");
+		if(this->stmt != NULL){
+			stmt->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+		// if(this->funcStmt != NULL){
+		// 	funcStmt->dump(indent);
+		// } else {
+		// 	label(indent, "[Empty]\n");
+		// }
+	}
+	
+	bool resolveNames(LexicalScope* scope) {
+		bool scoped = true;
+		if (stmt && !stmt->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
+	}
+};
+
+
 class LabelledStatement: public Statement {
 private:
-	LabelIdentifierExpression* expr;
+	Expression* expr;
+	LabelledItemStatement *stmt;
 public:
     LabelledStatement() {
         this->expr = NULL;
     };
-    LabelledStatement(LabelIdentifierExpression *expr) {
+    LabelledStatement(Expression *expr) {
         this->expr = expr;
     };
-    // LabelledItemStatement(LabelIdentifierExpression *expr, Statement *stmt) {
-    //     this->expr = expr;
-    //     this->stmt = stmt;
-    // };
+    LabelledStatement(Expression *expr, LabelledItemStatement *stmt) {
+        this->expr = expr;
+        this->stmt = stmt;
+    };
 
 	void dump(int indent) {
 		label(indent++, "LabelledStatement\n");
@@ -267,12 +307,17 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
+		bool scoped = true;
+		if (expr && !expr->resolveNames(scope)) {
+			scoped = false;
 		}
-		return false;
+		if (stmt && !stmt->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
 	}
 };
+
 
 class BreakStatement: public Statement {
 private:
