@@ -242,49 +242,63 @@ public:
 
 };
 
-class BreakStatement: public Statement {
+class LabelledItemStatement: public Statement {
 private:
-	Expression* expr;
-
+	Statement *stmt;
+	//FunctionDeclarationStatement *funcStmt;
 public:
-	BreakStatement(){
-		this->expr = NULL;
-	}
-	BreakStatement(Expression* expr){
-		this->expr = expr;
-	}
+    LabelledItemStatement() {
+        this->stmt = NULL;
+    };
+    LabelledItemStatement(Statement *stmt) {
+        this->stmt = stmt;
+    };
+    // LabelledItemStatement(Statement *stmt, FunctionDeclarationStatement *funcStmt) {
+    //     this->funcStmt = funcStmt;
+    // };
 
 	void dump(int indent) {
-		label(indent++, "BreakStatement\n");
-		if(this->expr != NULL){
-			expr->dump(indent);
+		label(indent++, "LabelledItemStatement\n");
+		if(this->stmt != NULL){
+			stmt->dump(indent);
 		} else {
 			label(indent, "[Empty]\n");
 		}
+		// if(this->funcStmt != NULL){
+		// 	funcStmt->dump(indent);
+		// } else {
+		// 	label(indent, "[Empty]\n");
+		// }
 	}
-
+	
 	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
+		bool scoped = true;
+		if (stmt && !stmt->resolveNames(scope)) {
+			scoped = false;
 		}
-		return false;
+		return scoped;
 	}
 };
 
-class ContinueStatement: public Statement {
+
+class LabelledStatement: public Statement {
 private:
 	Expression* expr;
-
+	LabelledItemStatement *stmt;
 public:
-	ContinueStatement(){
-		this->expr = NULL;
-	}
-	ContinueStatement(Expression* expr){
-		this->expr = expr;
-	}
+    LabelledStatement() {
+        this->expr = NULL;
+    };
+    LabelledStatement(Expression *expr) {
+        this->expr = expr;
+    };
+    LabelledStatement(Expression *expr, LabelledItemStatement *stmt) {
+        this->expr = expr;
+        this->stmt = stmt;
+    };
 
 	void dump(int indent) {
-		label(indent++, "ContinueStatement\n");
+		label(indent++, "LabelledStatement\n");
 		if(this->expr != NULL){
 			expr->dump(indent);
 		} else {
@@ -293,10 +307,14 @@ public:
 	}
 
 	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
+		bool scoped = true;
+		if (expr && !expr->resolveNames(scope)) {
+			scoped = false;
 		}
-		return false;
+		if (stmt && !stmt->resolveNames(scope)) {
+			scoped = false;
+		}
+		return scoped;
 	}
 };
 

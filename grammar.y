@@ -151,7 +151,7 @@ using namespace std;
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
-  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration
+  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -369,11 +369,11 @@ CatchParameter:
  */
 
 LabelledStatement:
-    LabelIdentifier COLON LabelledItem
+    LabelIdentifier COLON LabelledItem       { $$ = new LabelledStatement($1, new LabelledItemStatement($3)); }
     ;
 
 LabelledItem:
-    Statement
+    Statement                                { $$ = new LabelledItemStatement($1); }
     | FunctionDeclaration
     ;
 
@@ -421,8 +421,8 @@ WithStatement:
  */
 
 BreakStatement:
-    BREAK SEMICOLON                         { $$ = new BreakStatement(); }
-    | BREAK LabelIdentifier SEMICOLON       { $$ = new BreakStatement($2); }
+    BREAK SEMICOLON                         { $$ = new LabelledStatement(); }
+    | BREAK LabelIdentifier SEMICOLON       {$$ = new LabelledStatement($2); }
     ;
 
 /* 13.8 The continue Statement
@@ -430,8 +430,8 @@ BreakStatement:
  */
 
 ContinueStatement:
-    CONTINUE SEMICOLON						{ $$ = new ContinueStatement(); }
-    | CONTINUE LabelIdentifier SEMICOLON	{ $$ = new ContinueStatement($2); }
+    CONTINUE SEMICOLON						{ $$ = new LabelledStatement(); }
+    | CONTINUE LabelIdentifier SEMICOLON	{$$ = new LabelledStatement($2); }
     ;
 
 /* 13.7 The return Statement
@@ -451,6 +451,7 @@ IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			//{ $$ = new DoWhileIterationStatement($2,$5); }
     | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						{ $$ = new IterationStatement($3, $5); }
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN LEFT_BRACE Statement RIGHT_BRACE      { $$ = new IterationStatement($3, $6); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
