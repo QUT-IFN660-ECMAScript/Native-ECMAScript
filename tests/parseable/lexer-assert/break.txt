@@ -7,16 +7,7 @@ WHILE
 IDENTIFIER (x)
 )
 {
-RETURN
-;
-}
-WHILE
-(
-IDENTIFIER (x)
-)
-{
-RETURN
-VALUE_STRING ("return test")
+BREAK
 ;
 }
 END_OF_FILE

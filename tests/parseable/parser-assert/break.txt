@@ -7,9 +7,5 @@ ScriptBody
                 IntegerLiteralExpression: 1
         WhileStatement
             IdentifierExpression: x
-                ReturnStatement
+                LabelledStatement
                     [Empty]
-        WhileStatement
-            IdentifierExpression: x
-                ReturnStatement
-                    StringLiteralExpression: "return test"

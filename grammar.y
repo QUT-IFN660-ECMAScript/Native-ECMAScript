@@ -451,6 +451,7 @@ IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
     DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			//{ $$ = new DoWhileIterationStatement($2,$5); }
     | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						{ $$ = new IterationStatement($3, $5); }
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN LEFT_BRACE Statement RIGHT_BRACE      { $$ = new IterationStatement($3, $6); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
