@@ -318,65 +318,6 @@ public:
 	}
 };
 
-
-class BreakStatement: public Statement {
-private:
-	Expression* expr;
-
-public:
-	BreakStatement(){
-		this->expr = NULL;
-	}
-	BreakStatement(Expression* expr){
-		this->expr = expr;
-	}
-
-	void dump(int indent) {
-		label(indent++, "BreakStatement\n");
-		if(this->expr != NULL){
-			expr->dump(indent);
-		} else {
-			label(indent, "[Empty]\n");
-		}
-	}
-
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	}
-};
-
-class ContinueStatement: public Statement {
-private:
-	Expression* expr;
-
-public:
-	ContinueStatement(){
-		this->expr = NULL;
-	}
-	ContinueStatement(Expression* expr){
-		this->expr = expr;
-	}
-
-	void dump(int indent) {
-		label(indent++, "ContinueStatement\n");
-		if(this->expr != NULL){
-			expr->dump(indent);
-		} else {
-			label(indent, "[Empty]\n");
-		}
-	}
-
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	}
-};
-
 /* 13.6 If Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
  */
