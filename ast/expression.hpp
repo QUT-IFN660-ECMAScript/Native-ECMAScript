@@ -105,10 +105,16 @@ public:
         this->rhs = rhs;
     };
 
+    AssignmentExpression(Expression* expression){
+        this->lhs = expression;
+    }
+
     void dump(int indent) {
         label(indent, "AssignmentExpression\n");
         lhs->dump(indent + 1, "lhs");
-        rhs->dump(indent + 1, "rhs");
+        if(rhs != NULL){
+            rhs->dump(indent + 1, "rhs");
+        }
     }
 
     /**
@@ -314,4 +320,46 @@ public:
         return false;
     }
 
+};
+
+class Arguments : public Expression {
+private:
+    std::vector<AssignmentExpression*> argumentList;
+public:
+    Arguments(vector<AssignmentExpression*> argumentList){
+        this->argumentList = argumentList;
+    };
+
+    void dump(int indent) {
+        label(indent, "Arguments\n");
+        for (vector<AssignmentExpression*>::iterator iter = argumentList->begin(); iter != argumentList->end(); ++iter)
+          (*iter)->dump(indent+1);
+    }
+
+  bool resolveNames(LexicalScope* scope) {
+    return true;
+  }
+};
+
+
+class CallExpression : public Expression {
+private:
+    Expression* expression;
+public:
+    CallExpression(Expression *expression) {
+        this->expression = expression;
+    };
+
+    void dump(int indent) {
+        label(indent, "CallExpression\n");
+        indent++;
+        expression->dump(indent);
+    }
+
+    bool resolveNames(LexicalScope *scope) {
+        if (expression) {
+            return expression->resolveNames(scope);
+        }
+        return false;
+    }
 };

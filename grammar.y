@@ -857,9 +857,12 @@ NewExpression:
     ;
 
 CallExpression:
-    SuperCall
-    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
+    MemberExpression Arguments
+    | SuperCall
+    | CallExpression Arguments
+    | CallExpression LEFT_BRACKET Expression RIGHT_BRACKET
     | CallExpression FULL_STOP Identifier
+    /* | CallExpression TemplateLiteral */
     ;
 
 SuperCall:
