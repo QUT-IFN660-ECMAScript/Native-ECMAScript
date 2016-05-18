@@ -12,7 +12,7 @@ using namespace std;
 class Node {
 public:
 	virtual void dump(int indent)=0;
-	virtual bool resolveNames(LexicalScope* scope) = 0;
+
 	virtual void GenCode(FILE* file) = 0;
 	
 	void emit(FILE* outputfile, char* fmt, ...) {

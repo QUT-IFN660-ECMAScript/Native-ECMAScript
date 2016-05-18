@@ -6,6 +6,8 @@
 using namespace std;
 
 class Expression:public Node{
+	 
+	
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -23,9 +25,7 @@ public:
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
-    bool resolveNames(LexicalScope* scope) {
-        return true;
-    }
+  
     void GenCode(FILE* file)
 	{
 		
@@ -48,10 +48,7 @@ public:
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
-    bool resolveNames(LexicalScope* scope) {
-        return true;
-    }
-    
+  
     void GenCode(FILE* file)
 	{
 		
@@ -76,19 +73,16 @@ public:
     void dump(int indent){
         label(indent, "IdentifierExpression: %s\n", name.c_str());
     }
-    bool resolveNames(LexicalScope* scope) {
-        if (scope != NULL) {
-            reference = scope->resolve(name);
-        }
-        if (reference == NULL) {
-            fprintf(stderr, "Error: Undeclared identifier: %s\n", name.c_str());
-        }
-        return reference != NULL;
-    }
+   
     
     void GenCode(FILE* file)
 	{
 		
+	}
+	
+	void GenStoreCode(FILE* file)
+	{
+		emit(file, "stloc %d", reference->getReferencedName());
 	}
 };
 
@@ -107,9 +101,7 @@ public:
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
 	}
-    bool resolveNames(LexicalScope* scope) {
-        return true;
-    }
+   
     
     void GenCode(FILE* file)
 	{
@@ -131,6 +123,8 @@ public:
         lhs->dump(indent + 1, "lhs");
         rhs->dump(indent + 1, "rhs");
     }
+    
+    
 
     /**
      * Returns the base value component of the reference
@@ -209,22 +203,17 @@ public:
         return false;
     }
 
-    bool resolveNames(LexicalScope *scope) {
-        if (lhs && rhs) {
-//        return true;
-            IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
-            if (identifier != NULL) {
-                // not sure `this` in this context is what we are after, but whatever
-                scope->addToSymbolTable(identifier->getReferencedName(), this);
-            }
-            return lhs->resolveNames(scope) && rhs->resolveNames(scope);
-        }
-        return false;
-    }
+   
     
-    void GenCode(FILE* file)
-	{
-		
+     void GenStoreCode(FILE* file) 	{
+		emit(file, "stloc %d", getBase());
+	}
+   
+    
+    void GenCode(FILE* file) {
+    	rhs->GenCode(file);
+	//	lhs->GenStoreCode(file);
+		lhs->GenCode(file);
 	}
 };
 
@@ -247,26 +236,14 @@ public:
         }
     }
 
-    bool resolveNames(LexicalScope* scope) {
-        bool scoped = true;
-        if (propertyDefinitionList) {
-            for (vector<Expression *>::iterator it = propertyDefinitionList->begin();
-                 it != propertyDefinitionList->end(); ++it) {
-                if (*it) {
-                    if (!(*it)->resolveNames(scope)) {
-                        scoped = false;
-                    }
-                }
-            }
-            return scoped;
-        }
-        return false;
-    }
+   
     
     void GenCode(FILE* file)
 	{
 		
 	}
+	
+	
 
 };
 
@@ -294,21 +271,17 @@ public:
         }
     }
 
-    bool resolveNames(LexicalScope *scope) {
-        if (key && value) {
-            return key->resolveNames(scope) && value->resolveNames(scope);
-        }
-        return false;
-    }
+    
     
     void GenCode(FILE* file)
 	{
 		
 	}
+	
+	
 };
 
 class LiteralPropertyNameExpression : public Expression {
-private:
     Expression *literalExpression;
 public:
     LiteralPropertyNameExpression(Expression *literalExpression) {
@@ -321,12 +294,7 @@ public:
         literalExpression->dump(indent);
     }
 
-    bool resolveNames(LexicalScope* scope) {
-        if (literalExpression) {
-            return literalExpression->resolveNames(scope);
-        }
-        return false;
-    }
+   
     
     void GenCode(FILE* file)
 	{
@@ -348,12 +316,7 @@ public:
         computedExpression->dump(indent);
     }
 
-    bool resolveNames(LexicalScope *scope) {
-        if (computedExpression) {
-            return computedExpression->resolveNames(scope);
-        }
-        return false;
-    }
+  
     
     void GenCode(FILE* file)
 	{

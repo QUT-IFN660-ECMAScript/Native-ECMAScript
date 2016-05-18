@@ -26,12 +26,7 @@ public:
     label(indent, "ExpressionStatement\n");
     expr->dump(indent+1);
   }
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -52,30 +47,8 @@ public:
     for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
       (*iter)->dump(indent+1);
   }
-	bool resolveNames(LexicalScope* scope) {
-
-		bool scoped = true;
-		this->parentScope = scope;
-
-		if (stmts) {
-			for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
-				if (*it) {
-					Reference *reference = dynamic_cast<Reference *>(*it);
-					if (reference != NULL) {
-						symbolTable[reference->getReferencedName()] = reference;
-					}
-
-					if (!(*it)->resolveNames(scope)) {
-						scoped = false;
-					}
-				} else {
-					scoped = false;
-				}
-			}
-			return scoped;
-		}
-		return false;
-	}
+	
+	
 	void GenCode(FILE* file)
 	{
 		
@@ -105,12 +78,7 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (statementList) {
-			return statementList->resolveNames(scope);
-		}
-		return false;
-	}
+	
 	void GenCode(FILE* file)
 	{
 		
@@ -143,19 +111,7 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (tryStatement && !tryStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (catchStatement && !catchStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (finallyStatement && !finallyStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
-	}
+	
 	void GenCode(FILE* file)
 	{
 		
@@ -180,12 +136,7 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (expression && statement) {
-			return expression->resolveNames(scope) && statement->resolveNames(scope);
-		}
-		return false;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -208,12 +159,7 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (statement) {
-			return statement->resolveNames(scope);
-		}
-		return false;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -232,12 +178,7 @@ public:
 		expr->dump(indent+1);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -267,12 +208,7 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope *scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	}
+
 	
 	void GenCode(FILE* file)
 	{
@@ -310,13 +246,7 @@ public:
 		// }
 	}
 	
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (stmt && !stmt->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -350,16 +280,7 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expr && !expr->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (stmt && !stmt->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -400,19 +321,7 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expression && !expression->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (statement && !statement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (elseStatement && !elseStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
-	}
+	
 	
 	void GenCode(FILE* file)
 	{
@@ -440,16 +349,6 @@ class IterationStatement : public Statement {
 		statement->dump(indent + 2);
 	}
 	
-		bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expression && !expression->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (statement && !statement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
-	}
 	
 	void GenCode(FILE* file)
 	{

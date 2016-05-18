@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     yyin = fopen(argv[1], "r");
     yyparse();
     if (root != NULL) {
-        root->resolveNames(NULL);
+   //     root->resolveNames(NULL);
         CodeGeneration(argv[1], root);
         root->dump(0);
     }
