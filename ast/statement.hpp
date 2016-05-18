@@ -13,7 +13,7 @@
 using namespace std;
 
 class Statement: public Node {
-
+	
 };
 
 class ExpressionStatement: public Statement {
@@ -32,6 +32,13 @@ public:
 		}
 		return false;
 	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
+	
+	
 };
 
 class StatementList: public Node, public LexicalScope {
@@ -69,6 +76,10 @@ public:
 		}
 		return false;
 	}
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 //13.2 Block
@@ -99,6 +110,10 @@ public:
 			return statementList->resolveNames(scope);
 		}
 		return false;
+	}
+	void GenCode(FILE* file)
+	{
+		
 	}
 };
 
@@ -141,6 +156,10 @@ public:
 		}
 		return scoped;
 	}
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class CatchStatement : public Statement {
@@ -167,6 +186,11 @@ public:
 		}
 		return false;
 	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class FinallyStatement : public Statement {
@@ -190,6 +214,11 @@ public:
 		}
 		return false;
 	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class ThrowStatement: public Statement{
@@ -208,6 +237,11 @@ public:
 			return expr->resolveNames(scope);
 		}
 		return false;
+	}
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
 };
 
@@ -238,7 +272,12 @@ public:
 			return expr->resolveNames(scope);
 		}
 		return false;
-	};
+	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
 
 };
 
@@ -278,6 +317,11 @@ public:
 		}
 		return scoped;
 	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 
@@ -315,6 +359,11 @@ public:
 			scoped = false;
 		}
 		return scoped;
+	}
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
 };
 
@@ -364,6 +413,11 @@ public:
 		}
 		return scoped;
 	}
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 
@@ -395,6 +449,11 @@ class IterationStatement : public Statement {
 			scoped = false;
 		}
 		return scoped;
+	}
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
 
 };

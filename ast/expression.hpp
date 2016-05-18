@@ -26,6 +26,11 @@ public:
     bool resolveNames(LexicalScope* scope) {
         return true;
     }
+    void GenCode(FILE* file)
+	{
+		
+	}
+    
 };
 
 class DecimalLiteralExpression:public Expression{
@@ -46,6 +51,12 @@ public:
     bool resolveNames(LexicalScope* scope) {
         return true;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
+	
 };
 
 class IdentifierExpression:public Expression{
@@ -74,6 +85,11 @@ public:
         }
         return reference != NULL;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class StringLiteralExpression: public Expression {
@@ -94,6 +110,11 @@ public:
     bool resolveNames(LexicalScope* scope) {
         return true;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class AssignmentExpression:public Expression, Reference {
@@ -200,6 +221,11 @@ public:
         }
         return false;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class ObjectLiteralExpression : public Expression {
@@ -236,6 +262,11 @@ public:
         }
         return false;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 
 };
 
@@ -268,7 +299,12 @@ public:
             return key->resolveNames(scope) && value->resolveNames(scope);
         }
         return false;
-    };
+    }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class LiteralPropertyNameExpression : public Expression {
@@ -291,6 +327,11 @@ public:
         }
         return false;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 };
 
 class ComputedPropertyNameExpression : public Expression {
@@ -313,5 +354,10 @@ public:
         }
         return false;
     }
+    
+    void GenCode(FILE* file)
+	{
+		
+	}
 
 };

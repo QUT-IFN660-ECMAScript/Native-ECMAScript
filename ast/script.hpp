@@ -10,7 +10,8 @@ using namespace std;
 class ScriptBody: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
-public:
+public:  
+	
   ScriptBody(vector<Statement*> *stmts):
     stmts(stmts) {};
   void dump(int indent) {
@@ -55,4 +56,11 @@ public:
         }
         return scoped;
     }
+    
+    void GenCode(FILE* file)
+	{
+		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child)
+			(*child)->GenCode(file);
+	}
+   
 };

@@ -11,6 +11,9 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
 
+/* prototype */
+void CodeGeneration(char* inputfile, ScriptBody* root);
+
 int main(int argc, char* argv[])
 {
 
@@ -27,7 +30,26 @@ int main(int argc, char* argv[])
     yyparse();
     if (root != NULL) {
         root->resolveNames(NULL);
+        CodeGeneration(argv[1], root);
         root->dump(0);
     }
     return 0;
+}
+
+void CodeGeneration(char* inputfile, ScriptBody* root) {
+	char* outputFilename = (char*)malloc(strlen(inputfile) + 3);
+	sprintf(outputFilename, "%s.il", inputfile);
+	FILE* outputFile = fopen(outputFilename, "w");
+
+	
+	root->emit(outputFile, ".assembly %s {}", inputfile);
+	root->emit(outputFile, ".class %s {", inputfile);
+	root->emit(outputFile, ".method static void Main(string[] args) {");
+	root->emit(outputFile, ".entrypoint");
+
+	root->GenCode(outputFile);
+	
+	root->emit(outputFile, "ret");
+	root->emit(outputFile, "}"); // end of Main
+	root->emit(outputFile, "}"); // end of class
 }

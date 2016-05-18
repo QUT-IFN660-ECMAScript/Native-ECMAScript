@@ -13,6 +13,15 @@ class Node {
 public:
 	virtual void dump(int indent)=0;
 	virtual bool resolveNames(LexicalScope* scope) = 0;
+	virtual void GenCode(FILE* file) = 0;
+	
+	void emit(FILE* outputfile, char* fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(outputfile, fmt, args);
+		fprintf(outputfile, "\n");
+		va_end(args);
+	}
 
 	void indent(int N) {
 		for (int i = 0; i < N; i++)
