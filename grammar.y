@@ -8,6 +8,7 @@
 int yylex();
 
 ScriptBody *root;
+int global_var;
 
 using namespace std;
 

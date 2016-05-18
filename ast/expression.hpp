@@ -216,6 +216,7 @@ public:
    
     
      void GenStoreCode(FILE* file) 	{
+     printf("here");
 		global_var++;
 		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, getReferencedName().c_str());
 

@@ -11,14 +11,14 @@
 extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
-int global_var;
+extern int global_var;
 
 /* prototype */
 void CodeGeneration(char* inputfile, ScriptBody* root);
 
 int main(int argc, char* argv[])
 {
-
+	int global_var=0;
 //    ESValue* x = new Number(42);
 //    ESValue* y = Core::plus(x, new Number(4));
 //    Console::log(y);
