@@ -7,9 +7,11 @@
 #include "grammar.tab.h"
 #include "lex.yy.h"
 
+
 extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
+int global_var;
 
 /* prototype */
 void CodeGeneration(char* inputfile, ScriptBody* root);
@@ -36,20 +38,22 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+
+
 void CodeGeneration(char* inputfile, ScriptBody* root) {
 	char* outputFilename = (char*)malloc(strlen(inputfile) + 3);
-	sprintf(outputFilename, "%s.il", inputfile);
+	sprintf(outputFilename, "%s.inst", inputfile);
 	FILE* outputFile = fopen(outputFilename, "w");
 
 	
-	root->emit(outputFile, ".assembly %s {}", inputfile);
+/*	root->emit(outputFile, ".assembly %s {}", inputfile);
 	root->emit(outputFile, ".class %s {", inputfile);
 	root->emit(outputFile, ".method static void Main(string[] args) {");
-	root->emit(outputFile, ".entrypoint");
+	root->emit(outputFile, ".entrypoint"); */
 
 	root->GenCode(outputFile);
 	
-	root->emit(outputFile, "ret");
+/*	root->emit(outputFile, "ret");
 	root->emit(outputFile, "}"); // end of Main
-	root->emit(outputFile, "}"); // end of class
+	root->emit(outputFile, "}"); // end of class */
 }

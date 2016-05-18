@@ -4,10 +4,11 @@
 #include "node.hpp"
 
 using namespace std;
-
+extern int global_var;
 class Expression:public Node{
-	 
-	
+public:	 
+	virtual void GenCode(FILE* file) = 0;
+	virtual void GenStoreCode(FILE* file)=0;
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -30,6 +31,8 @@ public:
 	{
 		
 	}
+	
+	 void GenStoreCode(FILE* file) {};
     
 };
 
@@ -54,6 +57,8 @@ public:
 		
 	}
 	
+	void GenStoreCode(FILE* file) {};
+	
 };
 
 class IdentifierExpression:public Expression{
@@ -75,14 +80,16 @@ public:
     }
    
     
-    void GenCode(FILE* file)
-	{
+   void GenCode(FILE* file) {
+   		printf("here");
+		emit(file, "ldloc %d", reference->getReferencedName());
 		
 	}
-	
-	void GenStoreCode(FILE* file)
-	{
+
+	void GenStoreCode(FILE* file) 	{
+		printf("genstorecode");
 		emit(file, "stloc %d", reference->getReferencedName());
+		
 	}
 };
 
@@ -107,6 +114,8 @@ public:
 	{
 		
 	}
+	void GenStoreCode(FILE* file) {};
+	
 };
 
 class AssignmentExpression:public Expression, Reference {
@@ -131,6 +140,7 @@ public:
      * TODO: This method will need to be expanded for all possible types... maybe?
      */
     ESValue* getBase() {
+    	
 
         // attempt to cast to a string
         StringLiteralExpression* stringLiteralExpression = dynamic_cast<StringLiteralExpression*>(rhs);
@@ -206,13 +216,16 @@ public:
    
     
      void GenStoreCode(FILE* file) 	{
-		emit(file, "stloc %d", getBase());
+		global_var++;
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, getReferencedName().c_str());
+
 	}
    
     
     void GenCode(FILE* file) {
+    	printf("here");
     	rhs->GenCode(file);
-	//	lhs->GenStoreCode(file);
+		lhs->GenStoreCode(file);
 		lhs->GenCode(file);
 	}
 };
@@ -242,6 +255,8 @@ public:
 	{
 		
 	}
+	
+	void GenStoreCode(FILE* file) {};
 	
 	
 
@@ -278,6 +293,8 @@ public:
 		
 	}
 	
+	void GenStoreCode(FILE* file) {};
+	
 	
 };
 
@@ -300,6 +317,8 @@ public:
 	{
 		
 	}
+	
+	void GenStoreCode(FILE* file) {};
 };
 
 class ComputedPropertyNameExpression : public Expression {
@@ -322,5 +341,7 @@ public:
 	{
 		
 	}
+	
+	void GenStoreCode(FILE* file) {};
 
 };

@@ -16,3 +16,4 @@ compiler
 *.output
 *.html
 *.xml
+empty.js.inst

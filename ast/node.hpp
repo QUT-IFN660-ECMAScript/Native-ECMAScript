@@ -3,17 +3,26 @@
 #include <cstdio>
 #include <iostream>
 
+
 #include "../scope/lexical_scope.hpp"
 //
 // Created by Harry Scells on 18/04/2016.
 //
+
+
 using namespace std;
 
 class Node {
+protected:
+
+private:
+
+	
 public:
 	virtual void dump(int indent)=0;
-
 	virtual void GenCode(FILE* file) = 0;
+	virtual void GenStoreCode(FILE* file)=0;
+	
 	
 	void emit(FILE* outputfile, char* fmt, ...) {
 		va_list args;
