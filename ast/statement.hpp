@@ -357,8 +357,8 @@ class IterationStatement : public Statement {
 
 };
 
-/*
-class DoWhileIterationStatement : public Statement, public IterationStatement {
+
+class DoWhileIterationStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
@@ -377,8 +377,12 @@ class DoWhileIterationStatement : public Statement, public IterationStatement {
 		
 		
 	}
+	void GenCode(FILE* file)
+	{
+		
+	}
 };
-*/
+
 
 
 
