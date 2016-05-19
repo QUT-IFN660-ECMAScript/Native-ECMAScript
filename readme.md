@@ -54,7 +54,7 @@ Build compiler, and run parser tests only
 make test_parser
 ```
 
-Test compiler generates pseudo-code from input file - Will generate <inputFile.js.il>
+Test compiler generates pseudo-code from input file - Will generate inputFile.js.il
 ```
 make
 ./compiler <inputFile.js>
