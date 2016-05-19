@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
 void CodeGeneration(char* inputfile, ScriptBody* root) {
 	char* outputFilename = (char*)malloc(strlen(inputfile) + 3);
-	sprintf(outputFilename, "%s.inst", inputfile);
+	sprintf(outputFilename, "%s.il", inputfile);
 	FILE* outputFile = fopen(outputFilename, "w");
 
 	

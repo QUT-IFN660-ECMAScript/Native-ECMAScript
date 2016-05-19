@@ -2,9 +2,12 @@
 #include <cstdarg>
 #include <cstdio>
 #include "node.hpp"
+#include <string> 
 
 using namespace std;
 extern int global_var;
+
+
 class Expression:public Node{
 public:	 
 	virtual void GenCode(FILE* file) = 0;
@@ -32,7 +35,10 @@ public:
 		
 	}
 	
-	 void GenStoreCode(FILE* file) {};
+	void GenStoreCode(FILE* file) {		
+		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", global_var, this->getValue());
+		++global_var;
+	 };
     
 };
 
@@ -57,7 +63,9 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	void GenStoreCode(FILE* file) {
+		
+	};
 	
 };
 
@@ -74,22 +82,20 @@ public:
     std::string getReferencedName() {
         return name;
     }
+    
 
     void dump(int indent){
         label(indent, "IdentifierExpression: %s\n", name.c_str());
     }
    
     
-   void GenCode(FILE* file) {
-   		printf("here");
-		emit(file, "ldloc %d", reference->getReferencedName());
+	void GenCode(FILE* file) {
 		
 	}
 
-	void GenStoreCode(FILE* file) 	{
-		printf("genstorecode");
-		emit(file, "stloc %d", reference->getReferencedName());
-		
+	void GenStoreCode(FILE* file) 	{		
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, this->getReferencedName().c_str());	
+		++global_var;
 	}
 };
 
@@ -121,6 +127,7 @@ public:
 class AssignmentExpression:public Expression, Reference {
 private:
     Expression *lhs, *rhs;
+    int lhsReg, rhsReg;
 public:
     AssignmentExpression(Expression *lhs, Expression *rhs) {
         this->lhs = lhs;
@@ -212,22 +219,35 @@ public:
     bool isSuperReference() {
         return false;
     }
+    
+    /**
+     * Sets the lhs reference register
+     */
+     void setLHSRegister() {
+     	lhsReg = global_var;
+      }
+     
+     /**
+     * Sets the rhs reference register
+     */
+     void setRHSRegister() {
+     	rhsReg = global_var;
+     }
 
    
-    
-     void GenStoreCode(FILE* file) 	{
-     printf("here");
-		global_var++;
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, getReferencedName().c_str());
-
+    void GenStoreCode(FILE* file) 	{
+    	if (!isUnresolvableReference()) {
+    		setLHSRegister();
+			lhs->GenStoreCode(file);
+			setRHSRegister();
+			rhs->GenStoreCode(file);
+			GenCode(file);
+		}		
 	}
    
     
     void GenCode(FILE* file) {
-    	printf("here");
-    	rhs->GenCode(file);
-		lhs->GenStoreCode(file);
-		lhs->GenCode(file);
+		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, lhsReg, rhsReg);	
 	}
 };
 

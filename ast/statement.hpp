@@ -28,22 +28,24 @@ public:
 class ExpressionStatement: public Statement {
 private:
   Expression* expr;
+  
 public:
   ExpressionStatement(Expression* expr):
     expr(expr) {};
-  void dump(int indent){
-    label(indent, "ExpressionStatement\n");
-    expr->dump(indent+1);
-  }
+    
+    
+	void dump(int indent){
+    	label(indent, "ExpressionStatement\n");
+    	expr->dump(indent+1);
+	}
 	
 	
-	void GenCode(FILE* file)
-	{
-		
+	void GenCode(FILE* file) {
 		expr->GenStoreCode(file);
 	}
+	
 	void GenStoreCode(FILE* file) {
-		
+
 	}
 	
 };
@@ -54,15 +56,16 @@ private:
 public:
   StatementList(vector<Statement*> *stmts):
     stmts(stmts) {};
-  void dump(int indent) {
-    label(indent, "StatementList\n");
-    for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
-      (*iter)->dump(indent+1);
-  }
+    
+    
+	void dump(int indent) {
+    	label(indent, "StatementList\n");
+    	for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
+      		(*iter)->dump(indent+1);
+  	}
 	
 	
-	void GenCode(FILE* file)
-	{
+	void GenCode(FILE* file) {
 		
 	}
 	
@@ -93,8 +96,7 @@ public:
 	}
 
 	
-	void GenCode(FILE* file)
-	{
+	void GenCode(FILE* file) {
 		
 	}
 	

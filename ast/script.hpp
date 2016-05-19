@@ -15,16 +15,17 @@ public:
 	
   ScriptBody(vector<Statement*> *stmts):
     stmts(stmts) {};
-  void dump(int indent) {
-    label(indent, "ScriptBody\n");
-    vector<Statement*>::iterator iter;
-    for (iter = stmts->begin(); iter != stmts->end(); ++iter) {
-      (*iter)->dump(indent+1);
-    }
-  }
+    
+    
+	void dump(int indent) {
+    	label(indent, "ScriptBody\n");
+    	vector<Statement*>::iterator iter;
+    	for (iter = stmts->begin(); iter != stmts->end(); ++iter) {
+      		(*iter)->dump(indent+1);
+    	}
+  	}
   
-  void emit(FILE* outputfile, char* fmt, ...) {	
-  		printf("ASDDASSA");
+	void emit(FILE* outputfile, char* fmt, ...) {	
 		va_list args;
 		va_start(args, fmt);
 		vfprintf(outputfile, fmt, args);
