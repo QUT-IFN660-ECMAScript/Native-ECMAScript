@@ -324,9 +324,9 @@ public:
 
 class Arguments : public Expression {
 private:
-    std::vector<AssignmentExpression*> argumentList;
+    std::vector<AssignmentExpression*>* argumentList;
 public:
-    Arguments(vector<AssignmentExpression*> argumentList){
+    Arguments(vector<AssignmentExpression*>* argumentList){
         this->argumentList = argumentList;
     };
 
@@ -335,7 +335,7 @@ public:
         for (vector<AssignmentExpression*>::iterator iter = argumentList->begin(); iter != argumentList->end(); ++iter)
           (*iter)->dump(indent+1);
     }
-
+    
   bool resolveNames(LexicalScope* scope) {
     return true;
   }
@@ -345,6 +345,7 @@ public:
 class CallExpression : public Expression {
 private:
     Expression* expression;
+    Arguments* arguments;
 public:
     CallExpression(Expression *expression) {
         this->expression = expression;
@@ -354,6 +355,9 @@ public:
         label(indent, "CallExpression\n");
         indent++;
         expression->dump(indent);
+        if(arguments != NULL) {
+            arguments->dump(indent+1);
+        }
     }
 
     bool resolveNames(LexicalScope *scope) {

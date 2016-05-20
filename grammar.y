@@ -132,6 +132,8 @@ using namespace std;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
 
+    vector<Expression*>* argumentList;
+
     int ival;
     double dval;
     const char* sval;
@@ -164,7 +166,7 @@ using namespace std;
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
-
+%type <argumentList> ArgumentList
 %%
 
 /* 15.1 Scripts
@@ -875,8 +877,12 @@ Arguments:
     ;
 
 ArgumentList:
-    AssignmentExpression
-    | ArgumentList COMMA AssignmentExpression
+    AssignmentExpression    {
+        $$ = new std::vector<Expression*>; 
+        $$->push_back($1);
+
+    }
+    | ArgumentList COMMA AssignmentExpression   {$$ = $1; $$->push_back($3);}
     ;
 
 LeftHandSideExpression:
