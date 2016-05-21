@@ -55,4 +55,10 @@ public:
         }
         return scoped;
     }
+
+    void genCode(FILE* file) {
+      for (std::vector<Statement*>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
+            (*it)->genCode(file);
+        }
+    }
 };

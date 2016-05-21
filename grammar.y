@@ -65,11 +65,11 @@ using namespace std;
 %token UNARY_ADD                          // ++
 %token UNARY_SUBTRACT                     // --
 %token LOGICAL_NOT                        // !
-%token MULTIPLY                           // *
-%token DIVIDE                             // /
-%token MODULO                             // %
-%token ADD                                // +
-%token SUBTRACT                           // -
+%token <cval> MULTIPLY                           // *
+%token <cval> DIVIDE                             // /
+%token <cval> MODULO                             // %
+%token <cval> ADD                                // +
+%token <cval> SUBTRACT                           // -
 %token EQUAL                              // ==
 %token NOT_EQUAL                          // !=
 %token EXACTLY_EQUAL                      // ===
@@ -137,6 +137,8 @@ using namespace std;
     int ival;
     double dval;
     const char* sval;
+
+    char cval;
 }
 
 %error-verbose
@@ -167,6 +169,8 @@ using namespace std;
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
 %type <argumentList> ArgumentList
+
+%type <cval> MultiplicativeOperator
 %%
 
 /* 15.1 Scripts
@@ -801,6 +805,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression	{$$ = $1;}
+    | AdditiveExpression ADD MultiplicativeExpression  {$$ = new BinaryExpression($1, $3, $2);}
+    | AdditiveExpression SUBTRACT MultiplicativeExpression {$$ = new BinaryExpression($1, $3, $2);}
     ;
 
 /* 12.6 Multiplicative Operators
@@ -809,7 +815,7 @@ AdditiveExpression:
 
 MultiplicativeExpression:
     UnaryExpression	{ $$ = $1; }
-	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
+	| MultiplicativeExpression MultiplicativeOperator UnaryExpression {printf("Multiplicative");$$ = new BinaryExpression($1, $3, $2);}
     ;
 
 /* 12.6 Multiplicative Operators
@@ -817,7 +823,7 @@ MultiplicativeExpression:
  */
 
 MultiplicativeOperator:
-	MULTIPLY DIVIDE MODULO
+	MULTIPLY | DIVIDE | MODULO
 	;
 
 /* 12.5 Unary Operators

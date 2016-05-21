@@ -1,11 +1,14 @@
 #pragma once
 #include <cstdarg>
 #include <cstdio>
+#include <iostream>
 #include "node.hpp"
 
 using namespace std;
 
 class Expression:public Node{
+public:
+    virtual void genCode(FILE *file) = 0;
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -26,6 +29,11 @@ public:
     bool resolveNames(LexicalScope* scope) {
         return true;
     }
+
+    void genCode(FILE *file) {
+        int regInd = this->registerIndex++;
+        emit(file, "ESValue* r%d = new Number(%d);", regInd, this->value);
+    }
 };
 
 class DecimalLiteralExpression:public Expression{
@@ -45,6 +53,10 @@ public:
     }
     bool resolveNames(LexicalScope* scope) {
         return true;
+    }
+
+    void genCode(FILE *file) {
+
     }
 };
 
@@ -74,6 +86,11 @@ public:
         }
         return reference != NULL;
     }
+
+    void genCode(FILE *file) {
+        int regInd = this->registerIndex++;
+        emit(file, "ESValue* r%d = new ReferenceType(\"%s\")", regInd, name.c_str());
+    }
 };
 
 class StringLiteralExpression: public Expression {
@@ -93,6 +110,10 @@ public:
 	}
     bool resolveNames(LexicalScope* scope) {
         return true;
+    }
+
+    void genCode(FILE *file) {
+
     }
 };
 
@@ -206,6 +227,17 @@ public:
         }
         return false;
     }
+
+    void genCode(FILE *file) {
+        int regInd = this->registerIndex++;
+
+        std::string idenName = getReferencedName();
+        emit(file, "ESValue* r%d = new ReferenceType(\"%s\")", regInd, idenName.c_str());
+        this->rhs->genCode(file);
+
+        int regIndAfer = this->registerIndex - 1;
+        emit(file, "ESValue* r%d = Core::Asign(r%d, r%d)", this->registerIndex++, regInd, regIndAfer);
+    }
 };
 
 class ObjectLiteralExpression : public Expression {
@@ -243,6 +275,9 @@ public:
         return false;
     }
 
+    void genCode(FILE *file) {
+
+    }
 };
 
 class PropertyDefinitionExpression : public Expression {
@@ -275,6 +310,10 @@ public:
         }
         return false;
     };
+
+    void genCode(FILE *file) {
+
+    }
 };
 
 class LiteralPropertyNameExpression : public Expression {
@@ -296,6 +335,10 @@ public:
             return literalExpression->resolveNames(scope);
         }
         return false;
+    }
+
+    void genCode(FILE *file) {
+
     }
 };
 
@@ -320,6 +363,9 @@ public:
         return false;
     }
 
+    void genCode(FILE *file) {
+
+    }
 };
 
 class Arguments : public Expression {
@@ -339,6 +385,10 @@ public:
   bool resolveNames(LexicalScope* scope) {
     return true;
   }
+
+  void genCode(FILE *file) {
+
+    }
 };
 
 
@@ -365,5 +415,70 @@ public:
             return expression->resolveNames(scope);
         }
         return false;
+    }
+
+    void genCode(FILE *file) {
+
+    }
+};
+
+class BinaryExpression : public Expression {
+private:
+    Expression* lhs;
+    Expression* rhs;
+    char op;
+public:
+    BinaryExpression(Expression* lhs, Expression* rhs, char op) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+
+        this->op = op;
+    };
+
+    bool resolveNames(LexicalScope *scope) {
+        if (lhs && rhs) {
+            return lhs->resolveNames(scope) && rhs->resolveNames(scope);
+        }
+        return false;
+    }
+
+    void genCode(FILE *file) {
+
+        //rhs must genCode() first, otherwise, the output will be wrong
+        this->rhs->genCode(file);
+        this->lhs->genCode(file);
+
+        int regInd = this->registerIndex++;
+
+        //Becareful with Substract, Divide and Modulo.
+        int rRegInd = regInd - 2;
+        int lRegInd = regInd - 1;
+
+        switch(op) {
+            case '+':
+                emit(file, "ESValue* r%d = Core::Plus(r%d, r%d);", regInd, lRegInd, rRegInd);
+                break;
+            case '-':
+                emit(file, "ESValue* r%d = Core::Substract(r%d, r%d);", regInd, lRegInd, rRegInd);
+                break;
+            case '*':
+                emit(file, "ESValue* r%d = Core::Multiply(r%d, r%d);", regInd, lRegInd, rRegInd);
+                break;
+            case '/':
+                emit(file, "ESValue* r%d = Core::Divide(r%d, r%d);", regInd, lRegInd, rRegInd);
+                break;
+            case '%':
+                emit(file, "ESValue* r%d = Core::Modulo(r%d, r%d);", regInd, lRegInd, rRegInd);
+                break;
+        }
+    }
+
+    void dump(int indent) {
+        label(indent, "BinaryExpression\n");
+        label(indent + 1, "op: %c\n", op);
+        lhs->dump(indent + 1, "lhs");
+        if(rhs != NULL){
+            rhs->dump(indent + 1, "rhs");
+        }
     }
 };

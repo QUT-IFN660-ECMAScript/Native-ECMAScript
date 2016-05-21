@@ -13,7 +13,8 @@
 using namespace std;
 
 class Statement: public Node {
-
+public:
+    virtual void genCode(FILE *file) = 0;
 };
 
 class ExpressionStatement: public Statement {
@@ -32,19 +33,25 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+		if(expr) {
+			expr->genCode(file);
+		}
+    }
 };
 
 class StatementList: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
-  StatementList(vector<Statement*> *stmts):
+  	StatementList(vector<Statement*> *stmts):
     stmts(stmts) {};
-  void dump(int indent) {
-    label(indent, "StatementList\n");
-    for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
-      (*iter)->dump(indent+1);
-  }
+  	void dump(int indent) {
+    	label(indent, "StatementList\n");
+    	for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
+    	  (*iter)->dump(indent+1);
+  	}
 	bool resolveNames(LexicalScope* scope) {
 
 		bool scoped = true;
@@ -69,6 +76,10 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 //13.2 Block
@@ -100,6 +111,10 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 // 13.13 The try Statement
@@ -141,6 +156,10 @@ public:
 		}
 		return scoped;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 class CatchStatement : public Statement {
@@ -167,6 +186,10 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 class FinallyStatement : public Statement {
@@ -190,6 +213,10 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 class ThrowStatement: public Statement{
@@ -209,6 +236,10 @@ public:
 		}
 		return false;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 class ReturnStatement: public Statement {
@@ -240,6 +271,9 @@ public:
 		return false;
 	};
 
+	void genCode(FILE *file) {
+
+    }
 };
 
 class LabelledItemStatement: public Statement {
@@ -278,6 +312,10 @@ public:
 		}
 		return scoped;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 
@@ -316,6 +354,10 @@ public:
 		}
 		return scoped;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 /* 13.6 If Statement
@@ -364,6 +406,10 @@ public:
 		}
 		return scoped;
 	}
+
+	void genCode(FILE *file) {
+
+    }
 };
 
 
@@ -397,6 +443,9 @@ class IterationStatement : public Statement {
 		return scoped;
 	}
 
+	void genCode(FILE *file) {
+
+    }
 };
 
 /*

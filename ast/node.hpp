@@ -11,6 +11,8 @@ using namespace std;
 
 class Node {
 public:
+	static int registerIndex;
+
 	virtual void dump(int indent)=0;
 	virtual bool resolveNames(LexicalScope* scope) = 0;
 
@@ -28,5 +30,13 @@ public:
 	void dump(int i, char const* name) {
 		label(i, "%s:\n", name);
 		dump(i + 1);
+	}
+
+	void emit(FILE* outputfile, char* fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(outputfile, fmt, args);
+		fprintf(outputfile,"\n");
+		va_end(args);
 	}
 };
