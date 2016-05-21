@@ -800,6 +800,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression	{$$ = $1;}
+    | AdditiveExpression ADD MultiplicativeExpression
+    | AdditiveExpression SUBTRACT MultiplicativeExpression
     ;
 
 /* 12.6 Multiplicative Operators
@@ -830,8 +832,8 @@ UnaryExpression:
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
 	| UNARY_SUBTRACT UnaryExpression
-	/* | ADD UnaryExpression 		
-	| SUBTRACT UnaryExpression */
+	| ADD UnaryExpression 		
+	| SUBTRACT UnaryExpression 
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;

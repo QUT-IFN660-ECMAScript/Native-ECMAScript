@@ -16,4 +16,4 @@ compiler
 *.output
 *.html
 *.xml
-empty.js.il
+*.js.il
