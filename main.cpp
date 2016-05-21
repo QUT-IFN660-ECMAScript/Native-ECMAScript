@@ -11,7 +11,7 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
 
-int Node::registerIndex = 0;
+// int Node::registerIndex = 0;
 
 int main(int argc, char* argv[])
 {

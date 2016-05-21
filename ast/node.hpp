@@ -11,6 +11,7 @@ using namespace std;
 
 class Node {
 public:
+	//This is used to generate the variable names of register in the pseudo machine code
 	static int registerIndex;
 
 	virtual void dump(int indent)=0;

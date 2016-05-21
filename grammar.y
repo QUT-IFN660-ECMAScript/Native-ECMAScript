@@ -9,6 +9,9 @@ int yylex();
 
 ScriptBody *root;
 
+//Initialise static member registerIndex of Node
+int Node::registerIndex = 0;
+
 using namespace std;
 
 %}
