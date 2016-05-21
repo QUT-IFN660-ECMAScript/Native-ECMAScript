@@ -3,6 +3,12 @@
 #include <cstdio>
 #include "node.hpp"
 #include <string> 
+#include <stdio.h>
+#include <cstring>
+#include <stdlib.h>
+#include <sstream>
+
+#include "../type/type.hpp"
 
 using namespace std;
 extern int global_var;
@@ -102,13 +108,23 @@ public:
 class StringLiteralExpression: public Expression {
 private:
 	std::string val;
+	const char* result;
 public:
 	StringLiteralExpression(const char* val) {
 		this->val = std::string(val);
+		this->result = val;
 	};
 
     std::string getValue() {
         return val;
+    }
+    
+    int getIntValue() {
+		unsigned uintVar;
+	  	std::istringstream in(val);
+	   	in >> uintVar;
+	   	return uintVar;
+		
     }
 
 	void dump(int indent) {
@@ -356,13 +372,130 @@ public:
         computedExpression->dump(indent);
     }
 
-  
     
-    void GenCode(FILE* file)
-	{
+    void GenCode(FILE* file) 	{
 		
 	}
 	
 	void GenStoreCode(FILE* file) {};
+
+};
+
+/* See ECMA Specifications http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators */
+
+class UnaryExpression : public Expression, Reference {
+
+
+private:
+	 char operand; 
+	 Expression *unaryExpression;
+	 
+	 
+public:
+	UnaryExpression(char operand, Expression *unaryExpression) {
+		this->operand = operand;
+		this->unaryExpression = unaryExpression;
+	};
+	
+	ESValue* getBase() {
+    	
+
+        // attempt to cast to a string
+        StringLiteralExpression* stringLiteralExpression = dynamic_cast<StringLiteralExpression*>(unaryExpression);
+        if (stringLiteralExpression) {
+            return new String(stringLiteralExpression->getValue());
+        }
+
+        // attempt to cast to an int
+        DecimalIntegerLiteralExpression* decimalIntegerLiteralExpression = dynamic_cast<DecimalIntegerLiteralExpression*>(unaryExpression);
+        if (decimalIntegerLiteralExpression) {
+            return new Number(decimalIntegerLiteralExpression->getValue());
+        }
+
+        // attempt to cast to a double
+        DecimalLiteralExpression* decimalLiteralExpression = dynamic_cast<DecimalLiteralExpression*>(unaryExpression);
+        if (decimalLiteralExpression) {
+            return new Number(decimalLiteralExpression->getValue());
+        }
+
+        // ??? fail!
+        return new Undefined();
+    }
+
+    /**
+     * Returns the referenced name component of the reference.
+     */
+    std::string getReferencedName() {
+        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (unaryExpression);
+        if (identifier != NULL) {
+            return identifier->getReferencedName();
+        }
+        return NULL;
+    }
+
+    /**
+     * Returns the strict reference flag component of the reference.
+     */
+    bool isStrictReference() {
+        return false;
+    }
+
+    /**
+     * Returns true if Type(base) is Boolean, String, Symbol, or Number.
+     */
+    bool hasPrimitiveBase() {
+        return getBase()->isPrimitive();
+    }
+
+    /**
+     * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
+     */
+    bool isPropertyReference() {
+        if (getBase()->getType() == object || getBase()->isPrimitive()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the base value is undefined and false otherwise.
+     */
+    bool isUnresolvableReference() {
+        return getBase()->getType() == undefined;
+    }
+
+    /**
+     * Returns true if this reference has a thisValue component
+     */
+    bool isSuperReference() {
+        return false;
+    }
+
+	
+	 void dump(int indent) {
+        label(indent, "UnaryExpression\n");
+        indent++;
+        char lab[12] = "Operator: ";
+        strcat(lab, &operand);
+        strcat(lab, "\n");
+        label(indent, lab);
+        label(++indent, "Value\n");
+      	StringLiteralExpression* result = EvaluateType();
+		label(++indent, "%d\n", result->getIntValue());
+    }
+
+    
+    void GenCode(FILE* file) 	{
+		
+	}
+	
+	void GenStoreCode(FILE* file) {};
+	
+	StringLiteralExpression* EvaluateType() {
+		if (hasPrimitiveBase()) {
+			return static_cast<StringLiteralExpression*> (unaryExpression);
+		}
+	
+	}
 
 };

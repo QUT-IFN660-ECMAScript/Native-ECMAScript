@@ -826,13 +826,13 @@ MultiplicativeOperator:
  */
 
 UnaryExpression:
-    PostfixExpression	{ $$ = $1; }
+    PostfixExpression					{ $$ = $1; }
 	| DELETE UnaryExpression
 	| VOID UnaryExpression
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
-	| UNARY_SUBTRACT UnaryExpression
-	| ADD UnaryExpression 		
+	| UNARY_SUBTRACT UnaryExpression	
+	| ADD UnaryExpression 				{ $$ = new UnaryExpression('+', $2); }
 	| SUBTRACT UnaryExpression 
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
