@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
         /*
         So far, can only generates DecimalIntegerLiteralExpression, e.x. 5 + 6/2 + 5*10
         */
-        FILE* outputFile = fopen("../CodeGeneration.ouput", "w");
+        FILE* outputFile = fopen("../CodeGeneration.ouput", "w");//output file is in the same folder with Native-ECMAScript
         root->genCode(outputFile);
     }
     return 0;
