@@ -18,6 +18,7 @@ class Expression:public Node{
 public:	 
 	virtual void GenCode(FILE* file) = 0;
 	virtual void GenStoreCode(FILE* file)=0;
+	virtual void setRHSRegister() = 0;
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -44,6 +45,8 @@ public:
 	int getRefID() {
 		return refID;
 	}
+	
+	void setRHSRegister() {}
   
     void GenCode(FILE* file)
 	{
@@ -70,7 +73,7 @@ public:
         return value;
     }
     
-
+	void setRHSRegister() {}
 
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
@@ -112,6 +115,7 @@ public:
 		global_var++;
 	}
 
+	void setRHSRegister() {}
 	
 	int getRefID() {
 		return refID;
@@ -148,6 +152,8 @@ public:
 	   	return uintVar;
 		
     }
+    
+    void setRHSRegister() {}
 
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
@@ -173,16 +179,15 @@ public:
         this->lhs = lhs;
         this->rhs = rhs;
     };
+    
+    AssignmentExpression() {};
 
     void dump(int indent) {
         label(indent, "AssignmentExpression\n");
         lhs->dump(indent + 1, "lhs");
         rhs->dump(indent + 1, "rhs");
     }
-    
-    
-
-    
+  
     /**
      * Sets the lhs reference register
      */
@@ -196,20 +201,31 @@ public:
      void setRHSRegister() {
      	rhsReg = global_var;
      }
+     
+     int getLHSRegister() {
+     	return lhsReg;
+     }
+     
+     int getRHSRegister() {
+     	return rhsReg;
+     }
 
    
     void GenStoreCode(FILE* file) 	{
-   		setLHSRegister();
+    	setLHSRegister();
 		lhs->GenStoreCode(file);
 		setRHSRegister();
-		rhs->GenStoreCode(file);
+		rhs->GenStoreCode(file);		
 		GenCode(file);
 	}
    
     
-    void GenCode(FILE* file) {
-		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, lhsReg, rhsReg);	
+    void GenCode(FILE* file) {      		
+		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, this->getLHSRegister(), this->getRHSRegister());	
+		setLHSRegister();		
 		++global_var;
+		setRHSRegister(); 
+		
 	}
 };
 
@@ -232,6 +248,7 @@ public:
         }
     }
 
+	void setRHSRegister() {}
    
     
     void GenCode(FILE* file)
@@ -269,7 +286,7 @@ public:
         }
     }
 
-    
+    void setRHSRegister() {}
     
     void GenCode(FILE* file)
 	{
@@ -294,7 +311,7 @@ public:
         literalExpression->dump(indent);
     }
 
-   
+    void setRHSRegister() {}
     
     void GenCode(FILE* file)
 	{
@@ -318,6 +335,7 @@ public:
         computedExpression->dump(indent);
     }
 
+    void setRHSRegister() {}
     
     void GenCode(FILE* file) 	{
 		
@@ -348,9 +366,7 @@ public:
 	 void dump(int indent) {
         label(indent, "UnaryExpression\n");
         indent++;
-    /*    char lab[14] = "Operator: ";
-        strcat(lab, &operand);
-        strcat(lab, "\n"); */
+		/* need to handle different unary operators */
         label(indent, "Operator: +\n");
         label(++indent, "Value\n");
       	unaryExpression->dump(++indent);
@@ -448,6 +464,8 @@ private:
 		unaryExpression->GenStoreCode(file);
 		setRHSRegister();	
 		emit(file, "JSValue* r%d = Plus(r%d, r%d)", ++global_var, this->getLHSRegister(), this->getRHSRegister() );	
+		global_var++;
+		
 	};
 
 
