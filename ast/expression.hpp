@@ -23,6 +23,7 @@ public:
 class DecimalIntegerLiteralExpression:public Expression{
 private:
     int value;
+    int refID;
 public:
     DecimalIntegerLiteralExpression(int value){
         this->value = value;
@@ -35,6 +36,14 @@ public:
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
+    
+	void setRefID() {
+		refID = global_var;
+	}
+	
+	int getRefID() {
+		return refID;
+	}
   
     void GenCode(FILE* file)
 	{
@@ -51,6 +60,7 @@ public:
 class DecimalLiteralExpression:public Expression{
 private:
     double value;
+    
 public:
     DecimalLiteralExpression(double value){
         this->value = value;
@@ -59,6 +69,8 @@ public:
     double getValue() {
         return value;
     }
+    
+
 
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
@@ -79,6 +91,7 @@ class IdentifierExpression:public Expression{
 private:
     std::string name;
     Reference* reference;
+    int refID;
 public:
     IdentifierExpression(std::string name){
         this->name = name;
@@ -94,14 +107,23 @@ public:
         label(indent, "IdentifierExpression: %s\n", name.c_str());
     }
    
+	void setRefID() {
+		refID = global_var;
+		global_var++;
+	}
+
+	
+	int getRefID() {
+		return refID;
+	}
     
 	void GenCode(FILE* file) {
 		
 	}
 
 	void GenStoreCode(FILE* file) 	{		
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, this->getReferencedName().c_str());	
-		++global_var;
+		setRefID();
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", this->getRefID(), this->getReferencedName().c_str());	
 	}
 };
 
@@ -142,7 +164,7 @@ public:
 	
 };
 
-class AssignmentExpression:public Expression, Reference {
+class AssignmentExpression:public Expression {
 private:
     Expression *lhs, *rhs;
     int lhsReg, rhsReg;
@@ -160,83 +182,6 @@ public:
     
     
 
-    /**
-     * Returns the base value component of the reference
-     * TODO: This method will need to be expanded for all possible types... maybe?
-     */
-    ESValue* getBase() {
-    	
-
-        // attempt to cast to a string
-        StringLiteralExpression* stringLiteralExpression = dynamic_cast<StringLiteralExpression*>(rhs);
-        if (stringLiteralExpression) {
-            return new String(stringLiteralExpression->getValue());
-        }
-
-        // attempt to cast to an int
-        DecimalIntegerLiteralExpression* decimalIntegerLiteralExpression = dynamic_cast<DecimalIntegerLiteralExpression*>(rhs);
-        if (decimalIntegerLiteralExpression) {
-            return new Number(decimalIntegerLiteralExpression->getValue());
-        }
-
-        // attempt to cast to a double
-        DecimalLiteralExpression* decimalLiteralExpression = dynamic_cast<DecimalLiteralExpression*>(rhs);
-        if (decimalLiteralExpression) {
-            return new Number(decimalLiteralExpression->getValue());
-        }
-
-        // ??? fail!
-        return new Undefined();
-    }
-
-    /**
-     * Returns the referenced name component of the reference.
-     */
-    std::string getReferencedName() {
-        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (lhs);
-        if (identifier != NULL) {
-            return identifier->getReferencedName();
-        }
-        return NULL;
-    }
-
-    /**
-     * Returns the strict reference flag component of the reference.
-     */
-    bool isStrictReference() {
-        return false;
-    }
-
-    /**
-     * Returns true if Type(base) is Boolean, String, Symbol, or Number.
-     */
-    bool hasPrimitiveBase() {
-        return getBase()->isPrimitive();
-    }
-
-    /**
-     * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
-     */
-    bool isPropertyReference() {
-        if (getBase()->getType() == object || getBase()->isPrimitive()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the base value is undefined and false otherwise.
-     */
-    bool isUnresolvableReference() {
-        return getBase()->getType() == undefined;
-    }
-
-    /**
-     * Returns true if this reference has a thisValue component
-     */
-    bool isSuperReference() {
-        return false;
-    }
     
     /**
      * Sets the lhs reference register
@@ -254,13 +199,11 @@ public:
 
    
     void GenStoreCode(FILE* file) 	{
-    	if (!isUnresolvableReference()) {
-    		setLHSRegister();
-			lhs->GenStoreCode(file);
-			setRHSRegister();
-			rhs->GenStoreCode(file);
-			GenCode(file);
-		}		
+   		setLHSRegister();
+		lhs->GenStoreCode(file);
+		setRHSRegister();
+		rhs->GenStoreCode(file);
+		GenCode(file);
 	}
    
     
@@ -386,13 +329,13 @@ public:
 
 /* See ECMA Specifications http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators */
 
-class UnaryExpression : public Expression, Reference {
+class UnaryExpression : public Expression {
 
 
 private:
 	 char operand; 
 	 Expression *unaryExpression;
-	 int opReg;
+	 int opRegL, opRegR;
 	 
 public:
 	UnaryExpression(char operand, Expression *unaryExpression) {
@@ -400,88 +343,15 @@ public:
 		this->unaryExpression = unaryExpression;
 	};
 	
-	ESValue* getBase() {
-    	
-
-        // attempt to cast to a string
-        StringLiteralExpression* stringLiteralExpression = dynamic_cast<StringLiteralExpression*>(unaryExpression);
-        if (stringLiteralExpression) {
-            return new String(stringLiteralExpression->getValue());
-        }
-
-        // attempt to cast to an int
-        DecimalIntegerLiteralExpression* decimalIntegerLiteralExpression = dynamic_cast<DecimalIntegerLiteralExpression*>(unaryExpression);
-        if (decimalIntegerLiteralExpression) {
-            return new Number(decimalIntegerLiteralExpression->getValue());
-        }
-
-        // attempt to cast to a double
-        DecimalLiteralExpression* decimalLiteralExpression = dynamic_cast<DecimalLiteralExpression*>(unaryExpression);
-        if (decimalLiteralExpression) {
-            return new Number(decimalLiteralExpression->getValue());
-        }
-
-        // ??? fail!
-        return new Undefined();
-    }
-
-    /**
-     * Returns the referenced name component of the reference.
-     */
-    std::string getReferencedName() {
-        IdentifierExpression *identifier = dynamic_cast<IdentifierExpression *> (unaryExpression);
-        if (identifier != NULL) {
-            return identifier->getReferencedName();
-        }
-        return NULL;
-    }
-
-    /**
-     * Returns the strict reference flag component of the reference.
-     */
-    bool isStrictReference() {
-        return false;
-    }
-
-    /**
-     * Returns true if Type(base) is Boolean, String, Symbol, or Number.
-     */
-    bool hasPrimitiveBase() {
-        return getBase()->isPrimitive();
-    }
-
-    /**
-     * Returns true if either the base value is an object or hasPrimitiveBase() is true; otherwise returns false.
-     */
-    bool isPropertyReference() {
-        if (getBase()->getType() == object || getBase()->isPrimitive()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the base value is undefined and false otherwise.
-     */
-    bool isUnresolvableReference() {
-        return getBase()->getType() == undefined;
-    }
-
-    /**
-     * Returns true if this reference has a thisValue component
-     */
-    bool isSuperReference() {
-        return false;
-    }
-
+	
 	
 	 void dump(int indent) {
         label(indent, "UnaryExpression\n");
         indent++;
-        char lab[12] = "Operator: ";
+    /*    char lab[14] = "Operator: ";
         strcat(lab, &operand);
-        strcat(lab, "\n");
-        label(indent, lab);
+        strcat(lab, "\n"); */
+        label(indent, "Operator: +\n");
         label(++indent, "Value\n");
       	unaryExpression->dump(++indent);
 		
@@ -491,9 +361,25 @@ public:
      * Sets the operator reference register
      */
      void setLHSRegister() {
-     	opReg = global_var;
+     	opRegL = global_var;
      	++global_var;
       }
+      
+      int getLHSRegister() {
+      	return opRegL;
+      }
+      
+      /**
+     * Sets the assign reference register
+     */
+	void setRHSRegister() {
+     	opRegR = global_var;
+     //	++global_var;
+	}
+      
+	int getRHSRegister() {
+		return opRegR;
+	}
      
     
     void GenCode(FILE* file) 	{		
@@ -502,13 +388,67 @@ public:
 	
 	
 	void GenStoreCode(FILE* file) {
-		emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", ++global_var, operand);
-		setLHSRegister();
-		unaryExpression->GenStoreCode(file);
-		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, opReg, opReg+1);
+		emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", global_var, operand);		
+		setLHSRegister();		
+		setRHSRegister();
+		unaryExpression->GenStoreCode(file);						
+		emit(file, "JSValue* r%d = Plus(r%d, r%d)", global_var, this->getLHSRegister(), this->getRHSRegister());
 
 	};
+
+};
+
+class AdditiveExpression : public Expression {
+
+private:
+	char operand; 
+	Expression *additiveExpression;
+	Expression *unaryExpression;
+	int opRegL, opRegR;
+	 
+	public:
+	AdditiveExpression(Expression *additiveExpression, char operand, Expression *unaryExpression) {
+		this->additiveExpression = additiveExpression;
+		this->unaryExpression = unaryExpression;
+		this->operand = operand;
+	};
+	 
+	 
+	void dump(int indent) {
+		additiveExpression->dump(indent);
+		unaryExpression->dump(indent);   
+    }
+    
+    void setLHSRegister() {
+		opRegL = global_var;
+	}
+      
+	int getLHSRegister() {
+		return opRegL;
+	}
+	
+	void setRHSRegister() {
+		opRegR = global_var;
+	}
+      
+	int getRHSRegister() {
+		return opRegR;
+	}
+
+	
+
+	void GenCode(FILE* file) 	{	
+ 
+	}
 	
 	
+	void GenStoreCode(FILE* file) {	
+		setLHSRegister();
+		additiveExpression->GenStoreCode(file);					
+		unaryExpression->GenStoreCode(file);
+		setRHSRegister();	
+		emit(file, "JSValue* r%d = Plus(r%d, r%d)", ++global_var, this->getLHSRegister(), this->getRHSRegister() );	
+	};
+
 
 };

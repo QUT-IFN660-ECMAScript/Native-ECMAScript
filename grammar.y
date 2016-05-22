@@ -799,8 +799,8 @@ ShiftExpression:
  */
 
 AdditiveExpression:
-    MultiplicativeExpression	{$$ = $1;}
-    | AdditiveExpression ADD MultiplicativeExpression
+    MultiplicativeExpression								{$$ = $1;}
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new AdditiveExpression($1, '+', new UnaryExpression('+', $3)); }	
     | AdditiveExpression SUBTRACT MultiplicativeExpression
     ;
 
@@ -809,8 +809,10 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression	{ $$ = $1; }
-	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
+    UnaryExpression											
+	| MultiplicativeExpression MULTIPLY UnaryExpression
+	| MultiplicativeExpression DIVIDE UnaryExpression
+	| MultiplicativeExpression MODULO UnaryExpression
     ;
 
 /* 12.6 Multiplicative Operators

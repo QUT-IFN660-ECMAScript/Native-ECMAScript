@@ -44,16 +44,5 @@ void CodeGeneration(char* inputfile, ScriptBody* root) {
 	char* outputFilename = (char*)malloc(strlen(inputfile) + 4);
 	sprintf(outputFilename, "%s.il", inputfile);
 	FILE* outputFile = fopen(outputFilename, "w");
-
-	
-/*	root->emit(outputFile, ".assembly %s {}", inputfile);
-	root->emit(outputFile, ".class %s {", inputfile);
-	root->emit(outputFile, ".method static void Main(string[] args) {");
-	root->emit(outputFile, ".entrypoint"); */
-
 	root->GenCode(outputFile);
-	
-/*	root->emit(outputFile, "ret");
-	root->emit(outputFile, "}"); // end of Main
-	root->emit(outputFile, "}"); // end of class */
 }

@@ -15,6 +15,11 @@
  * Boolean, a String, a Symbol, a Number, or an Environment Record (8.1.1). A base value of undefined indicates that
  * the Reference could not be resolved to a binding. The referenced name is a String or Symbol value.
  */
+ 
+ /* Appendum: Refer http://www.ecma-international.org/ecma-262/6.0/#sec-getvalue
+  * Important in runtime semantic of GetValue(V)
+  */
+  
 class Reference{
 public:
     virtual ESValue* getBase() = 0;
