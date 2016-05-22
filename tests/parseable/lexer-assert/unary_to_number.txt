@@ -1,0 +1,4 @@
++
+VALUE_STRING ("10")
+;
+END_OF_FILE

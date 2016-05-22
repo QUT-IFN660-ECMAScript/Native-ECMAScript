@@ -70,7 +70,7 @@ public:
 	}
 	
 	void GenStoreCode(FILE* file) {
-		
+		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", global_var, this->getValue());
 	};
 	
 };
@@ -132,11 +132,13 @@ public:
 	}
    
     
-    void GenCode(FILE* file)
-	{
+    void GenCode(FILE* file) 	{
 		
 	}
-	void GenStoreCode(FILE* file) {};
+	void GenStoreCode(FILE* file) {
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, this->getValue().c_str());	
+		++global_var;
+	};
 	
 };
 
@@ -264,6 +266,7 @@ public:
     
     void GenCode(FILE* file) {
 		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, lhsReg, rhsReg);	
+		++global_var;
 	}
 };
 
@@ -389,7 +392,7 @@ class UnaryExpression : public Expression, Reference {
 private:
 	 char operand; 
 	 Expression *unaryExpression;
-	 
+	 int opReg;
 	 
 public:
 	UnaryExpression(char operand, Expression *unaryExpression) {
@@ -480,22 +483,32 @@ public:
         strcat(lab, "\n");
         label(indent, lab);
         label(++indent, "Value\n");
-      	StringLiteralExpression* result = EvaluateType();
-		label(++indent, "%d\n", result->getIntValue());
-    }
-
-    
-    void GenCode(FILE* file) 	{
+      	unaryExpression->dump(++indent);
 		
+    }
+    
+    /**
+     * Sets the operator reference register
+     */
+     void setLHSRegister() {
+     	opReg = global_var;
+     	++global_var;
+      }
+     
+    
+    void GenCode(FILE* file) 	{		
+   
 	}
 	
-	void GenStoreCode(FILE* file) {};
 	
-	StringLiteralExpression* EvaluateType() {
-		if (hasPrimitiveBase()) {
-			return static_cast<StringLiteralExpression*> (unaryExpression);
-		}
+	void GenStoreCode(FILE* file) {
+		emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", ++global_var, operand);
+		setLHSRegister();
+		unaryExpression->GenStoreCode(file);
+		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, opReg, opReg+1);
+
+	};
 	
-	}
+	
 
 };
