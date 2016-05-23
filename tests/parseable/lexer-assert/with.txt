@@ -8,7 +8,6 @@ WITH
 (
 IDENTIFIER (Math)
 )
-{
 IDENTIFIER (a)
 =
 IDENTIFIER (PI)
@@ -17,5 +16,4 @@ IDENTIFIER (radius)
 *
 IDENTIFIER (radius)
 ;
-}
 END_OF_FILE
