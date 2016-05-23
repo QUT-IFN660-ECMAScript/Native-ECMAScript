@@ -12,10 +12,10 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
 extern int global_var;
-
+extern unsigned int getNewRegister();
 /* prototype */
 void CodeGeneration(char* inputfile, ScriptBody* root);
-extern unsigned int getNewRegister();
+
 
 int main(int argc, char* argv[])
 {

@@ -13,7 +13,7 @@
 using namespace std;
 extern int global_var;
 
-extern unsigned int getNewRegister() {
+inline unsigned int getNewRegister() {
 	return global_var++;
 }
 
