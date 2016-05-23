@@ -19,14 +19,66 @@
  /* Appendum: Refer http://www.ecma-international.org/ecma-262/6.0/#sec-getvalue
   * Important in runtime semantic of GetValue(V)
   */
-
-class Reference{
+class Reference : public ESValue {
+private:
+    ESValue* base;
+    String* referencedName;
+    Boolean* strict;
 public:
-    virtual ESValue* getBase() = 0;
-    virtual std::string getReferencedName() = 0;
-    virtual bool isStrictReference() = 0;
-    virtual bool hasPrimitiveBase() = 0;
-    virtual bool isPropertyReference() = 0;
-    virtual bool isUnresolvableReference() = 0;
-    virtual bool isSuperReference() = 0;
+
+    Reference(String* referencedName) {
+     this->referencedName = referencedName;
+     this->base = new Undefined();
+     this->strict = new Boolean(false);
+    }
+
+    Reference(String* referencedNames, ESValue* base) {
+     this->referencedName = referencedNames;
+     this->base = base;
+     this->strict = new Boolean(false);
+    }
+
+    Type getType() {
+     return reference;
+    }
+
+    bool isPrimitive() {
+     return false;
+    }
+
+    String* toString() {
+     return referencedName;
+    }
+
+    // Implementations of the following abstract operations:
+    // -----------------------------------------------------
+
+    // The following abstract operations are used in this specification to access the components of references:
+
+    // GetBase(V). Returns the base value component of the reference V.
+    ESValue* getBase() {
+     return base;
+    }
+
+    // GetReferencedName(V). Returns the referenced name component of the reference V.
+    String* getReferencedName() {
+     return referencedName;
+    }
+
+    // IsStrictReference(V). Returns the strict reference flag component of the reference V.
+    Boolean* isStrictReference() {
+     return strict;
+    }
+
+    // HasPrimitiveBase(V). Returns true if Type(base) is Boolean, String, Symbol, or Number.
+    Boolean* hasPrimitiveBase() {
+     return new Boolean(base->isPrimitive());
+    }
+
+
+    // TODO:
+    // IsPropertyReference(V). Returns true if either the base value is an object or HasPrimitiveBase(V) is true; otherwise returns false.
+    // IsUnresolvableReference(V). Returns true if the base value is undefined and false otherwise.
+    // IsSuperReference(V). Returns true if this reference has a thisValue component.
+
 };

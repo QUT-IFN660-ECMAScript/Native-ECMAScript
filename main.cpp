@@ -13,19 +13,20 @@ extern FILE *yyin;
 int yyparse(void);
 extern ScriptBody *root;
 extern int global_var;
+ESObject* globalObj;
+
 extern unsigned int getNewRegister();
 /* prototype */
 void CodeGeneration(char* inputfile, ScriptBody* root);
 
 
+// int Node::registerIndex = 0;
+
 int main(int argc, char* argv[])
 {
 	int global_var=0;
 
-    ESObject* global = new ESObject();
-    global->set(new Number(1), new Number(42));
-    global->set(new String("y"), Core::plus(global->get(new Number(1)), new Number(4)));
-    Console::log(global->get(new String("y")));
+    globalObj = new ESObject();
 
     yyin = fopen(argv[1], "r");
 

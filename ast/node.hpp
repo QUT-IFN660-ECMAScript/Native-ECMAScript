@@ -14,9 +14,11 @@ using namespace std;
 
 class Node {
 public:
+	//This is used to generate the variable names of register in the pseudo machine code
+	static int registerIndex;
+
 	virtual void dump(int indent)=0;
-	virtual void genCode(FILE *file) = 0;
-	virtual unsigned int genStoreCode(FILE *file)=0;
+	virtual unsigned int genCode(FILE *file) = 0;
 
 	void emit(FILE* outputfile, char* fmt, ...) {
 		va_list args;
@@ -30,6 +32,7 @@ public:
 		for (int i = 0; i < N; i++)
 			printf("    ");
 	}
+
 	void label(int i, char const* fmt, ...) {
 		indent(i);
 		va_list args;
@@ -37,6 +40,7 @@ public:
 		vprintf(fmt, args);
 		va_end(args);
 	}
+
 	void dump(int i, char const* name) {
 		label(i, "%s:\n", name);
 		dump(i + 1);

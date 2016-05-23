@@ -229,43 +229,18 @@ public:
 
 };
 
-class Prototype : public Object {
-private:
-    std::map<std::string, ESValue*> prototype;
-public:
-    Prototype() {
-        prototype.clear();
-    }
-
-    ESValue* get(ESValue* key_ref) {
-        String* key = key_ref->toString();
-        std::map<std::string, ESValue*>::iterator it = prototype.find(key->getValue());
-        if (it != prototype.end()) {
-            return prototype[key->getValue()];
-        }
-        fprintf(stderr, "ya blew it!\n");
-        return new Undefined();
-    }
-
-    void set(ESValue* key_ref, ESValue* value) {
-        String* key = key_ref->toString();
-        prototype[key->getValue()] = value;
-    }
-
-    String* toString() {
-        return new String();
-    }
-};
-
 class ESObject : public Object {
 private:
     std::map<std::string, ESValue*> properties;
-public:
-    Prototype* prototype;
+    ESObject* prototype;
 
+public:
     ESObject() {
-        this->prototype = new Prototype();
         properties.clear();
+    }
+
+    ESObject(ESObject* prototype) {
+        this->prototype = prototype;
     }
 
     ESValue* get(ESValue* key_ref) {
@@ -290,11 +265,6 @@ public:
     }
 };
 
-ESObject* globalObject = new ESObject();
-ESObject* getGlobalObject() {
-    return globalObject;
-}
-
 class StringObject : public Object {
 private:
     String* string;
@@ -306,6 +276,10 @@ public:
     StringObject(String* string) {
         this->string = string;
     }
+};
+
+class Function : public ESObject {
+
 };
 
 /**
@@ -383,6 +357,8 @@ class TypeOps {
                 return true;
             case object:
                 return true;
+            case reference:
+                return false;
         }
     }
 
@@ -412,6 +388,8 @@ class TypeOps {
                 return new NaN();
             case object:
                 return toNumber(toPrimitive(argument));
+            case reference:
+                return NULL;
         }
     }
 

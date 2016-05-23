@@ -4,15 +4,17 @@
 #pragma once
 
 #include "../type/type.hpp"
+#include "../scope/reference.hpp"
 
 enum Exception {
     ReferenceError,
     TypeError
 };
 
+extern ESObject* globalObj;
+
 class Core {
 public:
-
     /**
      * 12.7.3 The Addition operator ( + )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-addition-operator-plus
@@ -35,7 +37,6 @@ public:
             Reference* ref = dynamic_cast<Reference*>(v);
 
             if (ref != NULL) {
-                ESObject* globalObj = getGlobalObject();
                 return globalObj->set(ref->getReferencedName(), w);
             }
 
