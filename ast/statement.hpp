@@ -18,8 +18,8 @@ class Statement: public Node {
 private:
 static String vinit[];
 public:
-	virtual void GenCode(FILE* file) = 0;
-	virtual unsigned int GenStoreCode(FILE* file)=0;
+	virtual void genCode(FILE* file) = 0;
+	virtual unsigned int genStoreCode(FILE* file)=0;
 	
 	
 };
@@ -40,11 +40,11 @@ public:
 	}
 	
 	
-	void GenCode(FILE* file) {
-		expr->GenStoreCode(file);
+	void genCode(FILE* file) {
+		expr->genStoreCode(file);
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 
 	}
 	
@@ -65,11 +65,11 @@ public:
   	}
 	
 	
-	void GenCode(FILE* file) {
+	void genCode(FILE* file) {
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 //13.2 Block
@@ -96,11 +96,11 @@ public:
 	}
 
 	
-	void GenCode(FILE* file) {
+	void genCode(FILE* file) {
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 // 13.13 The try Statement
@@ -130,12 +130,12 @@ public:
 	}
 
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 class CatchStatement : public Statement {
@@ -158,12 +158,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 class FinallyStatement : public Statement {
@@ -183,12 +183,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 class ThrowStatement: public Statement{
@@ -204,12 +204,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 class ReturnStatement: public Statement {
@@ -236,12 +236,12 @@ public:
 
 
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 
 };
 
@@ -276,12 +276,12 @@ public:
 	
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 
@@ -312,12 +312,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 /* 13.6 If Statement
@@ -355,12 +355,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 
@@ -384,12 +384,12 @@ class IterationStatement : public Statement {
 	}
 	
 	
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 
 };
 
@@ -413,12 +413,12 @@ class DoWhileIterationStatement : public Statement {
 		
 		
 	}
-	void GenCode(FILE* file)
+	void genCode(FILE* file)
 	{
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {};
 };
 
 

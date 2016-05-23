@@ -14,7 +14,8 @@ enum Type {
     string_,
     symbol,
     number,
-    object
+    object,
+    reference
 };
 
 enum NumberType {
@@ -277,9 +278,10 @@ public:
         return new Undefined();
     }
 
-    void set(ESValue* key_ref, ESValue* value) {
+    ESValue* set(ESValue* key_ref, ESValue* value) {
         String* key = key_ref->toString();
         properties[key->getValue()] = value;
+        return value;
     }
 
 
@@ -287,6 +289,11 @@ public:
         return new String();
     }
 };
+
+ESObject* globalObject = new ESObject();
+ESObject* getGlobalObject() {
+    return globalObject;
+}
 
 class StringObject : public Object {
 private:

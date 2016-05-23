@@ -21,9 +21,6 @@ void CodeGeneration(char* inputfile, ScriptBody* root);
 int main(int argc, char* argv[])
 {
 	int global_var=0;
-//    ESValue* x = new Number(42);
-//    ESValue* y = Core::plus(x, new Number(4));
-//    Console::log(y);
 
     ESObject* global = new ESObject();
     global->set(new Number(1), new Number(42));
@@ -31,11 +28,17 @@ int main(int argc, char* argv[])
     Console::log(global->get(new String("y")));
 
     yyin = fopen(argv[1], "r");
+
+    // 'compiled' c file name
+    char* inputFile = argv[1];
+    char* outputFilename = (char*)malloc(strlen(inputFile) + 3);
+    sprintf(outputFilename, "%s.c", inputFile);
+    FILE* outputFile = fopen(outputFilename, "w");
+
     yyparse();
     if (root != NULL) {
-   //     root->resolveNames(NULL);
-        CodeGeneration(argv[1], root);
         root->dump(0);
+        root->genCode(outputFile);
     }
     return 0;
 }
@@ -46,16 +49,4 @@ char* substring(const char* str, size_t begin, size_t len)
     return 0; 
 
   return strndup(str + begin, len); 
-} 
-
-
-void CodeGeneration(char* inputfile, ScriptBody* root) {
-	char* outputFilename = (char*)malloc(strlen(inputfile) + 3);
-	sprintf(outputFilename, "%s.c", inputfile);
-	FILE* outputFile = fopen(outputFilename, "w");
-	root->emit(outputFile, "include \"./runtime/core.hpp\"");
-	root->emit(outputFile, "include \"./runtime/console.hpp\"\n");
-	root->emit(outputFile, "int main() {");
-	root->GenCode(outputFile);
-	root->emit(outputFile, "return 0;\n}");
 }

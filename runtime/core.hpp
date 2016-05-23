@@ -5,6 +5,11 @@
 
 #include "../type/type.hpp"
 
+enum Exception {
+    ReferenceError,
+    TypeError
+};
+
 class Core {
 public:
 
@@ -25,5 +30,22 @@ public:
         }
     }
 
+    static ESValue* assign(ESValue* v, ESValue* w) {
+        if (v->getType() == reference) {
+            Reference* ref = dynamic_cast<Reference*>(v);
+
+            if (ref != NULL) {
+                ESObject* globalObj = getGlobalObject();
+                return globalObj->set(ref->getReferencedName(), w);
+            }
+
+            throw TypeError;
+
+        } else {
+            throw ReferenceError;
+        }
+    }
+
 };
+
 

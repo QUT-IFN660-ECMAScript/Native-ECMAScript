@@ -35,12 +35,17 @@ public:
 
  
     
-    void GenCode(FILE* file) 	{
+    void genCode(FILE* file) {
+		emit(file, "#include \"./runtime/core.hpp\"");
+		emit(file, "#include \"./runtime/console.hpp\"\n");
+		emit(file, "int main() {");
 		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child) {
-			(*child)->GenCode(file);
+			(*child)->genCode(file);
 		}
+		emit(file, "return 0;");
+		emit(file, "}");
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {}
+	unsigned int genStoreCode(FILE* file) {}
    
 };

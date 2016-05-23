@@ -13,23 +13,11 @@
 using namespace std;
 
 class Node {
-protected:
-
-//private:
-//	unsigned int registerNumber;
-	
 public:
 	virtual void dump(int indent)=0;
-	virtual void GenCode(FILE* file) = 0;
-	virtual unsigned int GenStoreCode(FILE* file)=0;
-	
-	//int getRegisterNumber(){
-	//	return registerNumber;
-	//}
-	//void setRegisterNumber(unsigned int reg) {
-	//	this->registerNumber = reg;
-	//}
-	
+	virtual void genCode(FILE *file) = 0;
+	virtual unsigned int genStoreCode(FILE *file)=0;
+
 	void emit(FILE* outputfile, char* fmt, ...) {
 		va_list args;
 		va_start(args, fmt);

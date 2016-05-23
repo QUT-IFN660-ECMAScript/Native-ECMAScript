@@ -19,7 +19,7 @@
  /* Appendum: Refer http://www.ecma-international.org/ecma-262/6.0/#sec-getvalue
   * Important in runtime semantic of GetValue(V)
   */
-  
+
 class Reference{
 public:
     virtual ESValue* getBase() = 0;
