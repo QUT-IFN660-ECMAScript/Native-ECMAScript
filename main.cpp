@@ -6,6 +6,7 @@
 #include "ast/ast.hpp"
 #include "grammar.tab.h"
 #include "lex.yy.h"
+#include <stdlib.h>
 
 
 extern FILE *yyin;
@@ -39,11 +40,22 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+char* substring(const char* str, size_t begin, size_t len) 
+{ 
+  if (str == 0 || strlen(str) == 0 || strlen(str) < begin || strlen(str) < (begin+len)) 
+    return 0; 
+
+  return strndup(str + begin, len); 
+} 
 
 
 void CodeGeneration(char* inputfile, ScriptBody* root) {
-	char* outputFilename = (char*)malloc(strlen(inputfile) + 4);
-	sprintf(outputFilename, "%s.il", inputfile);
+	char* outputFilename = (char*)malloc(strlen(inputfile) + 3);
+	sprintf(outputFilename, "%s.c", inputfile);
 	FILE* outputFile = fopen(outputFilename, "w");
+	root->emit(outputFile, "include \"./runtime/core.hpp\"");
+	root->emit(outputFile, "include \"./runtime/console.hpp\"\n");
+	root->emit(outputFile, "int main() {");
 	root->GenCode(outputFile);
+	root->emit(outputFile, "return 0;\n}");
 }

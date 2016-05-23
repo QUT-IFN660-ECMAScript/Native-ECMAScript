@@ -47,7 +47,7 @@ public:
 	
 	unsigned int GenStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();		
-		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", registerNumber, this->getValue());
+		emit(file, "\tJSValue* r%d = new Number(%d);", registerNumber, this->getValue());
 		return registerNumber;
 	 };
     
@@ -77,7 +77,7 @@ public:
 	
 	unsigned int GenStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", registerNumber, this->getValue());
+		emit(file, "\tJSValue* r%d = new Reference(env, \"%d\");", registerNumber, this->getValue());
 		return registerNumber;
 	};
 	
@@ -109,7 +109,7 @@ public:
 
 	unsigned int GenStoreCode(FILE* file) 	{		
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", registerNumber, this->getReferencedName().c_str());	
+		emit(file, "\tJSValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getReferencedName().c_str());	
 		return registerNumber;
 	}
 };
@@ -146,7 +146,7 @@ public:
 	}
 	unsigned int GenStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", registerNumber, this->getValue().c_str());	
+		emit(file, "\tJSValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getValue().c_str());	
 		return registerNumber;
 	};
 	
@@ -176,7 +176,7 @@ public:
 		unsigned int rhsRegisterNumber = rhs->GenStoreCode(file);
 		unsigned int registerNumber = getNewRegister();	
 
-		emit(file, "JSValue* r%d = Assign(r%d, r%d)", registerNumber, lhsRegisterNumber, rhsRegisterNumber);		
+		emit(file, "\tJSValue* r%d = Assign(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);		
 		return registerNumber;
 	}
    
@@ -374,7 +374,7 @@ private:
 		unsigned int lhsRegisterNumber = lhs->GenStoreCode(file);
 		unsigned int rhsRegisterNumber =  rhs->GenStoreCode(file);
 		unsigned int registerNumber = getNewRegister();	
-		emit(file, "JSValue* r%d = Plus(r%d, r%d)", registerNumber, lhsRegisterNumber, rhsRegisterNumber );	
+		emit(file, "\tJSValue* r%d = Plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber );	
 		return registerNumber;
 		
 	};
