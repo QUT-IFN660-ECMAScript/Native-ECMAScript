@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdarg>
 #include <cstdio>
+#include <iostream>
 #include "node.hpp"
 #include <string> 
 #include <stdio.h>
@@ -18,9 +19,9 @@ inline unsigned int getNewRegister() {
 }
 
 class Expression:public Node{
-public:	 
-	virtual void GenCode(FILE* file) = 0;
-	virtual unsigned int GenStoreCode(FILE* file)=0;
+public:
+	virtual unsigned int genCode(FILE* file) = 0;
+	virtual unsigned int genStoreCode(FILE* file)=0;
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -40,17 +41,15 @@ public:
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
     	  
-    void GenCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();		
-		emit(file, "\tJSValue* r%d = new Number(%d);", registerNumber, this->getValue());
+		emit(file, "\tESValue* r%d = new Number(%d);", registerNumber, this->getValue());
 		return registerNumber;
 	 };
-    
 };
 
 class DecimalLiteralExpression:public Expression{
@@ -69,18 +68,16 @@ public:
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
-  
-    void GenCode(FILE* file)
-	{
-		
-	}
+
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "\tJSValue* r%d = new Reference(env, \"%d\");", registerNumber, this->getValue());
+		emit(file, "\tESValue* r%d = new Reference(env, \"%d\");", registerNumber, this->getValue());
 		return registerNumber;
 	};
-	
 };
 
 class IdentifierExpression:public Expression{
@@ -102,14 +99,14 @@ public:
     void dump(int indent){
         label(indent, "IdentifierExpression: %s\n", name.c_str());
     }
-   
-	void GenCode(FILE* file) {
-		
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
-	unsigned int GenStoreCode(FILE* file) 	{		
+	unsigned int genStoreCode(FILE* file) 	{
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "\tJSValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getReferencedName().c_str());	
+		emit(file, "\tESValue* r%d = new Reference(new String(\"%s\"));", registerNumber, this->getReferencedName().c_str());
 		return registerNumber;
 	}
 };
@@ -139,17 +136,16 @@ public:
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
 	}
-   
-    
-    void GenCode(FILE* file) 	{
-		
-	}
-	unsigned int GenStoreCode(FILE* file) {
+
+    unsigned int genCode(FILE* file) 	{
+        return getNewRegister();
+    }
+
+	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "\tJSValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getValue().c_str());	
+		emit(file, "\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getValue().c_str());
 		return registerNumber;
 	};
-	
 };
 
 class AssignmentExpression:public Expression {
@@ -164,25 +160,32 @@ public:
     
     AssignmentExpression() {};
 
+    AssignmentExpression(Expression* expression){
+        this->lhs = expression;
+    }
+
     void dump(int indent) {
         label(indent, "AssignmentExpression\n");
         lhs->dump(indent + 1, "lhs");
-        rhs->dump(indent + 1, "rhs");
+        if(rhs != NULL){
+            rhs->dump(indent + 1, "rhs");
+        }
     }
-    
-    unsigned int GenStoreCode(FILE* file) 	{
+
+    unsigned int genStoreCode(FILE* file) 	{
     	
-    	unsigned int lhsRegisterNumber = lhs->GenStoreCode(file);
-		unsigned int rhsRegisterNumber = rhs->GenStoreCode(file);
+    	unsigned int lhsRegisterNumber = lhs->genStoreCode(file);
+		unsigned int rhsRegisterNumber = rhs->genStoreCode(file);
 		unsigned int registerNumber = getNewRegister();	
 
-		emit(file, "\tJSValue* r%d = Assign(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);		
+		emit(file, "\tESValue* r%d = Core::assign(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 		return registerNumber;
 	}
    
     
-    void GenCode(FILE* file) {      			
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 };
 
 class ObjectLiteralExpression : public Expression {
@@ -204,16 +207,13 @@ public:
         }
     }
 
-    void GenCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		return global_var;
 	};
-	
-	
 
 };
 
@@ -241,16 +241,15 @@ public:
         }
     }
 
-    void GenCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		return global_var;
 	};
 	
-	
+
 };
 
 class LiteralPropertyNameExpression : public Expression {
@@ -266,12 +265,11 @@ public:
         literalExpression->dump(indent);
     }
 
-    void GenCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		return global_var;
 	};
 };
@@ -290,11 +288,11 @@ public:
         computedExpression->dump(indent);
     }
 
-    void GenCode(FILE* file) 	{
-		
-	}
+    unsigned int genCode(FILE* file) 	{
+        return getNewRegister();
+    }
 	
-	unsigned int GenStoreCode(FILE* file) {
+	unsigned int genStoreCode(FILE* file) {
 		return global_var;
 	};
 
@@ -329,15 +327,15 @@ public:
     }
     
     
-    void GenCode(FILE* file) 	{		
-   
-	}
+    unsigned int genCode(FILE* file) 	{
+        return getNewRegister();
+    }
 	
 	
-	unsigned int GenStoreCode(FILE* file) {
-		//emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", global_var, operand);		
-		//unaryExpression->GenStoreCode(file);						
-		//emit(file, "JSValue* r%d = Plus(r%d, r%d)", global_var, this->getRegisterNumber(), this->getRegisterNumber());
+	unsigned int genStoreCode(FILE* file) {
+		//emit(file, "ESValue* r%d = new Reference(operand, \"%c\")", global_var, operand);
+		//unaryExpression->genStoreCode(file);
+		//emit(file, "ESValue* r%d = Plus(r%d, r%d)", global_var, this->getRegisterNumber(), this->getRegisterNumber());
 		return global_var;
 	};
 
@@ -365,19 +363,113 @@ private:
 		rhs->dump(indent);   
     }
     
-	void GenCode(FILE* file) 	{	
- 
-	}
+	unsigned int genCode(FILE* file) 	{
+        return getNewRegister();
+    }
 	
 	
-	unsigned int GenStoreCode(FILE* file) {	
-		unsigned int lhsRegisterNumber = lhs->GenStoreCode(file);
-		unsigned int rhsRegisterNumber =  rhs->GenStoreCode(file);
+	unsigned int genStoreCode(FILE* file) {
+		unsigned int lhsRegisterNumber = lhs->genStoreCode(file);
+		unsigned int rhsRegisterNumber =  rhs->genStoreCode(file);
 		unsigned int registerNumber = getNewRegister();	
-		emit(file, "\tJSValue* r%d = Plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber );	
+		emit(file, "\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber );
 		return registerNumber;
 		
 	};
+};
+
+class Arguments : public Expression {
+private:
+    std::vector<AssignmentExpression*>* argumentList;
+public:
+    Arguments(vector<AssignmentExpression*>* argumentList){
+        this->argumentList = argumentList;
+    };
+
+    void dump(int indent) {
+        label(indent, "Arguments\n");
+        for (vector<AssignmentExpression*>::iterator iter = argumentList->begin(); iter != argumentList->end(); ++iter)
+          (*iter)->dump(indent+1);
+    }
+
+  unsigned int genCode(FILE *file) {
+      return getNewRegister();
+    }
+};
 
 
+class CallExpression : public Expression {
+private:
+    Expression* expression;
+    Arguments* arguments;
+public:
+    CallExpression(Expression *expression) {
+        this->expression = expression;
+    };
+
+    void dump(int indent) {
+        label(indent, "CallExpression\n");
+        indent++;
+        expression->dump(indent);
+        if(arguments != NULL) {
+            arguments->dump(indent+1);
+        }
+    }
+
+
+    unsigned int genCode(FILE *file) {
+        return getNewRegister();
+    }
+};
+
+// TODO: Refactor this into each binary expression class...
+class BinaryExpression : public Expression {
+private:
+    Expression* lhs;
+    Expression* rhs;
+    char op;
+public:
+    BinaryExpression(Expression* lhs, Expression* rhs, char op) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+
+        this->op = op;
+    };
+
+    unsigned int genStoreCode(FILE* file) {
+
+        //rhs must genCode() first, otherwise, the output will be wrong
+        unsigned int rhsRegisterNumber = rhs->genCode(file);
+        unsigned int lhsRegisterNumber = lhs->genCode(file);
+        unsigned int registerNumber = getNewRegister();
+
+        switch(op) {
+            case '+':
+                emit(file, "ESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                break;
+            case '-':
+                emit(file, "ESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                break;
+            case '*':
+                emit(file, "ESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                break;
+            case '/':
+                emit(file, "ESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                break;
+            case '%':
+                emit(file, "ESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                break;
+        }
+
+        return registerNumber;
+    }
+
+    void dump(int indent) {
+        label(indent, "BinaryExpression\n");
+        label(indent + 1, "op: %c\n", op);
+        lhs->dump(indent + 1, "lhs");
+        if(rhs != NULL){
+            rhs->dump(indent + 1, "rhs");
+        }
+    }
 };

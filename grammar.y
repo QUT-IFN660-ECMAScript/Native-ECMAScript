@@ -11,6 +11,9 @@ ScriptBody *root;
 int global_var;
 unsigned int getNewRegister();
 
+//Initialise static member registerIndex of Node
+int Node::registerIndex = 0;
+
 using namespace std;
 
 %}
@@ -67,11 +70,11 @@ using namespace std;
 %token UNARY_ADD                          // ++
 %token UNARY_SUBTRACT                     // --
 %token LOGICAL_NOT                        // !
-%token MULTIPLY                           // *
-%token DIVIDE                             // /
-%token MODULO                             // %
-%token ADD                                // +
-%token SUBTRACT                           // -
+%token <cval> MULTIPLY                           // *
+%token <cval> DIVIDE                             // /
+%token <cval> MODULO                             // %
+%token <cval> ADD                                // +
+%token <cval> SUBTRACT                           // -
 %token EQUAL                              // ==
 %token NOT_EQUAL                          // !=
 %token EXACTLY_EQUAL                      // ===
@@ -134,9 +137,13 @@ using namespace std;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
 
+    vector<Expression*>* argumentList;
+
     int ival;
     double dval;
     const char* sval;
+
+    char cval;
 }
 
 %error-verbose
@@ -166,7 +173,9 @@ using namespace std;
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
+%type <argumentList> ArgumentList
 
+%type <cval> MultiplicativeOperator
 %%
 
 /* 15.1 Scripts
@@ -802,7 +811,7 @@ ShiftExpression:
 AdditiveExpression:
     MultiplicativeExpression								{$$ = $1;}
     | AdditiveExpression ADD MultiplicativeExpression		{$$ = new PlusAditiveExpression($1, $3); }	
-    | AdditiveExpression SUBTRACT MultiplicativeExpression  
+    | AdditiveExpression SUBTRACT MultiplicativeExpression
     ;
 
 /* 12.6 Multiplicative Operators
@@ -810,7 +819,7 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression											
+    UnaryExpression
 	| MultiplicativeExpression MULTIPLY UnaryExpression
 	| MultiplicativeExpression DIVIDE UnaryExpression
 	| MultiplicativeExpression MODULO UnaryExpression
@@ -821,7 +830,7 @@ MultiplicativeExpression:
  */
 
 MultiplicativeOperator:
-	MULTIPLY DIVIDE MODULO
+	MULTIPLY | DIVIDE | MODULO
 	;
 
 /* 12.5 Unary Operators
@@ -863,9 +872,12 @@ NewExpression:
     ;
 
 CallExpression:
-    SuperCall
-    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
+    MemberExpression Arguments
+    | SuperCall
+    | CallExpression Arguments
+    | CallExpression LEFT_BRACKET Expression RIGHT_BRACKET
     | CallExpression FULL_STOP Identifier
+    /* | CallExpression TemplateLiteral */
     ;
 
 SuperCall:
@@ -878,8 +890,12 @@ Arguments:
     ;
 
 ArgumentList:
-    AssignmentExpression
-    | ArgumentList COMMA AssignmentExpression
+    AssignmentExpression    {
+        $$ = new std::vector<Expression*>; 
+        $$->push_back($1);
+
+    }
+    | ArgumentList COMMA AssignmentExpression   {$$ = $1; $$->push_back($3);}
     ;
 
 LeftHandSideExpression:
