@@ -133,7 +133,7 @@ using namespace std;
     Expression* expression;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
-
+	
     int ival;
     double dval;
     const char* sval;
@@ -153,7 +153,7 @@ using namespace std;
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
-  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem
+  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem 
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -415,7 +415,7 @@ DefaultClause:
  */
 
 WithStatement:
-    WITH LEFT_PAREN Expression RIGHT_PAREN Statement { $$ = new WithStatement($3, $5); }
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement { $$ = new WithStatement($3, $5);  }
     ;
 
 /* 13.9 The break Statement

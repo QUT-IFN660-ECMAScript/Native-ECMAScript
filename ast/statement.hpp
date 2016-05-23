@@ -421,7 +421,7 @@ class DoWhileIterationStatement : public Statement {
 	unsigned int GenStoreCode(FILE* file) {};
 };
 
-/*
+
 class WithStatement : public Statement {
 	private:
 		Expression *expression;
@@ -429,7 +429,7 @@ class WithStatement : public Statement {
 		
 	public:
 	/* with expression statement */
-/*	WithStatement(Expression *expression, Statement *statement) {
+	WithStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
@@ -438,7 +438,7 @@ class WithStatement : public Statement {
 		indent++;
 		label(indent, "WithStatement\n");
 		expression->dump(indent+ 1);
-		statement->dump(indent + 2);
+		statement->dump(indent+3);
 	}
 	
 	
@@ -450,28 +450,8 @@ class WithStatement : public Statement {
 	unsigned int GenStoreCode(FILE* file) {};
 
 };
-*/
 
-class WithStatement: public Node, public LexicalScope {
-private:
-  vector<Statement*> *stmts;
-public:
-  WithStatement(vector<Statement*> *stmts):
-    stmts(stmts) {};
-    
-    
-	void dump(int indent) {
-    	label(indent, "WithStatement\n");
-    	for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
-      		(*iter)->dump(indent+1);
-  	}
-	
-	
-	void GenCode(FILE* file) {
-		
-	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
-};
+
+
 
 
