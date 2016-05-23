@@ -40,7 +40,9 @@ public:
 			(*child)->GenCode(file);
 		}
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {}
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
    
 };

@@ -11,11 +11,7 @@
 #include "../type/type.hpp"
 
 using namespace std;
-extern int global_var;
 
-inline unsigned int getNewRegister() {
-	return global_var++;
-}
 
 class Expression:public Node{
 public:	 

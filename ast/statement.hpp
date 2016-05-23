@@ -43,10 +43,10 @@ public:
 	void GenCode(FILE* file) {
 		expr->GenStoreCode(file);
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {
 
-	}
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 	
 };
 
@@ -68,8 +68,10 @@ public:
 	void GenCode(FILE* file) {
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 //13.2 Block
@@ -99,8 +101,10 @@ public:
 	void GenCode(FILE* file) {
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 // 13.13 The try Statement
@@ -134,8 +138,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 class CatchStatement : public Statement {
@@ -162,8 +168,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 class FinallyStatement : public Statement {
@@ -187,8 +195,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 class ThrowStatement: public Statement{
@@ -208,8 +218,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 class ReturnStatement: public Statement {
@@ -240,8 +252,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 
 };
 
@@ -280,8 +294,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 
@@ -316,8 +332,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 /* 13.6 If Statement
@@ -359,8 +377,10 @@ public:
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 
@@ -388,8 +408,10 @@ class IterationStatement : public Statement {
 	{
 		
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 
 };
 
@@ -418,7 +440,9 @@ class DoWhileIterationStatement : public Statement {
 		
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 
