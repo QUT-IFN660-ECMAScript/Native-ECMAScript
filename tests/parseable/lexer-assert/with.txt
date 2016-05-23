@@ -1,5 +1,5 @@
 IDENTIFIER (a)
-;
+zz
 IDENTIFIER (radius)
 =
 VALUE_INTEGER (10)
