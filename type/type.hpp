@@ -181,6 +181,10 @@ public:
     }
 };
 
+/**
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-properties-of-the-number-constructor
+ * TODO: implement the methods
+ */
 class Number : public Primitive<double> {
 private:
     double value;
@@ -211,11 +215,62 @@ public:
         return new String(strs.str());
     }
 
+    Boolean* isNan() {
+        return new Boolean(false);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(true);
+    }
+
+    // isInfinity is a non-standard method, but I want it
+    // in the ops for the runtime - harry
+    Boolean* isInfinity() {
+        return new Boolean(false);
+    }
+
 };
 
-class NaN : public Number {};
-class PosInfinity : public Number { };
-class NegInfinity : public Number { };
+class NaN : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(false);
+    }
+};
+
+class PosInfinity : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(true);
+    }
+};
+class NegInfinity : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(true);
+    }
+};
 
 class Object : public ESValue {
 public:
@@ -291,7 +346,7 @@ class Function : public ESObject {
  * specification types are used with these operations.
  */
 class TypeOps {
-
+public:
     /**
      * 7.1.1 ToPrimitive ( input [, PreferredType] )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive

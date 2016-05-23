@@ -41,10 +41,9 @@ public:
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
     	  
-    unsigned int genCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();		
@@ -70,10 +69,9 @@ public:
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
 
-    unsigned int genCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
@@ -139,10 +137,10 @@ public:
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
 	}
 
-    
     unsigned int genCode(FILE* file) 	{
-		
-	}
+        return getNewRegister();
+    }
+
 	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
 		emit(file, "\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getValue().c_str());
@@ -186,7 +184,8 @@ public:
    
     
     unsigned int genCode(FILE* file) {
-	}
+        return getNewRegister();
+    }
 };
 
 class ObjectLiteralExpression : public Expression {
@@ -208,10 +207,9 @@ public:
         }
     }
 
-    unsigned int genCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		return global_var;
@@ -243,10 +241,9 @@ public:
         }
     }
 
-    unsigned int genCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		return global_var;
@@ -268,10 +265,9 @@ public:
         literalExpression->dump(indent);
     }
 
-    unsigned int genCode(FILE* file)
-	{
-		
-	}
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		return global_var;
@@ -293,8 +289,8 @@ public:
     }
 
     unsigned int genCode(FILE* file) 	{
-		
-	}
+        return getNewRegister();
+    }
 	
 	unsigned int genStoreCode(FILE* file) {
 		return global_var;
@@ -332,8 +328,8 @@ public:
     
     
     unsigned int genCode(FILE* file) 	{
-   
-	}
+        return getNewRegister();
+    }
 	
 	
 	unsigned int genStoreCode(FILE* file) {
@@ -368,8 +364,8 @@ private:
     }
     
 	unsigned int genCode(FILE* file) 	{
- 
-	}
+        return getNewRegister();
+    }
 	
 	
 	unsigned int genStoreCode(FILE* file) {
@@ -397,7 +393,7 @@ public:
     }
 
   unsigned int genCode(FILE *file) {
-
+      return getNewRegister();
     }
 };
 
@@ -422,7 +418,7 @@ public:
 
 
     unsigned int genCode(FILE *file) {
-
+        return getNewRegister();
     }
 };
 

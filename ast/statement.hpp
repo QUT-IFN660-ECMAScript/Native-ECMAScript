@@ -40,10 +40,11 @@ public:
 	
 	unsigned int genCode(FILE* file) {
 		expr->genStoreCode(file);
- return getNewRegister();	}
+ 		return getNewRegister();
+	}
 	
 	unsigned int genStoreCode(FILE* file) {
-
+		return getNewRegister();
 	}
 };
 
@@ -128,9 +129,8 @@ public:
 	}
 
 	
-	unsigned int genCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -157,9 +157,8 @@ public:
 
 	
 	
-	unsigned int genCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -183,9 +182,8 @@ public:
 
 	
 	
-	unsigned int genCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -205,9 +203,8 @@ public:
 
 
 
-	unsigned int genCode(FILE* file)
-	{
-
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -238,9 +235,8 @@ public:
 
 
 
-	unsigned int genCode(FILE* file)
-	{
-
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 	
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -278,9 +274,8 @@ public:
 	
 	
 	
-	unsigned int genCode(FILE* file)
-	{
-
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -315,9 +310,8 @@ public:
 
 
 
-	unsigned int genCode(FILE* file)
-	{
-
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -359,9 +353,8 @@ public:
 
 
 
-	unsigned int genCode(FILE* file)
-	{
-
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
@@ -392,7 +385,7 @@ class IterationStatement : public Statement {
 	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
 
 	unsigned int genCode(FILE *file) {
-
+		return getNewRegister();
     }
 };
 
@@ -415,9 +408,9 @@ class DoWhileIterationStatement : public Statement {
 		statement->dump(indent + 1);
 	}
 
-	unsigned int genCode(FILE* file) {}
+	unsigned int genCode(FILE* file) { return getNewRegister(); }
 
-	unsigned int genStoreCode(FILE* file) {}
+	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
 };
 
 
