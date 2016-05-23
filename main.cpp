@@ -15,6 +15,7 @@ extern int global_var;
 
 /* prototype */
 void CodeGeneration(char* inputfile, ScriptBody* root);
+extern unsigned int getNewRegister();
 
 int main(int argc, char* argv[])
 {

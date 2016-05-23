@@ -19,7 +19,7 @@ private:
 static String vinit[];
 public:
 	virtual void GenCode(FILE* file) = 0;
-	virtual void GenStoreCode(FILE* file)=0;
+	virtual unsigned int GenStoreCode(FILE* file)=0;
 	
 	
 };
@@ -44,7 +44,7 @@ public:
 		expr->GenStoreCode(file);
 	}
 	
-	void GenStoreCode(FILE* file) {
+	unsigned int GenStoreCode(FILE* file) {
 
 	}
 	
@@ -69,7 +69,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 //13.2 Block
@@ -100,7 +100,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 // 13.13 The try Statement
@@ -135,7 +135,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class CatchStatement : public Statement {
@@ -163,7 +163,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class FinallyStatement : public Statement {
@@ -188,7 +188,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class ThrowStatement: public Statement{
@@ -209,7 +209,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class ReturnStatement: public Statement {
@@ -241,7 +241,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 
 };
 
@@ -281,7 +281,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 
@@ -317,7 +317,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 /* 13.6 If Statement
@@ -360,7 +360,7 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 
@@ -389,7 +389,7 @@ class IterationStatement : public Statement {
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 
 };
 
@@ -418,7 +418,7 @@ class DoWhileIterationStatement : public Statement {
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 

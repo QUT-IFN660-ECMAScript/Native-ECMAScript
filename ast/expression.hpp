@@ -13,12 +13,14 @@
 using namespace std;
 extern int global_var;
 
+extern unsigned int getNewRegister() {
+	return global_var++;
+}
 
 class Expression:public Node{
 public:	 
 	virtual void GenCode(FILE* file) = 0;
-	virtual void GenStoreCode(FILE* file)=0;
-	virtual void setRHSRegister() = 0;
+	virtual unsigned int GenStoreCode(FILE* file)=0;
 };
 
 class DecimalIntegerLiteralExpression:public Expression{
@@ -37,25 +39,16 @@ public:
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
-    
-	void setRefID() {
-		refID = global_var;
-	}
-	
-	int getRefID() {
-		return refID;
-	}
-	
-	void setRHSRegister() {}
-  
+    	  
     void GenCode(FILE* file)
 	{
 		
 	}
 	
-	void GenStoreCode(FILE* file) {		
-		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", global_var, this->getValue());
-		++global_var;
+	unsigned int GenStoreCode(FILE* file) {
+		unsigned int registerNumber = getNewRegister();		
+		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", registerNumber, this->getValue());
+		return registerNumber;
 	 };
     
 };
@@ -73,8 +66,6 @@ public:
         return value;
     }
     
-	void setRHSRegister() {}
-
     void dump(int indent){
         label(indent, "IntegerLiteralExpression: %d\n", value);
     }
@@ -84,8 +75,10 @@ public:
 		
 	}
 	
-	void GenStoreCode(FILE* file) {
-		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", global_var, this->getValue());
+	unsigned int GenStoreCode(FILE* file) {
+		unsigned int registerNumber = getNewRegister();
+		emit(file, "JSValue* r%d = new Reference(env, \"%d\")", registerNumber, this->getValue());
+		return registerNumber;
 	};
 	
 };
@@ -110,24 +103,14 @@ public:
         label(indent, "IdentifierExpression: %s\n", name.c_str());
     }
    
-	void setRefID() {
-		refID = global_var;
-		global_var++;
-	}
-
-	void setRHSRegister() {}
-	
-	int getRefID() {
-		return refID;
-	}
-    
 	void GenCode(FILE* file) {
 		
 	}
 
-	void GenStoreCode(FILE* file) 	{		
-		setRefID();
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", this->getRefID(), this->getReferencedName().c_str());	
+	unsigned int GenStoreCode(FILE* file) 	{		
+		unsigned int registerNumber = getNewRegister();
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", registerNumber, this->getReferencedName().c_str());	
+		return registerNumber;
 	}
 };
 
@@ -153,8 +136,6 @@ public:
 		
     }
     
-    void setRHSRegister() {}
-
 	void dump(int indent) {
 		label(indent, "StringLiteralExpression: %s\n", val.c_str());
 	}
@@ -163,9 +144,10 @@ public:
     void GenCode(FILE* file) 	{
 		
 	}
-	void GenStoreCode(FILE* file) {
-		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", global_var, this->getValue().c_str());	
-		++global_var;
+	unsigned int GenStoreCode(FILE* file) {
+		unsigned int registerNumber = getNewRegister();
+		emit(file, "JSValue* r%d = new Reference(env, \"%s\")", registerNumber, this->getValue().c_str());	
+		return registerNumber;
 	};
 	
 };
@@ -187,45 +169,19 @@ public:
         lhs->dump(indent + 1, "lhs");
         rhs->dump(indent + 1, "rhs");
     }
-  
-    /**
-     * Sets the lhs reference register
-     */
-     void setLHSRegister() {
-     	lhsReg = global_var;
-      }
-     
-     /**
-     * Sets the rhs reference register
-     */
-     void setRHSRegister() {
-     	rhsReg = global_var;
-     }
-     
-     int getLHSRegister() {
-     	return lhsReg;
-     }
-     
-     int getRHSRegister() {
-     	return rhsReg;
-     }
+    
+    unsigned int GenStoreCode(FILE* file) 	{
+    	
+    	unsigned int lhsRegisterNumber = lhs->GenStoreCode(file);
+		unsigned int rhsRegisterNumber = rhs->GenStoreCode(file);
+		unsigned int registerNumber = getNewRegister();	
 
-   
-    void GenStoreCode(FILE* file) 	{
-    	setLHSRegister();
-		lhs->GenStoreCode(file);
-		setRHSRegister();
-		rhs->GenStoreCode(file);		
-		GenCode(file);
+		emit(file, "JSValue* r%d = Assign(r%d, r%d)", registerNumber, lhsRegisterNumber, rhsRegisterNumber);		
+		return registerNumber;
 	}
    
     
-    void GenCode(FILE* file) {      		
-		emit(file, "JSValue* r%d = Assign(r%d, r%d)", global_var, this->getLHSRegister(), this->getRHSRegister());	
-		setLHSRegister();		
-		++global_var;
-		setRHSRegister(); 
-		
+    void GenCode(FILE* file) {      			
 	}
 };
 
@@ -248,15 +204,14 @@ public:
         }
     }
 
-	void setRHSRegister() {}
-   
-    
     void GenCode(FILE* file)
 	{
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 	
 	
 
@@ -286,14 +241,14 @@ public:
         }
     }
 
-    void setRHSRegister() {}
-    
     void GenCode(FILE* file)
 	{
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 	
 	
 };
@@ -311,14 +266,14 @@ public:
         literalExpression->dump(indent);
     }
 
-    void setRHSRegister() {}
-    
     void GenCode(FILE* file)
 	{
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 };
 
 class ComputedPropertyNameExpression : public Expression {
@@ -335,13 +290,13 @@ public:
         computedExpression->dump(indent);
     }
 
-    void setRHSRegister() {}
-    
     void GenCode(FILE* file) 	{
 		
 	}
 	
-	void GenStoreCode(FILE* file) {};
+	unsigned int GenStoreCode(FILE* file) {
+		return global_var;
+	};
 
 };
 
@@ -373,98 +328,54 @@ public:
 		
     }
     
-    /**
-     * Sets the operator reference register
-     */
-     void setLHSRegister() {
-     	opRegL = global_var;
-     	++global_var;
-      }
-      
-      int getLHSRegister() {
-      	return opRegL;
-      }
-      
-      /**
-     * Sets the assign reference register
-     */
-	void setRHSRegister() {
-     	opRegR = global_var;
-     //	++global_var;
-	}
-      
-	int getRHSRegister() {
-		return opRegR;
-	}
-     
     
     void GenCode(FILE* file) 	{		
    
 	}
 	
 	
-	void GenStoreCode(FILE* file) {
-		emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", global_var, operand);		
-		setLHSRegister();		
-		setRHSRegister();
-		unaryExpression->GenStoreCode(file);						
-		emit(file, "JSValue* r%d = Plus(r%d, r%d)", global_var, this->getLHSRegister(), this->getRHSRegister());
-
+	unsigned int GenStoreCode(FILE* file) {
+		//emit(file, "JSValue* r%d = new Reference(operand, \"%c\")", global_var, operand);		
+		//unaryExpression->GenStoreCode(file);						
+		//emit(file, "JSValue* r%d = Plus(r%d, r%d)", global_var, this->getRegisterNumber(), this->getRegisterNumber());
+		return global_var;
 	};
 
 };
 
-class AdditiveExpression : public Expression {
+class PlusAditiveExpression : public Expression {
 
 private:
 	char operand; 
-	Expression *additiveExpression;
-	Expression *unaryExpression;
+	Expression *lhs;
+	Expression *rhs;
 	int opRegL, opRegR;
 	 
 	public:
-	AdditiveExpression(Expression *additiveExpression, char operand, Expression *unaryExpression) {
-		this->additiveExpression = additiveExpression;
-		this->unaryExpression = unaryExpression;
-		this->operand = operand;
+	PlusAditiveExpression(Expression *lhs,  Expression *rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
 	};
 	 
 	 
 	void dump(int indent) {
-		additiveExpression->dump(indent);
-		unaryExpression->dump(indent);   
+		label(indent, "PlusAdditiveExpression\n");
+		lhs->dump(++indent);
+		
+		rhs->dump(indent);   
     }
     
-    void setLHSRegister() {
-		opRegL = global_var;
-	}
-      
-	int getLHSRegister() {
-		return opRegL;
-	}
-	
-	void setRHSRegister() {
-		opRegR = global_var;
-	}
-      
-	int getRHSRegister() {
-		return opRegR;
-	}
-
-	
-
 	void GenCode(FILE* file) 	{	
  
 	}
 	
 	
-	void GenStoreCode(FILE* file) {	
-		setLHSRegister();
-		additiveExpression->GenStoreCode(file);					
-		unaryExpression->GenStoreCode(file);
-		setRHSRegister();	
-		emit(file, "JSValue* r%d = Plus(r%d, r%d)", ++global_var, this->getLHSRegister(), this->getRHSRegister() );	
-		global_var++;
+	unsigned int GenStoreCode(FILE* file) {	
+		unsigned int lhsRegisterNumber = lhs->GenStoreCode(file);
+		unsigned int rhsRegisterNumber =  rhs->GenStoreCode(file);
+		unsigned int registerNumber = getNewRegister();	
+		emit(file, "JSValue* r%d = Plus(r%d, r%d)", registerNumber, lhsRegisterNumber, rhsRegisterNumber );	
+		return registerNumber;
 		
 	};
 

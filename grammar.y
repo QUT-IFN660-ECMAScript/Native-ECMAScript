@@ -9,6 +9,7 @@ int yylex();
 
 ScriptBody *root;
 int global_var;
+unsigned int getNewRegister();
 
 using namespace std;
 
@@ -800,8 +801,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression								{$$ = $1;}
-    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new AdditiveExpression($1, '+', new UnaryExpression('+', $3)); }	
-    | AdditiveExpression SUBTRACT MultiplicativeExpression
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new PlusAditiveExpression($1, $3); }	
+    | AdditiveExpression SUBTRACT MultiplicativeExpression  
     ;
 
 /* 12.6 Multiplicative Operators

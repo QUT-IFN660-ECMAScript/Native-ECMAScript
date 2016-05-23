@@ -41,6 +41,6 @@ public:
 		}
 	}
 	
-	void GenStoreCode(FILE* file) {}
+	unsigned int GenStoreCode(FILE* file) {}
    
 };
