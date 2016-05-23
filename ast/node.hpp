@@ -3,16 +3,40 @@
 #include <cstdio>
 #include <iostream>
 
+
 #include "../scope/lexical_scope.hpp"
 //
 // Created by Harry Scells on 18/04/2016.
 //
+
+
 using namespace std;
 
 class Node {
+protected:
+
+//private:
+//	unsigned int registerNumber;
+	
 public:
 	virtual void dump(int indent)=0;
-	virtual bool resolveNames(LexicalScope* scope) = 0;
+	virtual void GenCode(FILE* file) = 0;
+	virtual unsigned int GenStoreCode(FILE* file)=0;
+	
+	//int getRegisterNumber(){
+	//	return registerNumber;
+	//}
+	//void setRegisterNumber(unsigned int reg) {
+	//	this->registerNumber = reg;
+	//}
+	
+	void emit(FILE* outputfile, char* fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(outputfile, fmt, args);
+		fprintf(outputfile, "\n");
+		va_end(args);
+	}
 
 	void indent(int N) {
 		for (int i = 0; i < N; i++)

@@ -8,6 +8,8 @@
 int yylex();
 
 ScriptBody *root;
+int global_var;
+unsigned int getNewRegister();
 
 using namespace std;
 
@@ -449,7 +451,7 @@ ReturnStatement:
 
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
-    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			//{ $$ = new DoWhileIterationStatement($2,$5); }
+    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			{ $$ = new DoWhileIterationStatement($2,$5); }
     | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						{ $$ = new IterationStatement($3, $5); }
     | WHILE LEFT_PAREN Expression RIGHT_PAREN LEFT_BRACE Statement RIGHT_BRACE      { $$ = new IterationStatement($3, $6); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
@@ -798,7 +800,9 @@ ShiftExpression:
  */
 
 AdditiveExpression:
-    MultiplicativeExpression	{$$ = $1;}
+    MultiplicativeExpression								{$$ = $1;}
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new PlusAditiveExpression($1, $3); }	
+    | AdditiveExpression SUBTRACT MultiplicativeExpression  
     ;
 
 /* 12.6 Multiplicative Operators
@@ -806,8 +810,10 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression	{ $$ = $1; }
-	| MultiplicativeExpression MultiplicativeOperator UnaryExpression
+    UnaryExpression											
+	| MultiplicativeExpression MULTIPLY UnaryExpression
+	| MultiplicativeExpression DIVIDE UnaryExpression
+	| MultiplicativeExpression MODULO UnaryExpression
     ;
 
 /* 12.6 Multiplicative Operators
@@ -823,14 +829,14 @@ MultiplicativeOperator:
  */
 
 UnaryExpression:
-    PostfixExpression	{ $$ = $1; }
+    PostfixExpression					{ $$ = $1; }
 	| DELETE UnaryExpression
 	| VOID UnaryExpression
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
-	| UNARY_SUBTRACT UnaryExpression
-	/* | ADD UnaryExpression 		
-	| SUBTRACT UnaryExpression */
+	| UNARY_SUBTRACT UnaryExpression	
+	| ADD UnaryExpression 				{ $$ = new UnaryExpression('+', $2); }
+	| SUBTRACT UnaryExpression 
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;

@@ -1,7 +1,7 @@
 #pragma once
-
 #include <map>
 #include <sstream>
+
 
 /**
  * This is really annoying, we need to append something like `_` because Type::string is c++11 and using just `string`

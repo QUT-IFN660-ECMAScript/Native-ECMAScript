@@ -12,26 +12,42 @@
 
 using namespace std;
 
-class Statement: public Node {
 
+
+class Statement: public Node {
+private:
+static String vinit[];
+public:
+	virtual void GenCode(FILE* file) = 0;
+	virtual unsigned int GenStoreCode(FILE* file)=0;
+	
+	
 };
+
 
 class ExpressionStatement: public Statement {
 private:
   Expression* expr;
+  
 public:
   ExpressionStatement(Expression* expr):
     expr(expr) {};
-  void dump(int indent){
-    label(indent, "ExpressionStatement\n");
-    expr->dump(indent+1);
-  }
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
+    
+    
+	void dump(int indent){
+    	label(indent, "ExpressionStatement\n");
+    	expr->dump(indent+1);
 	}
+	
+	
+	void GenCode(FILE* file) {
+		expr->GenStoreCode(file);
+	}
+	
+	unsigned int GenStoreCode(FILE* file) {
+
+	}
+	
 };
 
 class StatementList: public Node, public LexicalScope {
@@ -40,35 +56,20 @@ private:
 public:
   StatementList(vector<Statement*> *stmts):
     stmts(stmts) {};
-  void dump(int indent) {
-    label(indent, "StatementList\n");
-    for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
-      (*iter)->dump(indent+1);
-  }
-	bool resolveNames(LexicalScope* scope) {
-
-		bool scoped = true;
-		this->parentScope = scope;
-
-		if (stmts) {
-			for (std::vector<Statement *>::iterator it = stmts->begin(); it != stmts->end(); ++it) {
-				if (*it) {
-					Reference *reference = dynamic_cast<Reference *>(*it);
-					if (reference != NULL) {
-						symbolTable[reference->getReferencedName()] = reference;
-					}
-
-					if (!(*it)->resolveNames(scope)) {
-						scoped = false;
-					}
-				} else {
-					scoped = false;
-				}
-			}
-			return scoped;
-		}
-		return false;
+    
+    
+	void dump(int indent) {
+    	label(indent, "StatementList\n");
+    	for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
+      		(*iter)->dump(indent+1);
+  	}
+	
+	
+	void GenCode(FILE* file) {
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 //13.2 Block
@@ -94,12 +95,12 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (statementList) {
-			return statementList->resolveNames(scope);
-		}
-		return false;
+	
+	void GenCode(FILE* file) {
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 // 13.13 The try Statement
@@ -128,19 +129,13 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (tryStatement && !tryStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (catchStatement && !catchStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (finallyStatement && !finallyStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class CatchStatement : public Statement {
@@ -161,12 +156,14 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (expression && statement) {
-			return expression->resolveNames(scope) && statement->resolveNames(scope);
-		}
-		return false;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class FinallyStatement : public Statement {
@@ -184,12 +181,14 @@ public:
 		statement->dump(indent);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (statement) {
-			return statement->resolveNames(scope);
-		}
-		return false;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class ThrowStatement: public Statement{
@@ -203,12 +202,14 @@ public:
 		expr->dump(indent+1);
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 class ReturnStatement: public Statement {
@@ -233,12 +234,14 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope *scope) {
-		if (expr) {
-			return expr->resolveNames(scope);
-		}
-		return false;
-	};
+
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 
 };
 
@@ -271,13 +274,14 @@ public:
 		// }
 	}
 	
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (stmt && !stmt->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 
@@ -306,16 +310,14 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expr && !expr->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (stmt && !stmt->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 /* 13.6 If Statement
@@ -351,19 +353,14 @@ public:
 		}
 	}
 
-	bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expression && !expression->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (statement && !statement->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (elseStatement && !elseStatement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
+	
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
 
 
@@ -386,21 +383,18 @@ class IterationStatement : public Statement {
 		statement->dump(indent + 2);
 	}
 	
-		bool resolveNames(LexicalScope* scope) {
-		bool scoped = true;
-		if (expression && !expression->resolveNames(scope)) {
-			scoped = false;
-		}
-		if (statement && !statement->resolveNames(scope)) {
-			scoped = false;
-		}
-		return scoped;
+	
+	void GenCode(FILE* file)
+	{
+		
 	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 
 };
 
-/*
-class DoWhileIterationStatement : public Statement, public IterationStatement {
+
+class DoWhileIterationStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
@@ -419,8 +413,14 @@ class DoWhileIterationStatement : public Statement, public IterationStatement {
 		
 		
 	}
+	void GenCode(FILE* file)
+	{
+		
+	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 };
-*/
+
 
 
 

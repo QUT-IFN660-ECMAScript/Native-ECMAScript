@@ -16,3 +16,5 @@ compiler
 *.output
 *.html
 *.xml
+*.js.il
+*.js

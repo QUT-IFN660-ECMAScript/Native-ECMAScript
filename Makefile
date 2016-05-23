@@ -140,6 +140,6 @@ generate: .bison .flex
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/simple.js
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/basic_if.js
 	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/while_basic_statement.js
-	@./compiler ./$(TESTS_ROOT)/parseable/$(TESTS_PATH)/do_while_loop.js
+	
 	
 	
