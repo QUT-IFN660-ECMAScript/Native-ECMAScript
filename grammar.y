@@ -415,7 +415,7 @@ DefaultClause:
  */
 
 WithStatement:
-    WITH LEFT_PAREN Expression RIGHT_PAREN Statement
+    WITH LEFT_PAREN Expression RIGHT_PAREN Statement { $$ = new WithStatement($3, $5); }
     ;
 
 /* 13.9 The break Statement

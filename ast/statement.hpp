@@ -421,7 +421,34 @@ class DoWhileIterationStatement : public Statement {
 	unsigned int GenStoreCode(FILE* file) {};
 };
 
+class WithStatement : public Statement {
+	private:
+		Expression *expression;
+		Statement *statement;
+		
+	public:
+	/* while expression statement */
+	WithStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		indent++;
+		label(indent, "WithStatement\n");
+		expression->dump(indent+ 1);
+		statement->dump(indent + 2);
+	}
+	
+	
+	void GenCode(FILE* file)
+	{
+		
+	}
+	
+	unsigned int GenStoreCode(FILE* file) {};
 
+};
 
 
 

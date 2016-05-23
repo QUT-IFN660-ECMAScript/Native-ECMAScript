@@ -216,6 +216,9 @@ int main(int argc, char* argv[])
 			case CONTINUE:
 				printf("CONTINUE\n");
 				break;
+			case WITH:
+				printf("WITH\n");
+				break;
 
 // line terminators, print nothing
             // case LINE_FEED:
