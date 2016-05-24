@@ -77,12 +77,12 @@ NaN                                 { return LITERAL_NAN; }
 "--"                                { return UNARY_SUBTRACT; }
 "!"                                 { return LOGICAL_NOT; }
 
-"*"                                 { return MULTIPLY; }
-"/"                                 { return DIVIDE; }
-"%"                                 { return MODULO; }
+"*"                                 { yylval.cval = '*'; return MULTIPLY; }
+"/"                                 { yylval.cval = '/'; return DIVIDE; }
+"%"                                 { yylval.cval = '%'; return MODULO; }
 
-"+"                                 { return ADD; }
-"-"                                 { return SUBTRACT; }
+"+"                                 { yylval.cval = '+'; return ADD; }
+"-"                                 { yylval.cval = '-'; return SUBTRACT; }
 
 "=="                                { return EQUAL; }
 "!="                                { return NOT_EQUAL; }

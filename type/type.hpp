@@ -2,6 +2,10 @@
 #include <map>
 #include <sstream>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdio>
+
 
 /**
  * This is really annoying, we need to append something like `_` because Type::string is c++11 and using just `string`
@@ -14,7 +18,8 @@ enum Type {
     string_,
     symbol,
     number,
-    object
+    object,
+    reference
 };
 
 enum NumberType {
@@ -180,6 +185,10 @@ public:
     }
 };
 
+/**
+ * http://www.ecma-international.org/ecma-262/6.0/#sec-properties-of-the-number-constructor
+ * TODO: implement the methods
+ */
 class Number : public Primitive<double> {
 private:
     double value;
@@ -210,11 +219,62 @@ public:
         return new String(strs.str());
     }
 
+    Boolean* isNan() {
+        return new Boolean(false);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(true);
+    }
+
+    // isInfinity is a non-standard method, but I want it
+    // in the ops for the runtime - harry
+    Boolean* isInfinity() {
+        return new Boolean(false);
+    }
+
 };
 
-class NaN : public Number {};
-class PosInfinity : public Number { };
-class NegInfinity : public Number { };
+class NaN : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(false);
+    }
+};
+
+class PosInfinity : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(true);
+    }
+};
+class NegInfinity : public Number {
+    Boolean* isNan() {
+        return new Boolean(true);
+    }
+
+    Boolean* isFinite() {
+        return new Boolean(false);
+    }
+
+    Boolean* isInfinity() {
+        return new Boolean(true);
+    }
+};
 
 class Object : public ESValue {
 public:
@@ -228,43 +288,18 @@ public:
 
 };
 
-class Prototype : public Object {
-private:
-    std::map<std::string, ESValue*> prototype;
-public:
-    Prototype() {
-        prototype.clear();
-    }
-
-    ESValue* get(ESValue* key_ref) {
-        String* key = key_ref->toString();
-        std::map<std::string, ESValue*>::iterator it = prototype.find(key->getValue());
-        if (it != prototype.end()) {
-            return prototype[key->getValue()];
-        }
-        fprintf(stderr, "ya blew it!\n");
-        return new Undefined();
-    }
-
-    void set(ESValue* key_ref, ESValue* value) {
-        String* key = key_ref->toString();
-        prototype[key->getValue()] = value;
-    }
-
-    String* toString() {
-        return new String();
-    }
-};
-
 class ESObject : public Object {
 private:
     std::map<std::string, ESValue*> properties;
-public:
-    Prototype* prototype;
+    ESObject* prototype;
 
+public:
     ESObject() {
-        this->prototype = new Prototype();
         properties.clear();
+    }
+
+    ESObject(ESObject* prototype) {
+        this->prototype = prototype;
     }
 
     ESValue* get(ESValue* key_ref) {
@@ -277,9 +312,10 @@ public:
         return new Undefined();
     }
 
-    void set(ESValue* key_ref, ESValue* value) {
+    ESValue* set(ESValue* key_ref, ESValue* value) {
         String* key = key_ref->toString();
         properties[key->getValue()] = value;
+        return value;
     }
 
 
@@ -301,6 +337,10 @@ public:
     }
 };
 
+class Function : public ESObject {
+
+};
+
 /**
  * 7.1 Type Conversion
  * http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive
@@ -310,7 +350,7 @@ public:
  * specification types are used with these operations.
  */
 class TypeOps {
-
+public:
     /**
      * 7.1.1 ToPrimitive ( input [, PreferredType] )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive
@@ -376,6 +416,8 @@ class TypeOps {
                 return true;
             case object:
                 return true;
+            case reference:
+                return false;
         }
     }
 
@@ -405,6 +447,8 @@ class TypeOps {
                 return new NaN();
             case object:
                 return toNumber(toPrimitive(argument));
+            case reference:
+                return NULL;
         }
     }
 

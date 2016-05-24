@@ -11,6 +11,9 @@ ScriptBody *root;
 int global_var;
 unsigned int getNewRegister();
 
+//Initialise static member registerIndex of Node
+int Node::registerIndex = 0;
+
 using namespace std;
 
 %}
@@ -67,11 +70,11 @@ using namespace std;
 %token UNARY_ADD                          // ++
 %token UNARY_SUBTRACT                     // --
 %token LOGICAL_NOT                        // !
-%token MULTIPLY                           // *
-%token DIVIDE                             // /
-%token MODULO                             // %
-%token ADD                                // +
-%token SUBTRACT                           // -
+%token <cval> MULTIPLY                           // *
+%token <cval> DIVIDE                             // /
+%token <cval> MODULO                             // %
+%token <cval> ADD                                // +
+%token <cval> SUBTRACT                           // -
 %token EQUAL                              // ==
 %token NOT_EQUAL                          // !=
 %token EXACTLY_EQUAL                      // ===
@@ -133,10 +136,14 @@ using namespace std;
     Expression* expression;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
-	
+
+    vector<Expression*>* argumentList;
+
     int ival;
     double dval;
     const char* sval;
+
+    char cval;
 }
 
 %error-verbose
@@ -166,7 +173,9 @@ using namespace std;
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
+%type <argumentList> ArgumentList
 
+%type <cval> MultiplicativeOperator
 %%
 
 /* 15.1 Scripts
@@ -801,8 +810,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression								{$$ = $1;}
-    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new PlusAditiveExpression($1, $3); }	
-    | AdditiveExpression SUBTRACT MultiplicativeExpression  
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new BinaryExpression($1, $3, '+'); }	
+    | AdditiveExpression SUBTRACT MultiplicativeExpression	{$$ = new BinaryExpression($1, $3, '-'); }
     ;
 
 /* 12.6 Multiplicative Operators
@@ -810,10 +819,10 @@ AdditiveExpression:
  */
 
 MultiplicativeExpression:
-    UnaryExpression											
-	| MultiplicativeExpression MULTIPLY UnaryExpression
-	| MultiplicativeExpression DIVIDE UnaryExpression
-	| MultiplicativeExpression MODULO UnaryExpression
+    UnaryExpression
+	| MultiplicativeExpression MULTIPLY UnaryExpression 	{$$ = new BinaryExpression($1, $3, '*'); }	
+	| MultiplicativeExpression DIVIDE UnaryExpression		{$$ = new BinaryExpression($1, $3, '/'); }	
+	| MultiplicativeExpression MODULO UnaryExpression		{$$ = new BinaryExpression($1, $3, '%'); }	
     ;
 
 /* 12.6 Multiplicative Operators
@@ -821,7 +830,7 @@ MultiplicativeExpression:
  */
 
 MultiplicativeOperator:
-	MULTIPLY DIVIDE MODULO
+	MULTIPLY | DIVIDE | MODULO
 	;
 
 /* 12.5 Unary Operators
@@ -835,8 +844,8 @@ UnaryExpression:
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
 	| UNARY_SUBTRACT UnaryExpression	
-	| ADD UnaryExpression 				{ $$ = new UnaryExpression('+', $2); }
-	| SUBTRACT UnaryExpression 
+	| ADD UnaryExpression 				{ $$ = new UnaryExpression($2, '+'); }
+	| SUBTRACT UnaryExpression 			{ $$ = new UnaryExpression($2, '-'); }
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;
@@ -863,9 +872,12 @@ NewExpression:
     ;
 
 CallExpression:
-    SuperCall
-    | CallExpression RIGHT_BRACKET Expression LEFT_BRACKET
+    MemberExpression Arguments
+    | SuperCall
+    | CallExpression Arguments
+    | CallExpression LEFT_BRACKET Expression RIGHT_BRACKET
     | CallExpression FULL_STOP Identifier
+    /* | CallExpression TemplateLiteral */
     ;
 
 SuperCall:
@@ -878,8 +890,12 @@ Arguments:
     ;
 
 ArgumentList:
-    AssignmentExpression
-    | ArgumentList COMMA AssignmentExpression
+    AssignmentExpression    {
+        $$ = new std::vector<Expression*>; 
+        $$->push_back($1);
+
+    }
+    | ArgumentList COMMA AssignmentExpression   {$$ = $1; $$->push_back($3);}
     ;
 
 LeftHandSideExpression:

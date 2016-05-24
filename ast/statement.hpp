@@ -18,10 +18,8 @@ class Statement: public Node {
 private:
 static String vinit[];
 public:
-	virtual void GenCode(FILE* file) = 0;
-	virtual unsigned int GenStoreCode(FILE* file)=0;
-	
-	
+	virtual unsigned int genCode(FILE* file) = 0;
+	virtual unsigned int genStoreCode(FILE* file)=0;
 };
 
 
@@ -38,25 +36,25 @@ public:
     	label(indent, "ExpressionStatement\n");
     	expr->dump(indent+1);
 	}
-	
-	
-	void GenCode(FILE* file) {
-		expr->GenStoreCode(file);
-	}
-	
-	unsigned int GenStoreCode(FILE* file) {
 
+	
+	unsigned int genCode(FILE* file) {
+		expr->genStoreCode(file);
+ 		return getNewRegister();
 	}
 	
+	unsigned int genStoreCode(FILE* file) {
+		return getNewRegister();
+	}
 };
 
 class StatementList: public Node, public LexicalScope {
 private:
   vector<Statement*> *stmts;
 public:
-  StatementList(vector<Statement*> *stmts):
+  	StatementList(vector<Statement*> *stmts):
     stmts(stmts) {};
-    
+
     
 	void dump(int indent) {
     	label(indent, "StatementList\n");
@@ -65,11 +63,11 @@ public:
   	}
 	
 	
-	void GenCode(FILE* file) {
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
 };
 
 //13.2 Block
@@ -96,11 +94,12 @@ public:
 	}
 
 	
-	void GenCode(FILE* file) {
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 // 13.13 The try Statement
@@ -130,12 +129,12 @@ public:
 	}
 
 	
-	void GenCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 class CatchStatement : public Statement {
@@ -158,12 +157,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 class FinallyStatement : public Statement {
@@ -183,12 +182,12 @@ public:
 
 	
 	
-	void GenCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 class ThrowStatement: public Statement{
@@ -202,14 +201,14 @@ public:
 		expr->dump(indent+1);
 	}
 
-	
-	
-	void GenCode(FILE* file)
-	{
-		
+
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 class ReturnStatement: public Statement {
@@ -235,13 +234,12 @@ public:
 	}
 
 
-	
-	void GenCode(FILE* file)
-	{
-		
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
 	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
 
 };
 
@@ -276,12 +274,12 @@ public:
 	
 	
 	
-	void GenCode(FILE* file)
-	{
-		
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 
@@ -310,14 +308,14 @@ public:
 		}
 	}
 
-	
-	
-	void GenCode(FILE* file)
-	{
-		
+
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 /* 13.6 If Statement
@@ -353,14 +351,14 @@ public:
 		}
 	}
 
-	
-	
-	void GenCode(FILE* file)
-	{
-		
+
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
 };
 
 
@@ -382,15 +380,13 @@ class IterationStatement : public Statement {
 		expression->dump(indent+ 1);
 		statement->dump(indent + 2);
 	}
-	
-	
-	void GenCode(FILE* file)
-	{
-		
-	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
 
+	
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
+	unsigned int genCode(FILE *file) {
+		return getNewRegister();
+    }
 };
 
 
@@ -410,15 +406,11 @@ class DoWhileIterationStatement : public Statement {
 		label(indent, "DoWhileStatement\n");
 		expression->dump(indent+ 2);
 		statement->dump(indent + 1);
-		
-		
 	}
-	void GenCode(FILE* file)
-	{
-		
-	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+
+	unsigned int genCode(FILE* file) { return getNewRegister(); }
+
+	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
 };
 
 
@@ -442,12 +434,11 @@ class WithStatement : public Statement {
 	}
 	
 	
-	void GenCode(FILE* file)
-	{
-		
-	}
-	
-	unsigned int GenStoreCode(FILE* file) {};
+	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+
+	unsigned int genCode(FILE *file) {
+		return getNewRegister();
+    }
 
 };
 

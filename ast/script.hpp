@@ -33,14 +33,19 @@ public:
 		va_end(args);
 	}
 
- 
-    
-    void GenCode(FILE* file) 	{
+    unsigned int genCode(FILE* file) {
+		emit(file, "#include \"./runtime/core.hpp\"");
+		emit(file, "#include \"./runtime/console.hpp\"");
+		emit(file, "#include \"./scope/reference.hpp\"");
+		emit(file, "\tESObject* globalObj = new ESObject();");
+		emit(file, "int main() {");
+		
 		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child) {
-			(*child)->GenCode(file);
+			(*child)->genCode(file);
 		}
+		emit(file, "\treturn 0;");
+		emit(file, "}");
+		return getNewRegister();
 	}
-	
-	unsigned int GenStoreCode(FILE* file) {}
-   
+
 };
