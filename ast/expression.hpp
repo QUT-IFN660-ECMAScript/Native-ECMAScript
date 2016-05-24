@@ -435,29 +435,33 @@ public:
 
         this->op = op;
     };
+    
+    unsigned int genCode(FILE *file) {
+        return getNewRegister();
+    }
 
     unsigned int genStoreCode(FILE* file) {
 
         //rhs must genCode() first, otherwise, the output will be wrong
-        unsigned int rhsRegisterNumber = rhs->genCode(file);
-        unsigned int lhsRegisterNumber = lhs->genCode(file);
-        unsigned int registerNumber = getNewRegister();
+        unsigned int lhsRegisterNumber = lhs->genStoreCode(file);
+		unsigned int rhsRegisterNumber =  rhs->genStoreCode(file);
+		unsigned int registerNumber = getNewRegister();	
 
         switch(op) {
             case '+':
-                emit(file, "ESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '-':
-                emit(file, "ESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '*':
-                emit(file, "ESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '/':
-                emit(file, "ESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '%':
-                emit(file, "ESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
         }
 
@@ -467,7 +471,7 @@ public:
     void dump(int indent) {
         label(indent, "BinaryExpression\n");
         label(indent + 1, "op: %c\n", op);
-        lhs->dump(indent + 1, "lhs");
+        lhs->dump(indent + 1, "rhs");
         if(rhs != NULL){
             rhs->dump(indent + 1, "rhs");
         }

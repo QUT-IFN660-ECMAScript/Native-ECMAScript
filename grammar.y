@@ -810,8 +810,8 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression								{$$ = $1;}
-    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new PlusAditiveExpression($1, $3); }	
-    | AdditiveExpression SUBTRACT MultiplicativeExpression
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new BinaryExpression($1, $3, '+'); }	
+    | AdditiveExpression SUBTRACT MultiplicativeExpression	{$$ = new BinaryExpression($1, $3, '-'); }
     ;
 
 /* 12.6 Multiplicative Operators
@@ -820,9 +820,9 @@ AdditiveExpression:
 
 MultiplicativeExpression:
     UnaryExpression
-	| MultiplicativeExpression MULTIPLY UnaryExpression
-	| MultiplicativeExpression DIVIDE UnaryExpression
-	| MultiplicativeExpression MODULO UnaryExpression
+	| MultiplicativeExpression MULTIPLY UnaryExpression 	{$$ = new BinaryExpression($1, $3, '*'); }	
+	| MultiplicativeExpression DIVIDE UnaryExpression		{$$ = new BinaryExpression($1, $3, '/'); }	
+	| MultiplicativeExpression MODULO UnaryExpression		{$$ = new BinaryExpression($1, $3, '%'); }	
     ;
 
 /* 12.6 Multiplicative Operators
