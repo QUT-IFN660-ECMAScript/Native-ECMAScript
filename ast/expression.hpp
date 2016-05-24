@@ -475,7 +475,7 @@ public:
     void dump(int indent) {
         label(indent, "BinaryExpression\n");
         label(indent + 1, "op: %c\n", op);
-        lhs->dump(indent + 1, "rhs");
+        lhs->dump(indent + 1, "lhs");
         if(rhs != NULL){
             rhs->dump(indent + 1, "rhs");
         }
