@@ -2,6 +2,10 @@
 #include <map>
 #include <sstream>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdio>
+
 
 /**
  * This is really annoying, we need to append something like `_` because Type::string is c++11 and using just `string`

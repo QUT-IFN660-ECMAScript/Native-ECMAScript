@@ -299,32 +299,27 @@ public:
 };
 
 /* See ECMA Specifications http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators */
-
+/* Unary operator + * / - % */
 class UnaryExpression : public Expression {
 
 
 private:
 	 char operand; 
 	 Expression *unaryExpression;
-	 int opRegL, opRegR;
 	 
 public:
-	UnaryExpression(char operand, Expression *unaryExpression) {
-		this->operand = operand;
+	UnaryExpression(Expression *unaryExpression, char operand) {
 		this->unaryExpression = unaryExpression;
+		this->operand = operand;
 	};
 	
 	
 	
 	 void dump(int indent) {
         label(indent, "UnaryExpression\n");
-        indent++;
-		/* need to handle different unary operators */
-        label(indent, "Operator: +\n");
-        label(++indent, "Value\n");
-      	unaryExpression->dump(++indent);
-		
-    }
+        label(indent + 1, "op: %c\n", operand);
+        unaryExpression->dump(indent + 1, "rhs");
+     }
     
     
     unsigned int genCode(FILE* file) 	{
@@ -333,14 +328,23 @@ public:
 	
 	
 	unsigned int genStoreCode(FILE* file) {
-		//emit(file, "ESValue* r%d = new Reference(operand, \"%c\")", global_var, operand);
-		//unaryExpression->genStoreCode(file);
-		//emit(file, "ESValue* r%d = Plus(r%d, r%d)", global_var, this->getRegisterNumber(), this->getRegisterNumber());
-		return global_var;
+		unsigned int rhsRegisterNumber =  unaryExpression->genStoreCode(file);
+		unsigned int registerNumber = getNewRegister();	
+		 switch(operand) {
+            case '+':
+                emit(file, "\tESValue* r%d = Core::plus(r%d);", registerNumber, rhsRegisterNumber);
+                break;
+            case '-':
+                emit(file, "\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber,  rhsRegisterNumber);
+                break;
+        }
+
+        return registerNumber;
 	};
 
 };
 
+/* To be removed - replace with BinaryExpression */
 class PlusAditiveExpression : public Expression {
 
 private:
@@ -435,29 +439,33 @@ public:
 
         this->op = op;
     };
+    
+    unsigned int genCode(FILE *file) {
+        return getNewRegister();
+    }
 
     unsigned int genStoreCode(FILE* file) {
 
         //rhs must genCode() first, otherwise, the output will be wrong
-        unsigned int rhsRegisterNumber = rhs->genCode(file);
-        unsigned int lhsRegisterNumber = lhs->genCode(file);
-        unsigned int registerNumber = getNewRegister();
+        unsigned int lhsRegisterNumber = lhs->genStoreCode(file);
+		unsigned int rhsRegisterNumber =  rhs->genStoreCode(file);
+		unsigned int registerNumber = getNewRegister();	
 
         switch(op) {
             case '+':
-                emit(file, "ESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '-':
-                emit(file, "ESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '*':
-                emit(file, "ESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '/':
-                emit(file, "ESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
             case '%':
-                emit(file, "ESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
+                emit(file, "\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
                 break;
         }
 
@@ -467,7 +475,7 @@ public:
     void dump(int indent) {
         label(indent, "BinaryExpression\n");
         label(indent + 1, "op: %c\n", op);
-        lhs->dump(indent + 1, "lhs");
+        lhs->dump(indent + 1, "rhs");
         if(rhs != NULL){
             rhs->dump(indent + 1, "rhs");
         }

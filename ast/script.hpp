@@ -37,8 +37,9 @@ public:
 		emit(file, "#include \"./runtime/core.hpp\"");
 		emit(file, "#include \"./runtime/console.hpp\"");
 		emit(file, "#include \"./scope/reference.hpp\"");
-		emit(file, "int main() {");
 		emit(file, "\tESObject* globalObj = new ESObject();");
+		emit(file, "int main() {");
+		
 		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child) {
 			(*child)->genCode(file);
 		}
