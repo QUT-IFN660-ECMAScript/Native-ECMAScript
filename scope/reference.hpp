@@ -50,7 +50,8 @@ public:
      return referencedName;
     }
 
-    // Implementations of the following abstract operations:
+	// 6.2.3 The Reference Specification Type
+    // Implementations of the following abstract operations:   
     // -----------------------------------------------------
 
     // The following abstract operations are used in this specification to access the components of references:
@@ -77,8 +78,17 @@ public:
 
 
     // TODO:
-    // IsPropertyReference(V). Returns true if either the base value is an object or HasPrimitiveBase(V) is true; otherwise returns false.
-    // IsUnresolvableReference(V). Returns true if the base value is undefined and false otherwise.
     // IsSuperReference(V). Returns true if this reference has a thisValue component.
+    
+    /* Returns true if either the base value is an object or HasPrimitiveBase(V) is true; otherwise returns false. */
+    Boolean* IsPropertyReference() {
+    	return new Boolean(((base->getType()==object) || hasPrimitiveBase()));
+    }
+    
+    //Returns true if the base value is undefined and false otherwise.
+    Boolean IsUnresolvableReference() {
+    	return new Boolean(base->getType()==undefined);
+    }
+   
 
 };
