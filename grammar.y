@@ -138,6 +138,7 @@ using namespace std;
     vector<Expression*>* propertyDefinitionList;
 
     vector<Expression*>* argumentList;
+    vector<Statement*>* caseClauses;
 
     int ival;
     double dval;
@@ -160,7 +161,7 @@ using namespace std;
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
-  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem 
+  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem  CaseBlock CaseClause DefaultClause
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -176,6 +177,7 @@ using namespace std;
 %type <argumentList> ArgumentList
 
 %type <cval> MultiplicativeOperator
+%type <caseClauses> CaseClauses
 %%
 
 /* 15.1 Scripts
@@ -393,30 +395,26 @@ LabelledItem:
  */
 
 SwitchStatement:
-    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+    /* TODO: implement default clause */
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock  {$$ = new SwitchStatement($3, $5); }
     ;
 
 CaseBlock:
-    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
-    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    LEFT_BRACE CaseClauses RIGHT_BRACE                              {$$ = new CaseBlockStatement($2);}
+    | LEFT_BRACE CaseClauses DefaultClause CaseClauses RIGHT_BRACE
     ;
 
 CaseClauses:
-    CaseClause
-    | CaseClauses CaseClause
-    ;
-
-CaseClausesOptional:
-    CaseClauses
-    |
+    CaseClause              {$$ = new vector<Statement*>; $$->push_back($1);}
+    | CaseClauses CaseClause {$$ = $1; $$->push_back($2);}
     ;
 
 CaseClause:
-    CASE Expression COLON StatementListOptional
+    CASE Expression COLON StatementList { $$ = new CaseClauseStatement($2, $4); }
     ;
 
 DefaultClause:
-    DEFAULT COLON StatementListOptional
+    DEFAULT COLON StatementList
     ;
 
 /* 13.11 The with Statement
