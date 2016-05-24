@@ -299,7 +299,7 @@ public:
 };
 
 /* See ECMA Specifications http://www.ecma-international.org/ecma-262/6.0/#sec-unary-operators */
-
+/* Unary operator + * / - % */
 class UnaryExpression : public Expression {
 
 
@@ -337,15 +337,6 @@ public:
             case '-':
                 emit(file, "\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber,  rhsRegisterNumber);
                 break;
-            case '*':
-                emit(file, "\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber,  rhsRegisterNumber);
-                break;
-            case '/':
-                emit(file, "\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber,  rhsRegisterNumber);
-                break;
-            case '%':
-                emit(file, "\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber,  rhsRegisterNumber);
-                break;
         }
 
         return registerNumber;
@@ -353,6 +344,7 @@ public:
 
 };
 
+/* To be removed - replace with BinaryExpression */
 class PlusAditiveExpression : public Expression {
 
 private:
