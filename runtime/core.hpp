@@ -5,6 +5,9 @@
 
 #include "../type/type.hpp"
 #include "../scope/reference.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstdio>
 
 enum Exception {
     ReferenceError,
