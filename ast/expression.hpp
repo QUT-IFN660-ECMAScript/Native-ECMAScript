@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <sstream>
 
+#include "constants.h"
+
 #include "../type/type.hpp"
 
 using namespace std;
@@ -426,58 +428,137 @@ public:
     }
 };
 
-// TODO: Refactor this into each binary expression class...
+/* Each Binary Expression will inherit from BinaryExpression
+ * Operators for Binary Expression -->'+', '-', '*', '/' 
+ * Each operator will be implemented in subclass of BinaryExpression
+*/
 class BinaryExpression : public Expression {
 private:
     Expression* lhs;
     Expression* rhs;
-    char op;
+
 public:
-    BinaryExpression(Expression* lhs, Expression* rhs, char op) {
+    BinaryExpression(Expression* lhs, Expression* rhs) {
         this->lhs = lhs;
         this->rhs = rhs;
-
-        this->op = op;
     };
     
-    unsigned int genCode(FILE *file) {
-        return getNewRegister();
-    }
+    unsigned int genCode(FILE *file) {   }
 
-    unsigned int genStoreCode(FILE* file) {
-
-        //rhs must genCode() first, otherwise, the output will be wrong
-        unsigned int lhsRegisterNumber = lhs->genStoreCode(file);
-		unsigned int rhsRegisterNumber =  rhs->genStoreCode(file);
-		unsigned int registerNumber = getNewRegister();	
-
-        switch(op) {
-            case '+':
-                emit(file, "\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
-                break;
-            case '-':
-                emit(file, "\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
-                break;
-            case '*':
-                emit(file, "\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
-                break;
-            case '/':
-                emit(file, "\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
-                break;
-            case '%':
-                emit(file, "\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
-                break;
-        }
-
-        return registerNumber;
-    }
-
+    unsigned int genStoreCode(FILE* file) {  }
+        
     void dump(int indent) {
-        label(indent, "BinaryExpression\n");
-        label(indent + 1, "op: %c\n", op);
         lhs->dump(indent + 1, "lhs");
         if(rhs != NULL){
             rhs->dump(indent + 1, "rhs");
         }
     }
+    
+    /* Called by all subclasses of BinaryExpression for file output of register operation
+     * Must call in explicit ordering to get correct file output - cannot call in emit(..)
+     * Operation defined in constants.h
+     */
+    unsigned int fileEmit(FILE* file, const char* operation) {
+    	unsigned int lhsRegister = lhs->genStoreCode(file);
+    	unsigned int rhsRegister = rhs->genStoreCode(file);
+    	unsigned int registerNumber = getNewRegister();
+		emit(file, "\tESValue* r%d = Core::%s(r%d, r%d);", registerNumber, operation,  lhsRegister, rhsRegister);
+		return registerNumber;
+	}
+    
 };
+
+/* Plus additive operator Binary Expression */
+class AdditiveBinaryExpression : public BinaryExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+
+public:
+	AdditiveBinaryExpression(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+    unsigned int genStoreCode(FILE* file) {    	
+    	fileEmit(file, ADDITION);
+	}
+	
+	void dump(int indent) {
+		label(indent, "AdditiveBinaryExpression: +\n");
+		BinaryExpression::dump(indent);
+	}
+};
+
+/* Subtraction operator Binary Expression */
+class SubtractionBinaryExpression : public BinaryExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+
+public:
+	SubtractionBinaryExpression(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+    unsigned int genStoreCode(FILE* file) {
+    	fileEmit(file, SUBTRACTION);
+	}
+	
+	void dump(int indent) {
+		label(indent, "SubtractionBinaryExpression: -\n");
+		BinaryExpression::dump(indent);
+	}
+};
+
+
+/* Multiplicative operator Binary Expression */
+class MultiplicativeBinaryExpression : public BinaryExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+
+public:
+	MultiplicativeBinaryExpression(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+    unsigned int genStoreCode(FILE* file) {
+    	fileEmit(file, MULTIPLICATION);
+	}
+	
+	void dump(int indent) {
+		label(indent, "MultiplicativeBinaryExpression: *\n");
+		BinaryExpression::dump(indent);
+	}
+};
+
+/* Division operator Binary Expression */
+class DivisionBinaryExpression : public BinaryExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+
+public:
+	DivisionBinaryExpression(Expression* lhs, Expression* rhs) : BinaryExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+    unsigned int genStoreCode(FILE* file) {
+    	fileEmit(file, DIVISION);
+	}
+	
+	void dump(int indent) {
+		label(indent, "DivisionBinaryExpression: \\\n");
+		BinaryExpression::dump(indent);
+	}
+};
+
+
