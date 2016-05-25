@@ -1,0 +1,32 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: num
+            rhs:
+                IntegerLiteralExpression: 2
+    SwitchStatement
+        IdentifierExpression: num
+            CaseBlockStatement
+                CaseClauseStatement
+                    IntegerLiteralExpression: 1
+                        StatementList
+                            ExpressionStatement
+                                AssignmentExpression
+                                    lhs:
+                                        IdentifierExpression: num
+                                    rhs:
+                                        IntegerLiteralExpression: 14
+                            LabelledStatement
+                                [Empty]
+                CaseClauseStatement
+                    IntegerLiteralExpression: 2
+                        StatementList
+                            ExpressionStatement
+                                AssignmentExpression
+                                    lhs:
+                                        IdentifierExpression: num
+                                    rhs:
+                                        IntegerLiteralExpression: 15
+                            LabelledStatement
+                                [Empty]
