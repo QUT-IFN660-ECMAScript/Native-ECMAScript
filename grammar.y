@@ -987,7 +987,7 @@ Literal:
     ;
 
 ArrayLiteral:
-    LEFT_BRACKET RIGHT_BRACKET
+    LEFT_BRACKET RIGHT_BRACKET  {$$= new ArrayLiteralExpression();}
     | LEFT_BRACKET Elision RIGHT_BRACKET
     | LEFT_BRACKET ElementList RIGHT_BRACKET
     | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
@@ -1015,7 +1015,7 @@ PrimaryExpression:
     THIS
     | IdentifierReference { $$ = $1; }
     | Literal	{ $$ = $1; }
-    | ArrayLiteral
+    | ArrayLiteral { $$ = $1; }
     | ObjectLiteral     {$$ = $1;}
     | FunctionExpression
     | ClassExpression

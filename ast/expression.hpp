@@ -428,6 +428,35 @@ public:
     }
 };
 
+class ArrayLiteralExpression : public Expression {
+private:
+    vector<Expression*> *elementList;
+public:
+    //No parameter constructor
+    ArrayLiteralExpression(){};
+    ArrayLiteralExpression(vector<Expression*> *elementList) {
+        this->elementList = elementList;
+    };
+
+    void dump(int indent) {
+        label(indent, "ArrayLiteralExpression\n");
+
+        if(elementList != NULL) {
+            for (vector<Expression*>::iterator iter = elementList->begin(); iter != elementList->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+    }
+
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
+	
+	unsigned int genStoreCode(FILE* file) {
+		return global_var;
+	};
+
+};
+
 /* Each Binary Expression will inherit from BinaryExpression
  * Operators for Binary Expression -->'+', '-', '*', '/' 
  * Each operator will be implemented in subclass of BinaryExpression
