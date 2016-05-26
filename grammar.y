@@ -138,6 +138,7 @@ using namespace std;
     vector<Expression*>* propertyDefinitionList;
 
     vector<Expression*>* argumentList;
+    vector<Expression*>* elementList;
     vector<Statement*>* caseClauses;
 
     int ival;
@@ -178,6 +179,7 @@ using namespace std;
 
 %type <cval> MultiplicativeOperator
 %type <caseClauses> CaseClauses
+%type <elementList> ElementList
 %%
 
 /* 15.1 Scripts
@@ -955,11 +957,11 @@ CoverInitializedName:
 
 ElementList:
     Elision AssignmentExpression
-    | AssignmentExpression
+    | AssignmentExpression {$$ = new vector<Expression*>; $$->push_back($1);}
     | Elision SpreadElement
     | SpreadElement
-    | ElementList COMMA Elision AssignmentExpression
-    | ElementList COMMA AssignmentExpression
+    | ElementList COMMA Elision AssignmentExpression 
+    | ElementList COMMA AssignmentExpression {$$ = $1; $$->push_back($3);}
     | ElementList COMMA Elision SpreadElement
     | ElementList COMMA SpreadElement
     ;
@@ -969,8 +971,6 @@ Elision:
     | Elision COMMA
     ;
     
-
-
 SpreadElement:
     ELLIPSIS AssignmentExpression
     ;
@@ -987,9 +987,9 @@ Literal:
     ;
 
 ArrayLiteral:
-    LEFT_BRACKET RIGHT_BRACKET  {$$= new ArrayLiteralExpression();}
+    LEFT_BRACKET RIGHT_BRACKET  { $$ = new ArrayLiteralExpression(); }
     | LEFT_BRACKET Elision RIGHT_BRACKET
-    | LEFT_BRACKET ElementList RIGHT_BRACKET
+    | LEFT_BRACKET ElementList RIGHT_BRACKET { $$ = new ArrayLiteralExpression($2); }
     | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
     | LEFT_BRACKET ElementList COMMA RIGHT_BRACKET
     ;

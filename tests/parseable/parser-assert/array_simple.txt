@@ -1,0 +1,10 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                ArrayLiteralExpression
+                    IntegerLiteralExpression: 1
+                    IntegerLiteralExpression: 2
+                    IntegerLiteralExpression: 3
