@@ -1,7 +1,8 @@
 %{
 #include <cstdio>
-#include "y.tab.h"
 #include "ast/ast.hpp"
+#include "y.tab.h"
+
 #include "lex.yy.h"
 
 
@@ -136,8 +137,9 @@ using namespace std;
     Expression* expression;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
-
     vector<Expression*>* argumentList;
+    Parameter* parameter;
+    vector<Parameter* >* formalsList;
 
     int ival;
     double dval;
@@ -156,11 +158,12 @@ using namespace std;
 %nonassoc NOT_EXACTLY_EQUAL
 
 %type <scriptBody> ScriptBody
-%type <statementList> StatementList
+%type <statementList> StatementList FunctionBody FunctionStatementList
+%type <parameter>   FormalParameter  
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
-  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem 
+  HoistableDeclaration ClassDeclaration SwitchStatement  LabelledItem  
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -170,10 +173,12 @@ using namespace std;
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
-  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall FunctionDeclaration
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList
 %type <argumentList> ArgumentList
+%type <formalsList> FormalsList FormalParameters FormalParameterList
+
 
 %type <cval> MultiplicativeOperator
 %%
@@ -297,44 +302,50 @@ ConciseBody:
 
 /* 14.1 Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-function-definitions
+ * [Default] function { ( FormalParameters ) { FunctionBody }
  */
 
 FunctionDeclaration:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE 		
+    	{$$ = new FunctionDeclarationExpression($2, $4); }
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
 
 FunctionExpression:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE		
+    | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
 
 FormalParameters:
-    FormalParameterList
+	/* empty */
+	| FormalParameterList										{ $$ = $1; }
     ;
 
-FormalParameterList:
+FormalParameterList:   
     /* incomplete */
-    FormalsList
-    | FormalsList COMMA FormalParameter
+    FormalsList													{$$ = new vector<Parameter*>; }
+    | FormalsList COMMA FormalParameter							{$$ = $1; $1->push_back($3); }
     ;
 
 FormalsList:
-    FormalParameter
-    | FormalsList COMMA FormalParameter
-    ;
+    FormalParameter												
+    | FormalsList COMMA FormalParameter							
+    ;	
+    
 
 FormalParameter:
-    BindingElement
+    BindingElement												
     ;
 
 FunctionBody:
-    FunctionStatementList
+    FunctionStatementList										{$$ = $1; }
     ;
+    
 
 FunctionStatementList:
-    StatementList
+    StatementList												{$$ = $1; }
     ;
 
 /* 13.16 The debugger Statement
@@ -387,6 +398,7 @@ LabelledItem:
     Statement                                { $$ = new LabelledItemStatement($1); }
     | FunctionDeclaration
     ;
+
 
 /* 13.12 The switch Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-switch-statement

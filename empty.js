@@ -1,1 +1,3 @@
-y = a + b - c * d / e;
+function foo(x,y,z) {
+x=5;
+}

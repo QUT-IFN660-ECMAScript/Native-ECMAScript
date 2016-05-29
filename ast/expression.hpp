@@ -7,13 +7,18 @@
 #include <stdio.h>
 #include <cstring>
 #include <stdlib.h>
+#include <vector>
 #include <sstream>
-
+#include "statement.hpp"
+#include "parameter.hpp"
 #include "constants.h"
 
 #include "../type/type.hpp"
 
 using namespace std;
+
+
+
 extern int global_var;
 
 inline unsigned int getNewRegister() {
@@ -562,3 +567,49 @@ public:
 };
 
 
+
+class FunctionDeclarationExpression : public Expression {
+
+
+private:
+	Expression* expression;
+ 	FormalParameters *params;
+// 	StatementList *stmts;
+
+public:
+	FunctionDeclarationExpression() { 
+		this->expression = NULL;
+	}
+	
+	FunctionDeclarationExpression(Expression* expression) {
+		this->expression = expression;
+	}
+	
+	FunctionDeclarationExpression(Expression* expression, vector<Parameter*> *params) {
+		this->expression = expression;
+		this->params = new FormalParameters(params);
+	}
+
+/*	FunctionDeclarationExpression(Expression* expression, vector<Parameter*> *params, vector<Statement*> *stmts) {
+		this->expression = expression;
+		this->params = new FormalParameters(params);
+		this->stmts = new StatementList(stmts);
+	}  */
+
+	void dump(int indent) {
+		label(indent, "FunctionDeclaration:\n");
+		expression->dump(indent);
+		if (params!=NULL) {
+	      	params->dump(indent);
+       
+   //    stmts->dump(indent); 
+   		}
+    }
+
+	unsigned int genCode(FILE *file) {
+      
+    }
+    
+    unsigned int genStoreCode(FILE* file) {}
+
+};
