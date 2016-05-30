@@ -31,14 +31,7 @@ private:
 	
 public:
 
-	FunctionDeclaration(Expression* expression) {
-		this->expression = expression;
-	}
 	
-	FunctionDeclaration(Expression* expression, vector<Expression*> *params) {
-		this->expression = expression;
-		this->params = params;
-	}
 	
 	FunctionDeclaration(Expression* expression, vector<Expression*> *params, vector<Statement*>  *statements) {
 		this->expression = expression;
@@ -47,12 +40,14 @@ public:
 	}
 	
 	void dump(int indent) {
-     	Declaration::label(indent, "FunctionDeclaration\n");
-     	expression->dump(indent);
-     	for (vector<Expression*>::iterator iter = params->begin(); iter != params->end(); ++iter)
-          (*iter)->dump(indent+1);
+		Declaration::label(indent, "FunctionDeclaration\n");
+     	expression->dump(++indent);
+       	for (vector<Expression*>::iterator iter = params->begin(); iter != params->end(); ++iter) {
+       		printf("param\n");
+          (*iter)->dump(++indent);
+		}
      	for (vector<Statement*>::iterator iter = statements->begin(); iter != statements->end(); ++iter)
-          (*iter)->dump(indent+1);
+          (*iter)->dump(++indent);
      	
      }
      
