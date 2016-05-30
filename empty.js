@@ -1,3 +1,8 @@
+a = 42
+
 function test(a, b) {
-    return a + 1;
+    c = a + b;
+    return c;
 }
+
+b = 1 + a;
