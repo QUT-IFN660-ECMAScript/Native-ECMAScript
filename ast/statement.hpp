@@ -443,6 +443,116 @@ class WithStatement : public Statement {
 };
 
 
+class SwitchStatement : public Statement {
+private:
+	Expression *expression;
+	Statement *statement;
+	
+public:
+	SwitchStatement(Expression *expression, Statement *statement) {
+		this->expression = expression;
+		this->statement = statement;
+	}
+	
+	void dump(int indent) {
+		label(indent++, "SwitchStatement\n");
+		expression->dump(indent++);
+		statement->dump(indent);
+	}
+
+	unsigned int genCode(FILE* file) { return getNewRegister(); }
+
+	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
+};
 
 
 
+class CaseClauseStatement : public Statement {
+private:
+	Expression *expression;
+	StatementList *stmtList;
+	
+public:
+	CaseClauseStatement(vector<Statement*> *stmtList) {
+		this->stmtList = new StatementList(stmtList);
+	}
+	CaseClauseStatement(Expression *expression, vector<Statement*> *stmtList) {
+		this->expression = expression;
+		this->stmtList = new StatementList(stmtList);
+	}
+	
+	void dump(int indent) {
+		label(indent++, "CaseClauseStatement\n");
+		if(expression){
+			expression->dump(indent++);
+		}
+		stmtList->dump(indent);
+	}
+
+	unsigned int genCode(FILE* file) { return getNewRegister(); }
+
+	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
+};
+
+class CaseBlockStatement : public Statement {
+private:
+    vector<Statement*> *caseClauses;
+public:
+    CaseBlockStatement(vector<Statement*> *caseClauses) {
+        this->caseClauses = caseClauses;
+    };
+
+    void dump(int indent) {
+        label(indent, "CaseBlockStatement\n");
+
+        if(caseClauses != NULL) {
+            for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+    }
+
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
+	
+	unsigned int genStoreCode(FILE* file) {
+		return global_var;
+	};
+
+};
+
+class FunctionDeclaration : public Statement {
+private:
+	Expression* bindingIdentifier;
+	vector<Expression*>* formalParameters;
+	vector<Statement*>* functionBody;
+public:
+	FunctionDeclaration(Expression* bindingIdentifier, vector<Expression*>* formalParameters, vector<Statement*>* functionBody) {
+		this->bindingIdentifier = bindingIdentifier;
+		this->formalParameters = formalParameters;
+		this->functionBody = functionBody;
+	}
+
+	void dump(int indent) {
+		label(indent++, "FunctionDeclaration\n");
+		if (bindingIdentifier != NULL) {
+			bindingIdentifier->dump(indent);
+		}
+		label(indent, "FormalParameters\n");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+		label(indent, "FunctionBody\n");
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+	}
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
+	}
+
+	unsigned int genStoreCode(FILE* file) {
+		return getNewRegister();
+	};
+};

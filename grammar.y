@@ -133,13 +133,18 @@ using namespace std;
 
 %union {
     ScriptBody* scriptBody;
-    vector<Statement* >* statementList;
     Expression* expression;
     Statement* statement;
+<<<<<<< HEAD
     vector<Expression*>* propertyDefinitionList;
     vector<Expression*>* argumentList;
 
 
+=======
+
+    vector<Statement* >* statementList;
+    vector<Expression*>* expressionList;
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
     int ival;
     double dval;
     const char* sval;
@@ -155,14 +160,24 @@ using namespace std;
 %nonassoc NOT_EQUAL
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
+%nonassoc ASSIGNMENT
 
 %type <scriptBody> ScriptBody
+<<<<<<< HEAD
 %type <statementList> StatementList FunctionBody FunctionStatementList
  
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
   HoistableDeclaration ClassDeclaration SwitchStatement  LabelledItem  
+=======
+%type <statementList> StatementList FunctionBody FunctionStatementList CaseClauses
+%type <expressionList> PropertyDefinitionList ArgumentList  ElementList FormalParameterList FormalsList FormalParameters
+%type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
+  ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
+  EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
+  HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem  CaseBlock CaseClause DefaultClause
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
@@ -172,12 +187,18 @@ using namespace std;
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
+<<<<<<< HEAD
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall FunctionDeclaration FormalParameter
 %type <sval> Identifier IdentifierName
 %type <propertyDefinitionList> PropertyDefinitionList 
 %type <argumentList> ArgumentList FormalsList  FormalParameterList FormalParameters
  
 
+=======
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
+  SingleNameBinding
+%type <sval> Identifier IdentifierName
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
 
 %type <cval> MultiplicativeOperator
 %%
@@ -305,8 +326,12 @@ ConciseBody:
  */
 
 FunctionDeclaration:
+<<<<<<< HEAD
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE 		
     	{$$ = new FunctionDeclaration($2, $4, $7); }
+=======
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE { $$ = new FunctionDeclaration($2, $4, $7); }
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
@@ -319,12 +344,17 @@ FunctionExpression:
 
 
 FormalParameters:
+<<<<<<< HEAD
 	/* empty */
 	| FormalParameterList										{$$ = new vector<Expression*>; }
+=======
+    FormalParameterList                     { $$ = $1; }
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
     ;
 
 FormalParameterList:   
     /* incomplete */
+<<<<<<< HEAD
     FormalsList													
     | FormalsList COMMA FormalParameter							{$$ = $1; $1->push_back($3); }
     ;
@@ -341,11 +371,32 @@ FormalParameter:
 
 FunctionBody:
     FunctionStatementList										{$$ = $1; }
+=======
+    FormalsList                             { $$ = $1; }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
+    ;
+
+FormalsList:
+    FormalParameter                         { $$ = new vector<Expression*>; $$->push_back($1); }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
+    ;
+
+FormalParameter:
+    BindingElement                          { $$ = $1; }
+    ;
+
+FunctionBody:
+    FunctionStatementList                   { $$ = $1; }
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
     ;
     
 
 FunctionStatementList:
+<<<<<<< HEAD
     StatementList												{$$ = $1; }
+=======
+    StatementList                           { $$ = $1; }
+>>>>>>> 3e7294745ed584eb5ba161cc86d0511a9453c34a
     ;
 
 /* 13.16 The debugger Statement
@@ -405,30 +456,26 @@ LabelledItem:
  */
 
 SwitchStatement:
-    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock
+    /* TODO: implement default clause */
+    SWITCH LEFT_PAREN Expression RIGHT_PAREN CaseBlock  {$$ = new SwitchStatement($3, $5); }
     ;
 
 CaseBlock:
-    LEFT_BRACE CaseClausesOptional RIGHT_BRACE
-    | LEFT_BRACE CaseClausesOptional DefaultClause CaseClausesOptional RIGHT_BRACE
+    LEFT_BRACE CaseClauses RIGHT_BRACE                              {$$ = new CaseBlockStatement($2);}
+    | LEFT_BRACE CaseClauses DefaultClause CaseClauses RIGHT_BRACE
     ;
 
 CaseClauses:
-    CaseClause
-    | CaseClauses CaseClause
-    ;
-
-CaseClausesOptional:
-    CaseClauses
-    |
+    CaseClause              {$$ = new vector<Statement*>; $$->push_back($1);}
+    | CaseClauses CaseClause {$$ = $1; $$->push_back($2);}
     ;
 
 CaseClause:
-    CASE Expression COLON StatementListOptional
+    CASE Expression COLON StatementList { $$ = new CaseClauseStatement($2, $4); }
     ;
 
 DefaultClause:
-    DEFAULT COLON StatementListOptional
+    DEFAULT COLON StatementList
     ;
 
 /* 13.11 The with Statement
@@ -564,12 +611,12 @@ BindingProperty:
     ;
 
 BindingElement:
-    SingleNameBinding
+    SingleNameBinding                   { $$ = $1; }
     | BindingPattern Initialiser
     ;
 
 SingleNameBinding:
-    BindingIdentifier Initialiser
+    BindingIdentifier                   { $$ = $1; }
     ;
 
 BindingRestElement:
@@ -969,11 +1016,11 @@ CoverInitializedName:
 
 ElementList:
     Elision AssignmentExpression
-    | AssignmentExpression
+    | AssignmentExpression {$$ = new vector<Expression*>; $$->push_back($1);}
     | Elision SpreadElement
     | SpreadElement
-    | ElementList COMMA Elision AssignmentExpression
-    | ElementList COMMA AssignmentExpression
+    | ElementList COMMA Elision AssignmentExpression 
+    | ElementList COMMA AssignmentExpression {$$ = $1; $$->push_back($3);}
     | ElementList COMMA Elision SpreadElement
     | ElementList COMMA SpreadElement
     ;
@@ -983,8 +1030,6 @@ Elision:
     | Elision COMMA
     ;
     
-
-
 SpreadElement:
     ELLIPSIS AssignmentExpression
     ;
@@ -1001,9 +1046,9 @@ Literal:
     ;
 
 ArrayLiteral:
-    LEFT_BRACKET RIGHT_BRACKET
+    LEFT_BRACKET RIGHT_BRACKET  { $$ = new ArrayLiteralExpression(); }
     | LEFT_BRACKET Elision RIGHT_BRACKET
-    | LEFT_BRACKET ElementList RIGHT_BRACKET
+    | LEFT_BRACKET ElementList RIGHT_BRACKET { $$ = new ArrayLiteralExpression($2); }
     | LEFT_BRACKET ElementList COMMA Elision RIGHT_BRACKET
     | LEFT_BRACKET ElementList COMMA RIGHT_BRACKET
     ;
@@ -1029,7 +1074,7 @@ PrimaryExpression:
     THIS
     | IdentifierReference { $$ = $1; }
     | Literal	{ $$ = $1; }
-    | ArrayLiteral
+    | ArrayLiteral { $$ = $1; }
     | ObjectLiteral     {$$ = $1;}
     | FunctionExpression
     | ClassExpression

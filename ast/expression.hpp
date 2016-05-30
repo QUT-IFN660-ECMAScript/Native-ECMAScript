@@ -435,6 +435,35 @@ public:
     }
 };
 
+class ArrayLiteralExpression : public Expression {
+private:
+    vector<Expression*> *elementList;
+public:
+    //No parameter constructor
+    ArrayLiteralExpression(){};
+    ArrayLiteralExpression(vector<Expression*> *elementList) {
+        this->elementList = elementList;
+    };
+
+    void dump(int indent) {
+        label(indent, "ArrayLiteralExpression\n");
+
+        if(elementList != NULL) {
+            for (vector<Expression*>::iterator iter = elementList->begin(); iter != elementList->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+    }
+
+    unsigned int genCode(FILE* file) {
+        return getNewRegister();
+    }
+	
+	unsigned int genStoreCode(FILE* file) {
+		return global_var;
+	};
+
+};
+
 /* Each Binary Expression will inherit from BinaryExpression
  * Operators for Binary Expression -->'+', '-', '*', '/' 
  * Each operator will be implemented in subclass of BinaryExpression
@@ -450,9 +479,13 @@ public:
         this->rhs = rhs;
     };
     
-    unsigned int genCode(FILE *file) {   }
+    unsigned int genCode(FILE *file) {
+		return getNewRegister();
+	}
 
-    unsigned int genStoreCode(FILE* file) {  }
+    unsigned int genStoreCode(FILE* file) {
+		return getNewRegister();
+	}
         
     void dump(int indent) {
         lhs->dump(indent + 1, "lhs");
@@ -489,7 +522,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {    	
-    	fileEmit(file, ADDITION);
+    	return fileEmit(file, ADDITION);
 	}
 	
 	void dump(int indent) {
@@ -512,7 +545,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, SUBTRACTION);
+    	return fileEmit(file, SUBTRACTION);
 	}
 	
 	void dump(int indent) {
@@ -536,7 +569,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, MULTIPLICATION);
+    	return fileEmit(file, MULTIPLICATION);
 	}
 	
 	void dump(int indent) {
@@ -560,12 +593,11 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, DIVISION);
+    	return fileEmit(file, DIVISION);
 	}
 	
 	void dump(int indent) {
 		label(indent, "DivisionBinaryExpression: \\\n");
 		BinaryExpression::dump(indent);
 	}
-};
-
+S};
