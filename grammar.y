@@ -138,8 +138,7 @@ using namespace std;
     Statement* statement;
     vector<Expression*>* propertyDefinitionList;
     vector<Expression*>* argumentList;
-    Parameter* parameter;
-    vector<Parameter* >* formalsList;
+
 
     int ival;
     double dval;
@@ -159,7 +158,7 @@ using namespace std;
 
 %type <scriptBody> ScriptBody
 %type <statementList> StatementList FunctionBody FunctionStatementList
-%type <parameter>   FormalParameter  
+ 
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
@@ -173,11 +172,11 @@ using namespace std;
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
-  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall FunctionDeclaration
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall FunctionDeclaration FormalParameter
 %type <sval> Identifier IdentifierName
-%type <propertyDefinitionList> PropertyDefinitionList
-%type <argumentList> ArgumentList
-%type <formalsList> FormalsList FormalParameters FormalParameterList
+%type <propertyDefinitionList> PropertyDefinitionList 
+%type <argumentList> ArgumentList FormalsList  FormalParameterList FormalParameters
+ 
 
 
 %type <cval> MultiplicativeOperator
@@ -307,25 +306,26 @@ ConciseBody:
 
 FunctionDeclaration:
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE 		
-    	{$$ = new FunctionDeclarationExpression($2, $4); }
+    	{$$ = new FunctionDeclaration($2, $4, $7); }
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
 
 FunctionExpression:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE		
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE	
+    	
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
 
 FormalParameters:
 	/* empty */
-	| FormalParameterList										{ $$ = $1; }
+	| FormalParameterList										{$$ = new vector<Expression*>; }
     ;
 
 FormalParameterList:   
     /* incomplete */
-    FormalsList													{$$ = new vector<Parameter*>; }
+    FormalsList													
     | FormalsList COMMA FormalParameter							{$$ = $1; $1->push_back($3); }
     ;
 

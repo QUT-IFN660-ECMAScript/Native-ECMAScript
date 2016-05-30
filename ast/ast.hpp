@@ -6,7 +6,7 @@
 #include "node.hpp"
 #include "script.hpp"
 #include "statement.hpp"
-#include "parameter.hpp"
+#include "declaration.hpp"
 #include "expression.hpp"
 #include "../type/type.hpp"
 #include "../runtime/core.hpp"

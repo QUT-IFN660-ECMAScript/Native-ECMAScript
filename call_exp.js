@@ -1,1 +1,1 @@
-a(b,c,d);
+function foo(x) {}
