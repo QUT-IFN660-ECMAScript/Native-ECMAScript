@@ -132,15 +132,11 @@ using namespace std;
 
 %union {
     ScriptBody* scriptBody;
-    vector<Statement* >* statementList;
     Expression* expression;
     Statement* statement;
-    vector<Expression*>* propertyDefinitionList;
 
-    vector<Expression*>* argumentList;
-    vector<Expression*>* elementList;
-    vector<Statement*>* caseClauses;
-
+    vector<Statement* >* statementList;
+    vector<Expression*>* expressionList;
     int ival;
     double dval;
     const char* sval;
@@ -156,9 +152,11 @@ using namespace std;
 %nonassoc NOT_EQUAL
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
+%nonassoc ASSIGNMENT
 
 %type <scriptBody> ScriptBody
-%type <statementList> StatementList
+%type <statementList> StatementList FunctionBody FunctionStatementList CaseClauses
+%type <expressionList> PropertyDefinitionList ArgumentList  ElementList FormalParameterList FormalsList FormalParameters
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
@@ -172,14 +170,11 @@ using namespace std;
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
-  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
+  SingleNameBinding
 %type <sval> Identifier IdentifierName
-%type <propertyDefinitionList> PropertyDefinitionList
-%type <argumentList> ArgumentList
 
 %type <cval> MultiplicativeOperator
-%type <caseClauses> CaseClauses
-%type <elementList> ElementList
 %%
 
 /* 15.1 Scripts
@@ -304,7 +299,7 @@ ConciseBody:
  */
 
 FunctionDeclaration:
-    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+    FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE { $$ = new FunctionDeclaration($2, $4, $7); }
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
     ;
 
@@ -315,30 +310,30 @@ FunctionExpression:
 
 
 FormalParameters:
-    FormalParameterList
+    FormalParameterList                     { $$ = $1; }
     ;
 
 FormalParameterList:
     /* incomplete */
-    FormalsList
-    | FormalsList COMMA FormalParameter
+    FormalsList                             { $$ = $1; }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
     ;
 
 FormalsList:
-    FormalParameter
-    | FormalsList COMMA FormalParameter
+    FormalParameter                         { $$ = new vector<Expression*>; $$->push_back($1); }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
     ;
 
 FormalParameter:
-    BindingElement
+    BindingElement                          { $$ = $1; }
     ;
 
 FunctionBody:
-    FunctionStatementList
+    FunctionStatementList                   { $$ = $1; }
     ;
 
 FunctionStatementList:
-    StatementList
+    StatementList                           { $$ = $1; }
     ;
 
 /* 13.16 The debugger Statement
@@ -552,12 +547,12 @@ BindingProperty:
     ;
 
 BindingElement:
-    SingleNameBinding
+    SingleNameBinding                   { $$ = $1; }
     | BindingPattern Initialiser
     ;
 
 SingleNameBinding:
-    BindingIdentifier Initialiser
+    BindingIdentifier                   { $$ = $1; }
     ;
 
 BindingRestElement:

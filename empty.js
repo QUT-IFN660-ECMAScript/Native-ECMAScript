@@ -1,1 +1,3 @@
-y = a + b - c * d / e;
+function test(a, b) {
+    return a + 1;
+}

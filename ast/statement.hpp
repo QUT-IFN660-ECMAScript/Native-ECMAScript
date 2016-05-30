@@ -521,3 +521,38 @@ public:
 
 };
 
+class FunctionDeclaration : public Statement {
+private:
+	Expression* bindingIdentifier;
+	vector<Expression*>* formalParameters;
+	vector<Statement*>* functionBody;
+public:
+	FunctionDeclaration(Expression* bindingIdentifier, vector<Expression*>* formalParameters, vector<Statement*>* functionBody) {
+		this->bindingIdentifier = bindingIdentifier;
+		this->formalParameters = formalParameters;
+		this->functionBody = functionBody;
+	}
+
+	void dump(int indent) {
+		label(indent++, "FunctionDeclaration\n");
+		if (bindingIdentifier != NULL) {
+			bindingIdentifier->dump(indent);
+		}
+		label(indent, "FormalParameters\n");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+		label(indent, "FunctionBody\n");
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+	}
+
+	unsigned int genCode(FILE* file) {
+		return getNewRegister();
+	}
+
+	unsigned int genStoreCode(FILE* file) {
+		return getNewRegister();
+	};
+};

@@ -472,9 +472,13 @@ public:
         this->rhs = rhs;
     };
     
-    unsigned int genCode(FILE *file) {   }
+    unsigned int genCode(FILE *file) {
+		return getNewRegister();
+	}
 
-    unsigned int genStoreCode(FILE* file) {  }
+    unsigned int genStoreCode(FILE* file) {
+		return getNewRegister();
+	}
         
     void dump(int indent) {
         lhs->dump(indent + 1, "lhs");
@@ -511,7 +515,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {    	
-    	fileEmit(file, ADDITION);
+    	return fileEmit(file, ADDITION);
 	}
 	
 	void dump(int indent) {
@@ -534,7 +538,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, SUBTRACTION);
+    	return fileEmit(file, SUBTRACTION);
 	}
 	
 	void dump(int indent) {
@@ -558,7 +562,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, MULTIPLICATION);
+    	return fileEmit(file, MULTIPLICATION);
 	}
 	
 	void dump(int indent) {
@@ -581,7 +585,7 @@ public:
 	}
 	
     unsigned int genStoreCode(FILE* file) {
-    	fileEmit(file, DIVISION);
+    	return fileEmit(file, DIVISION);
 	}
 	
 	void dump(int indent) {
@@ -589,5 +593,3 @@ public:
 		BinaryExpression::dump(indent);
 	}
 };
-
-
