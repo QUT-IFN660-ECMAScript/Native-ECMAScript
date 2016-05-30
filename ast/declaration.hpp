@@ -43,7 +43,6 @@ public:
 		Declaration::label(indent, "FunctionDeclaration\n");
      	expression->dump(++indent);
        	for (vector<Expression*>::iterator iter = params->begin(); iter != params->end(); ++iter) {
-       		printf("param\n");
           (*iter)->dump(++indent);
 		}
      	for (vector<Statement*>::iterator iter = statements->begin(); iter != statements->end(); ++iter)
