@@ -97,6 +97,8 @@ public:
         this->name = name;
         this->reference = NULL;
     };
+    
+    IdentifierExpression() {};
 
     std::string getReferencedName() {
         return name;

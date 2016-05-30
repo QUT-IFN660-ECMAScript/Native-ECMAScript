@@ -30,7 +30,17 @@ private:
 	vector<Statement*> *statements;
 	
 public:
-	FunctionDeclaration(Expression* expression, vector<Expression*> *params, vector<Statement*> *statements) {
+
+	FunctionDeclaration(Expression* expression) {
+		this->expression = expression;
+	}
+	
+	FunctionDeclaration(Expression* expression, vector<Expression*> *params) {
+		this->expression = expression;
+		this->params = params;
+	}
+	
+	FunctionDeclaration(Expression* expression, vector<Expression*> *params, vector<Statement*>  *statements) {
 		this->expression = expression;
 		this->params = params;
 		this->statements = statements;
@@ -38,11 +48,11 @@ public:
 	
 	void dump(int indent) {
      	Declaration::label(indent, "FunctionDeclaration\n");
-     	expression->dump(indent+1);
+     	expression->dump(indent);
      	for (vector<Expression*>::iterator iter = params->begin(); iter != params->end(); ++iter)
-      		(*iter)->dump(indent+1);
-      	for (vector<Statement*>::iterator iter = statements->begin(); iter != statements->end(); ++iter)
-      		(*iter)->dump(indent+1);
+          (*iter)->dump(indent+1);
+     	for (vector<Statement*>::iterator iter = statements->begin(); iter != statements->end(); ++iter)
+          (*iter)->dump(indent+1);
      	
      }
      

@@ -1,3 +1,3 @@
-function foo(x) {
+function foo(x=2) {
 x=5;
 }
