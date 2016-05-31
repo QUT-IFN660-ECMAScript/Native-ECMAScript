@@ -1,4 +1,4 @@
 x = 1;
-while (x) {
+while (x < 3) {
 	x += 1;
 }
