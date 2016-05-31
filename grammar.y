@@ -176,7 +176,7 @@ using namespace std;
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
   SingleNameBinding
 %type <sval> Identifier IdentifierName
-%type <cval> MultiplicativeOperator, AssignmentOperator
+%type <cval> MultiplicativeOperator AssignmentOperator
 %%
 
 /* 15.1 Scripts
@@ -982,7 +982,7 @@ SpreadElement:
 
 Literal:
     NullLiteral
-    | BooleanLiteral  { $$ = $1;}
+    | BooleanLiteral
     | NumericLiteral	{$$=$1;}
     | StringLiteral		{$$=$1;}
     ;
