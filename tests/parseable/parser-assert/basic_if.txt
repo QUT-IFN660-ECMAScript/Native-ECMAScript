@@ -1,12 +1,10 @@
 ScriptBody
-	ExpressionStatement
+	IfStatement
 		AssignmentExpression
 			lhs:
 				IdentifierExpression: x
 			rhs:
-				IntegerLiteralExpression: 0
-	IfStatement
-		IdentifierExpression: x
+				IntegerLiteralExpression: 4
 		ExpressionStatement
 			AssignmentExpression
 				lhs:
