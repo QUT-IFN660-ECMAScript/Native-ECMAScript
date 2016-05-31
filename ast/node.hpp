@@ -10,6 +10,8 @@
 //
 
 
+extern std::map<int, std::vector<std::string> > codeScope;
+extern int codeScopeDepth;
 using namespace std;
 
 class Node {
@@ -18,13 +20,17 @@ public:
 	static int registerIndex;
 
 	virtual void dump(int indent)=0;
-	virtual unsigned int genCode(FILE *file) = 0;
+	virtual unsigned int genCode() = 0;
 
-	void emit(FILE* outputfile, char* fmt, ...) {
+	void emit(char* fmt, ...) {
+		// previously we wrote directly to an output file here.
+		char tempString[512] = {'\0'};
 		va_list args;
 		va_start(args, fmt);
-		vfprintf(outputfile, fmt, args);
-		fprintf(outputfile, "\n");
+//		vfprintf(outputfile, fmt, args);
+//		fprintf(outputfile, "\n");
+		vsnprintf(tempString, 512, fmt, args);
+		codeScope[codeScopeDepth].push_back(tempString);
 		va_end(args);
 	}
 

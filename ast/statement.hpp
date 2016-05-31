@@ -10,16 +10,19 @@
 #include "node.hpp"
 #include "expression.hpp"
 
-using namespace std;
 
+extern std::map<int, std::vector<std::string> > codeScope;
+extern std::vector<std::string> functionDefinitions;
+
+using namespace std;
 
 
 class Statement: public Node {
 private:
 static String vinit[];
 public:
-	virtual unsigned int genCode(FILE* file) = 0;
-	virtual unsigned int genStoreCode(FILE* file)=0;
+	virtual unsigned int genCode() = 0;
+	virtual unsigned int genStoreCode()=0;
 };
 
 
@@ -38,12 +41,12 @@ public:
 	}
 
 	
-	unsigned int genCode(FILE* file) {
-		expr->genStoreCode(file);
+	unsigned int genCode() {
+		expr->genStoreCode();
  		return getNewRegister();
 	}
 	
-	unsigned int genStoreCode(FILE* file) {
+	unsigned int genStoreCode() {
 		return getNewRegister();
 	}
 };
@@ -63,11 +66,12 @@ public:
   	}
 	
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 	
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
+
 };
 
 //13.2 Block
@@ -94,11 +98,11 @@ public:
 	}
 
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -129,11 +133,11 @@ public:
 	}
 
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -157,11 +161,11 @@ public:
 
 	
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -182,11 +186,11 @@ public:
 
 	
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -203,11 +207,11 @@ public:
 
 
 
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -235,11 +239,13 @@ public:
 
 
 
-	unsigned int genCode(FILE* file) {
-		return getNewRegister();
+	unsigned int genCode() {
+		unsigned int reg = getNewRegister();
+		emit("\treturn r%d;", reg - 2);
+		return reg;
 	}
 	
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -274,11 +280,11 @@ public:
 	
 	
 	
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -310,11 +316,11 @@ public:
 
 
 
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -353,11 +359,11 @@ public:
 
 
 
-	unsigned int genCode(FILE* file) {
+	unsigned int genCode() {
 		return getNewRegister();
 	}
 
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
 };
 
@@ -382,9 +388,9 @@ class IterationStatement : public Statement {
 	}
 
 	
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
-	unsigned int genCode(FILE *file) {
+	unsigned int genCode() {
 		return getNewRegister();
     }
 };
@@ -408,9 +414,9 @@ class DoWhileIterationStatement : public Statement {
 		statement->dump(indent + 1);
 	}
 
-	unsigned int genCode(FILE* file) { return getNewRegister(); }
+	unsigned int genCode() { return getNewRegister(); }
 
-	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
+	unsigned int genStoreCode() {	return getNewRegister(); }
 };
 
 
@@ -434,9 +440,9 @@ class WithStatement : public Statement {
 	}
 	
 	
-	unsigned int genStoreCode(FILE* file) {return getNewRegister();};
+	unsigned int genStoreCode() {return getNewRegister();};
 
-	unsigned int genCode(FILE *file) {
+	unsigned int genCode() {
 		return getNewRegister();
     }
 
@@ -460,9 +466,9 @@ public:
 		statement->dump(indent);
 	}
 
-	unsigned int genCode(FILE* file) { return getNewRegister(); }
+	unsigned int genCode() { return getNewRegister(); }
 
-	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
+	unsigned int genStoreCode() {	return getNewRegister(); }
 };
 
 
@@ -489,9 +495,9 @@ public:
 		stmtList->dump(indent);
 	}
 
-	unsigned int genCode(FILE* file) { return getNewRegister(); }
+	unsigned int genCode() { return getNewRegister(); }
 
-	unsigned int genStoreCode(FILE* file) {	return getNewRegister(); }
+	unsigned int genStoreCode() {	return getNewRegister(); }
 };
 
 class CaseBlockStatement : public Statement {
@@ -511,13 +517,126 @@ public:
         }
     }
 
-    unsigned int genCode(FILE* file) {
+    unsigned int genCode() {
         return getNewRegister();
     }
 	
-	unsigned int genStoreCode(FILE* file) {
+	unsigned int genStoreCode() {
 		return global_var;
 	};
 
 };
 
+class FunctionDeclaration : public Statement {
+private:
+	Expression* bindingIdentifier;
+	vector<Expression*>* formalParameters;
+	vector<Statement*>* functionBody;
+public:
+	FunctionDeclaration(Expression* bindingIdentifier, vector<Expression*>* formalParameters, vector<Statement*>* functionBody) {
+		this->bindingIdentifier = bindingIdentifier;
+		this->formalParameters = formalParameters;
+		this->functionBody = functionBody;
+	}
+
+	void dump(int indent) {
+		label(indent++, "FunctionDeclaration\n");
+		if (bindingIdentifier != NULL) {
+			bindingIdentifier->dump(indent);
+		}
+		label(indent, "FormalParameters\n");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+		label(indent, "FunctionBody\n");
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+	}
+
+	unsigned int genCode() {
+		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
+		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
+			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
+		}
+		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
+		
+
+		codeScopeDepth++;
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->genCode();
+		}
+		std::vector<std::string> body = codeScope[codeScopeDepth];
+		for (std::vector<std::string>::iterator iter = body.begin(); iter != body.end(); ++iter) {
+			// get a char pointer out of the string
+			std::string s = (*iter);
+			char* w = new char[s.size() + 1];
+			std::copy(s.begin(), s.end(), w);
+			w[s.size()] = '\0';
+			emit(w);
+		}
+		codeScopeDepth--;
+
+		// TODO this code should go into function calling......
+//		unsigned int reg = getNewRegister();
+//		emit("\tESValue* r%d = %s();", reg, functionName->getReferencedName().c_str());
+
+		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
+		functionDefinitions.push_back("}");
+		return getNewRegister();
+	}
+
+	unsigned int genStoreCode() {
+		return getNewRegister();
+	};
+};
+
+class AnonymousFunctionDeclaration : public Statement {
+private:
+	vector<Expression*>* formalParameters;
+	vector<Statement*>* functionBody;
+public:
+	AnonymousFunctionDeclaration(vector<Expression*>* formalParameters, vector<Statement*>* functionBody) {
+		this->formalParameters = formalParameters;
+		this->functionBody = functionBody;
+	}
+
+	void dump(int indent) {
+		label(indent++, "FunctionDeclaration\n");
+		label(indent, "FormalParameters\n");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+		label(indent, "FunctionBody\n");
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+	}
+
+	unsigned int genCode() {
+		// TODO parameters
+		codeScopeDepth++;
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->genCode();
+		}
+		std::vector<std::string> body = codeScope[codeScopeDepth];
+		for (std::vector<std::string>::iterator iter = body.begin(); iter != body.end(); ++iter) {
+			// get a char pointer out of the string
+			std::string s = (*iter);
+			char* w = new char[s.size() + 1];
+			std::copy(s.begin(), s.end(), w);
+			w[s.size()] = '\0';
+			emit(w);
+		}
+		codeScopeDepth--;
+
+		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
+		functionDefinitions.push_back("}");
+		return getNewRegister();
+	}
+
+	unsigned int genStoreCode() {
+		return getNewRegister();
+	};
+};

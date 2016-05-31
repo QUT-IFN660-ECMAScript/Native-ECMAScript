@@ -7,6 +7,13 @@
 #include "grammar.tab.h"
 #include "lex.yy.h"
 #include <stdlib.h>
+#include <cstdarg>
+#include <cstdio>
+#include <iostream>
+#include <cstdarg>
+#include <cstdio>
+#include <string>
+
 
 
 extern FILE *yyin;
@@ -14,19 +21,21 @@ int yyparse(void);
 extern ScriptBody *root;
 extern int global_var;
 ESObject* globalObj;
+// these two are globals just because wow, making them pointers was insane.
+extern std::map<int, vector<std::string> > codeScope; // this really should be named something better...?
+extern int codeScopeDepth;
+extern std::vector<std::string> functionDefinitions;
+
 
 extern unsigned int getNewRegister();
-/* prototype */
-void CodeGeneration(char* inputfile, ScriptBody* root);
-
 
 // int Node::registerIndex = 0;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	int global_var=0;
 
     globalObj = new ESObject();
+    codeScopeDepth = 0;
 
     yyin = fopen(argv[1], "r");
 
@@ -37,9 +46,30 @@ int main(int argc, char* argv[])
     FILE* outputFile = fopen(outputFilename, "w");
 
     yyparse();
+
+    fprintf(outputFile, "#include \"./runtime/core.hpp\"\n");
+    fprintf(outputFile, "#include \"./runtime/console.hpp\"\n");
+    fprintf(outputFile, "#include \"./scope/reference.hpp\"\n");
+    fprintf(outputFile, "\n");
+	fprintf(outputFile, "ESObject* globalObj = new ESObject();\n\n");
     if (root != NULL) {
         root->dump(0);
-        root->genCode(outputFile);
+        root->genCode();
+
+//        printf("printing scoped IR:\n");
+        for (std::vector<std::string>::iterator iter = functionDefinitions.begin(); iter != functionDefinitions.end(); ++iter) {
+            std::string s = (*iter);
+            const char* c = s.c_str();
+            fprintf(outputFile, "%s\n", c);
+        }
+
+        for (std::vector<std::string>::iterator iter = codeScope[codeScopeDepth].begin(); iter != codeScope[codeScopeDepth].end(); ++iter) {
+            std::string s = (*iter);
+            const char* c = s.c_str();
+            fprintf(outputFile, "%s\n", c);
+        }
+        fprintf(outputFile, "\n");
+
     }
     return 0;
 }
