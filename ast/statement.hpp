@@ -396,9 +396,11 @@ class IterationStatement : public Statement {
 		unsigned int registerNumber = getNewRegister();
 		emit("\t// r%d", registerNumber);
 		unsigned int expressionRegister = expression->genCode();
-		emit("\t// r%d evaluate some boolean expression", expressionRegister);
+		emit("\t// r%d evaluate some boolean expression if true skip to register after all statements", expressionRegister);
 		unsigned int statementRegister = statement->genCode();
 		emit("\t// r%d jmp r%d", statementRegister, registerNumber);
+		registerNumber = getNewRegister();
+		emit("\t// r%d skip to here if expression is true", registerNumber);
 
 		return registerNumber;
   }
