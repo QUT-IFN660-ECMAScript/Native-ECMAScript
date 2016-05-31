@@ -207,7 +207,7 @@ public:
 
 	unsigned int genStoreCode(FILE* file) {
 		unsigned int registerNumber = getNewRegister();
-		emit(file, "\tESValue* r%d = new Reference(env, 0);", registerNumber);
+		emit(file, "\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getStringValue().c_str());
 		return registerNumber;
 	};
 };
