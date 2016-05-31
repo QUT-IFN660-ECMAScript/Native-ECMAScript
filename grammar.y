@@ -138,14 +138,12 @@ using namespace std;
     ScriptBody* scriptBody;
     Expression* expression;
     Statement* statement;
-
     vector<Statement* >* statementList;
     vector<Expression*>* expressionList;
     int ival;
     double dval;
     const char* sval;
     bool bval;
-
     char cval;
 }
 
@@ -176,7 +174,7 @@ using namespace std;
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
-  SingleNameBinding
+  SingleNameBinding 
 %type <sval> Identifier IdentifierName
 
 %type <cval> MultiplicativeOperator
@@ -985,7 +983,7 @@ SpreadElement:
 
 Literal:
     NullLiteral
-    | BooleanLiteral    {$$=$1;}
+    | BooleanLiteral    
     | NumericLiteral	{$$=$1;}
     | StringLiteral		{$$=$1;}
     ;
@@ -1003,8 +1001,8 @@ NullLiteral:
     ;
 
 BooleanLiteral: 
-    LITERAL_TRUE        { $$ = new BooleanLiteralExpression($1); }
-    | LITERAL_FALSE     { $$ = new BooleanLiteralExpression($1); }
+    LITERAL_TRUE        
+    | LITERAL_FALSE     
     ;
 
 StringLiteral:
