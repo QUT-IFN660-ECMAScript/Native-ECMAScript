@@ -203,27 +203,27 @@ public:
 
 		if (operand == '+') {
 			unsigned int newRegisterNumber = getNewRegister();
-			emit("\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, rhsRegisterNumber);
+			emit("\tESValue* r%d = Core::plus(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 			rhsRegisterNumber = registerNumber;
 			registerNumber = newRegisterNumber;
 		} else if (operand == '-') {
 			unsigned int newRegisterNumber = getNewRegister();
-			emit("\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, rhsRegisterNumber);
+			emit("\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 			rhsRegisterNumber = registerNumber;
 			registerNumber = newRegisterNumber;
 		} else if (operand == '*') {
 			unsigned int newRegisterNumber = getNewRegister();
-			emit("\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, rhsRegisterNumber);
+			emit("\tESValue* r%d = Core::multiply(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 			rhsRegisterNumber = registerNumber;
 			registerNumber = newRegisterNumber;
 		} else if (operand == '/') {
 			unsigned int newRegisterNumber = getNewRegister();
-			emit("\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber, rhsRegisterNumber);
+			emit("\tESValue* r%d = Core::divide(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 			rhsRegisterNumber = registerNumber;
 			registerNumber = newRegisterNumber;
 		} else if (operand == '%') {
 			unsigned int newRegisterNumber = getNewRegister();
-			emit("\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, rhsRegisterNumber);
+			emit("\tESValue* r%d = Core::modulo(r%d, r%d);", registerNumber, lhsRegisterNumber, rhsRegisterNumber);
 			rhsRegisterNumber = registerNumber;
 			registerNumber = newRegisterNumber;
 		}

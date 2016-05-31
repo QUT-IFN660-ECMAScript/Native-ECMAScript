@@ -394,8 +394,12 @@ class IterationStatement : public Statement {
 
 	unsigned int genCode() {
 		unsigned int registerNumber = getNewRegister();
+		emit("\t// r%d", registerNumber);
 		unsigned int expressionRegister = expression->genCode();
+		emit("\t// r%d evaluate some boolean expression", expressionRegister);
 		unsigned int statementRegister = statement->genCode();
+		emit("\t// r%d jmp r%d", statementRegister, registerNumber);
+
 		return registerNumber;
   }
 };
