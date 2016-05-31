@@ -13,7 +13,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <string>
-#include "ast/constants.h"
+
 
 
 extern FILE *yyin;
@@ -22,7 +22,8 @@ extern ScriptBody *root;
 extern int global_var;
 ESObject* globalObj;
 // these two are globals just because wow, making them pointers was insane.
-std::map<int, vector<std::string> > codeScope; // this really should be named something better...?
+extern std::map<int, vector<std::string> > codeScope; // this really should be named something better...?
+extern int codeScopeDepth;
 std::vector<std::string> functionDefinitions;
 
 
