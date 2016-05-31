@@ -29,8 +29,7 @@ extern unsigned int getNewRegister();
 
 // int Node::registerIndex = 0;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	int global_var=0;
 
     globalObj = new ESObject();
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
     fprintf(outputFile, "#include \"./runtime/console.hpp\"\n");
     fprintf(outputFile, "#include \"./scope/reference.hpp\"\n");
     fprintf(outputFile, "\n");
-
+	fprintf(outputFile, "ESObject* globalObj = new ESObject();\n\n");
     if (root != NULL) {
         root->dump(0);
         root->genCode();

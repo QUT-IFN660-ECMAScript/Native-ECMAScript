@@ -26,7 +26,7 @@ public:
   	}
 
     unsigned int genCode() {
-		emit("\nESObject* globalObj = new ESObject();\n");
+		
 		emit("int main() {");
 		
 		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child) {

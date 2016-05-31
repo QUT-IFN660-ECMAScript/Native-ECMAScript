@@ -556,7 +556,12 @@ public:
 	unsigned int genCode() {
 		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
 		// TODO parameters
-		functionDefinitions.push_back(std::string("ESValue* " + functionName->getReferencedName() + "() {"));
+		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
+			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
+		}
+		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
+		
 
 		codeScopeDepth++;
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
@@ -576,6 +581,55 @@ public:
 		// TODO this code should go into function calling......
 //		unsigned int reg = getNewRegister();
 //		emit("\tESValue* r%d = %s();", reg, functionName->getReferencedName().c_str());
+
+		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
+		functionDefinitions.push_back("}");
+		return getNewRegister();
+	}
+
+	unsigned int genStoreCode() {
+		return getNewRegister();
+	};
+};
+
+class AnonymousFunctionDeclaration : public Statement {
+private:
+	vector<Expression*>* formalParameters;
+	vector<Statement*>* functionBody;
+public:
+	AnonymousFunctionDeclaration(vector<Expression*>* formalParameters, vector<Statement*>* functionBody) {
+		this->formalParameters = formalParameters;
+		this->functionBody = functionBody;
+	}
+
+	void dump(int indent) {
+		label(indent++, "FunctionDeclaration\n");
+		label(indent, "FormalParameters\n");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+		label(indent, "FunctionBody\n");
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->dump(indent + 1);
+		}
+	}
+
+	unsigned int genCode() {
+		// TODO parameters
+		codeScopeDepth++;
+		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
+			(*iter)->genCode();
+		}
+		std::vector<std::string> body = codeScope[codeScopeDepth];
+		for (std::vector<std::string>::iterator iter = body.begin(); iter != body.end(); ++iter) {
+			// get a char pointer out of the string
+			std::string s = (*iter);
+			char* w = new char[s.size() + 1];
+			std::copy(s.begin(), s.end(), w);
+			w[s.size()] = '\0';
+			emit(w);
+		}
+		codeScopeDepth--;
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
 		functionDefinitions.push_back("}");

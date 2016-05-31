@@ -302,8 +302,9 @@ ConciseBody:
 
 FunctionDeclaration:
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
-     { $$ = new FunctionDeclaration($2, $4, $7); }
+     { $$ = new FunctionDeclaration($2, $4, $7); }     
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+     { $$ = new AnonymousFunctionDeclaration($3, $6); }
     ;
 
 
