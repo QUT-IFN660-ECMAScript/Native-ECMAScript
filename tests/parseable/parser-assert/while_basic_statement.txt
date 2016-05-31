@@ -1,6 +1,10 @@
 ScriptBody
 	WhileStatement
-		IdentifierExpression: x
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: x
+			rhs:
+				IntegerLiteralExpression: 4
 			ExpressionStatement
 				AssignmentExpression
 					lhs:
