@@ -154,39 +154,10 @@ public:
 		unsigned int registerNumber = getNewRegister();
 		emit("\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getValue().c_str());
 		return registerNumber;
-	};
-};
-
-class BooleanLiteralExpression: public Expression {
-private:
-	bool val;
-public:
-	BooleanLiteralExpression(bool val) {
-		this->val = val;
-	};
-
-    bool getValue() {
-        return val;
-    }
-    
-    std::string getStringValue() {
-        return val ? "true" : "false";
-    }
-    
-	void dump(int indent) {
-		label(indent, "BooleanLiteralExpression: %s\n", getStringValue().c_str());
 	}
-
-    unsigned int genCode(FILE* file) 	{
-        return getNewRegister();
-    }
-
-	unsigned int genStoreCode(FILE* file) {
-		unsigned int registerNumber = getNewRegister();
-		emit(file, "\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getStringValue().c_str());
-		return registerNumber;
-	};
 };
+
+
 
 class AssignmentExpression:public Expression {
 private:
