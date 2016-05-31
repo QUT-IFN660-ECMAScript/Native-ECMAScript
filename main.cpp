@@ -13,6 +13,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <string>
+#include "ast/constants.h"
 
 
 extern FILE *yyin;

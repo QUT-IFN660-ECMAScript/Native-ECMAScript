@@ -10,7 +10,7 @@
 #include "node.hpp"
 #include "expression.hpp"
 
-extern int codeScopeDepth;
+
 extern std::map<int, std::vector<std::string> > codeScope;
 extern std::vector<std::string> functionDefinitions;
 
@@ -555,7 +555,6 @@ public:
 
 	unsigned int genCode() {
 		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
-		// TODO parameters
 		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";

@@ -21,6 +21,7 @@ using namespace std;
 
 extern int global_var;
 
+
 inline unsigned int getNewRegister() {
 	return global_var++;
 }
