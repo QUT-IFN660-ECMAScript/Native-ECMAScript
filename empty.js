@@ -1,4 +1,4 @@
-function (a, b) {
+function foo(a, b) {
     c = a + b;
     return c;
 }

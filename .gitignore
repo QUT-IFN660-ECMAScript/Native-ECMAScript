@@ -18,3 +18,4 @@ compiler
 *.xml
 *.js.il
 *.js
+empty.js
