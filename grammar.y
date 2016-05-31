@@ -12,6 +12,7 @@ ScriptBody *root;
 int global_var;
 std::map<int, vector<std::string> > codeScope; 
 int codeScopeDepth;
+std::vector<std::string> functionDefinitions;
 unsigned int getNewRegister();
 
 //Initialise static member registerIndex of Node

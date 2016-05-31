@@ -24,7 +24,7 @@ ESObject* globalObj;
 // these two are globals just because wow, making them pointers was insane.
 extern std::map<int, vector<std::string> > codeScope; // this really should be named something better...?
 extern int codeScopeDepth;
-std::vector<std::string> functionDefinitions;
+extern std::vector<std::string> functionDefinitions;
 
 
 extern unsigned int getNewRegister();
