@@ -10,9 +10,7 @@ ScriptBody
 		ExpressionStatement
 			AssignmentExpression
 				lhs:
-				IdentifierExpression
-					lhs:
-						IdentifierExpression: y
-					rhs:
-						IntegerLiteralExpression: 4
-					
+					dentifierExpression: y
+				rhs:
+					IntegerLiteralExpression: 4
+	

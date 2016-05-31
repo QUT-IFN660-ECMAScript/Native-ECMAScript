@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <sstream>
-
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
@@ -351,6 +351,7 @@ class Function : public ESObject {
  */
 class TypeOps {
 public:
+
     /**
      * 7.1.1 ToPrimitive ( input [, PreferredType] )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive
@@ -406,12 +407,16 @@ public:
                 return false;
             case boolean:
                 return argument;
+            /* 	Return false if argument is +0, −0, or NaN; otherwise return true. */
             case number:
-                // TODO: Return false if argument is +0, −0, or NaN; otherwise return true.
+                if (dynamic_cast<Number*>(argument)->getValue()== 0 ||
+                	isnan(dynamic_cast<Number*>(argument)->getValue())) {
+                	return false;
+                }
                 return true;
+             /* Return false if argument is the empty String (its length is zero); otherwise return true */
             case string_:
-                // TODO: Return false if argument is the empty String (its length is zero); otherwise return true.
-                return true;
+            	return dynamic_cast<String*>(argument)==NULL;
             case symbol:
                 return true;
             case object:
@@ -439,9 +444,9 @@ public:
                 return new Number(0);
             case number:
                 return dynamic_cast<Number*>(argument);
+          /*  The conversion of a String to a Number value is similar overall to the determination of the Number value 				for a numeric literal (see 11.8.3), but some of the details are different, process defined 7.1.3.11 . This 				value is determined in two steps: first, a mathematical value (MV) is derived from the String numeric 				literal; second, this mathematical value is rounded. */
             case string_:
-                // TODO: 7.1.3.1 ToNumber Applied to the String Type
-                return new NaN();
+				return mathematicalValue(argument);
             case symbol:
                 // TODO: Throw a TypeError exception.
                 return new NaN();
@@ -451,5 +456,76 @@ public:
                 return NULL;
         }
     }
+    
+	/**
+     * 7.1.4 ToInteger ( argument )
+     * http://www.ecma-international.org/ecma-262/6.0/#sec-tointeger
+     * The abstract operation ToInteger converts argument to an integral numeric value. 
+     */
+	static Number* toInteger(ESValue* argument) {
+		Number* number = toNumber(argument);
+		if (isnan(dynamic_cast<Number*>(number)->getValue())) {
+			return new Number(0);
+		} else {
+			return new Number(floor(abs(dynamic_cast<Number*>(argument)->getValue())));
+		}
+	}
+	
+	
+	/**
+     * 7.1.12 ToString ( argument )
+     * http://www.ecma-international.org/ecma-262/6.0/#sec-tostring
+     * The abstract operation ToString converts argument to a value of type String 
+     */
+	static char* toString(ESValue* argument) {
+		switch (argument->getType()) {
+            case undefined:
+                return "undefined";
+            case null:
+                return "null";
+            case boolean:
+                if (dynamic_cast<Boolean*>(argument)->getValue()) {
+                	return "true";
+                }
+                return "false";               
+            case number:
+            	return toStringOnNumber(argument);
+            case symbol:
+            	//todo
+            	return "true";
+            case object:
+            	//todo
+            	return "true";            		
+		}
+	}
+	
+	    
+    /* Simple mathmatical evaluation - 7.1.3.1.1 Runtime Semantics: MV’s more complex for types 
+       Return 0 if the length of string = 0 or string is completely whitespace otherwise return
+       new Number
+    */
+    static Number* mathematicalValue(ESValue* argument) {
+		if (dynamic_cast<String*>(argument)->getValue().length()==0) {
+			return new Number(0);
+		} else if (dynamic_cast<String*>(argument)->getValue().find_first_not_of(' ') != std::string::npos) {
+			return new Number(0);
+		} 
+		return new Number(atof(dynamic_cast<String*>(argument)->getValue().c_str()));
+	}
+		
+	
+	/* 7.1.12.1 ToString Applied to the Number Type - Helper method for ToString(argument) */
+	static char* toStringOnNumber(ESValue* argument) {
+		if (isnan(dynamic_cast<Number*>(argument)->getValue())) {
+			return "NaN";
+		} else if (dynamic_cast<Number*>(argument)->getValue()==0) {
+			return "0";
+		} else if isinf(dynamic_cast<Number*>(argument)->getValue()) {
+			return "Infinity";
+		}
+		return "0";
+	}
+		
+
 
 };

@@ -1,17 +1,14 @@
-VAR
-IDENTIFIER (x)
-,
-IDENTIFIER (y)
-;
 IF
 (
 IDENTIFIER (x)
 )
 IDENTIFIER (y)
 =
-false
+2
+;
 ELSE
 IDENTIFIER (y)
 =
-true
+4
+;
 END_OF_FILE
