@@ -770,7 +770,7 @@ BitwiseORExpression:
 
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
-    | EqualityExpression EQUAL RelationalExpression
+    | EqualityExpression EQUAL RelationalExpression				{$$ = new EqualityEqualExpression($1,$3); }
 	| EqualityExpression NOT_EQUAL RelationalExpression
 	| EqualityExpression EXACTLY_EQUAL RelationalExpression
 	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
