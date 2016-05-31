@@ -1,0 +1,12 @@
+ScriptBody
+	ExpressionStatement
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: x
+			rhs:
+				DivisionBinaryExpression: /
+					lhs:
+						IdentifierExpression: y
+					rhs:
+						IdentifierExpression: z
+

@@ -1,0 +1,11 @@
+ScriptBody
+	ExpressionStatement
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: x
+			rhs:
+				AdditiveBinaryExpression: +
+					lhs:
+						IntegerLiteralExpression: 42
+					rhs:
+						IntegerLiteralExpression: 5

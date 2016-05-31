@@ -1,0 +1,7 @@
+IDENTIFIER (x)
+=
+IDENTIFIER (y)
+-
+IDENTIFIER (z)
+;
+END_OF_FILE
