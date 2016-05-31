@@ -1,6 +1,10 @@
 ScriptBody
 	IfStatement
-		IdentifierExpression: x
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: x
+			rhs:
+				IntegerLiteralExpression: 4
 		ExpressionStatement
 			AssignmentExpression
 				lhs:
@@ -10,7 +14,6 @@ ScriptBody
 		ExpressionStatement
 			AssignmentExpression
 				lhs:
-					dentifierExpression: y
+					IdentifierExpression: y
 				rhs:
 					IntegerLiteralExpression: 4
-	
