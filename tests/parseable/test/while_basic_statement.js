@@ -1,2 +1,2 @@
-x=0;
+/* Anthony Gough */
 while (x) y=4;

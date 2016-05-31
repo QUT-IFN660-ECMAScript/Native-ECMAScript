@@ -1,0 +1,9 @@
+ScriptBody
+	WhileStatement
+		IdentifierExpression: x
+			ExpressionStatement
+				AssignmentExpression
+					lhs:
+						IdentifierExpression: y
+					rhs:
+						IntegerLiteralExpression: 4

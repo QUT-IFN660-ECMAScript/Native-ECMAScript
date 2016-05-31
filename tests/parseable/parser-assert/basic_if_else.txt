@@ -1,0 +1,18 @@
+ScriptBody
+	IfStatement
+		IdentifierExpression: x
+		ExpressionStatement
+			AssignmentExpression
+				lhs:
+					IdentifierExpression: y
+				rhs:
+					IntegerLiteralExpression: 2
+		ExpressionStatement
+			AssignmentExpression
+				lhs:
+				IdentifierExpression
+					lhs:
+						IdentifierExpression: y
+					rhs:
+						IntegerLiteralExpression: 4
+					

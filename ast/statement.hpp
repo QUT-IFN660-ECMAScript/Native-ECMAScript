@@ -381,10 +381,9 @@ class IterationStatement : public Statement {
 	}
 	
 	void dump(int indent) {
-		indent++;
 		label(indent, "WhileStatement\n");
-		expression->dump(indent+ 1);
-		statement->dump(indent + 2);
+		expression->dump(++indent);
+		statement->dump(++indent);
 	}
 
 	
@@ -408,10 +407,9 @@ class DoWhileIterationStatement : public Statement {
 	}
 	
 	void dump(int indent) {
-		indent++;
 		label(indent, "DoWhileStatement\n");
-		expression->dump(indent+ 2);
-		statement->dump(indent + 1);
+		expression->dump(++indent);
+		statement->dump(++indent);
 	}
 
 	unsigned int genCode() { return getNewRegister(); }

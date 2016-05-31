@@ -1,1 +1,1 @@
-x = y - z;
+while (x) y=4;

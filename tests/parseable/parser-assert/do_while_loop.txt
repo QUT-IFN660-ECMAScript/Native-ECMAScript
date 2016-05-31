@@ -1,0 +1,14 @@
+ScriptBody
+	DoWhileStatement
+		IdentifierExpression: y
+			ExpressionStatement
+				AssignmentExpression
+					lhs:
+						IdentifierExpression: y
+					rhs:
+						AdditiveBinaryExpression: +
+							lhs:
+								IdentifierExpression: y
+							rhs:
+								IntegerLiteralExpression: 1
+		
