@@ -1,0 +1,19 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 1
+        WhileStatement
+            IdentifierExpression: x
+                BlockStatement
+                    StatementList
+                        ExpressionStatement
+                            + AssignmentExpression
+                                lhs:
+                                    IdentifierExpression: x
+                                rhs:
+                                    IntegerLiteralExpression: 1
+                        LabelledStatement
+                            [Empty]

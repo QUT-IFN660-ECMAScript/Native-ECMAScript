@@ -177,9 +177,10 @@ using namespace std;
 %type <propertyDefinitionList> PropertyDefinitionList
 %type <argumentList> ArgumentList
 
-%type <cval> MultiplicativeOperator
+%type <cval> MultiplicativeOperator, AssignmentOperator
 %type <caseClauses> CaseClauses
 %type <elementList> ElementList
+
 %%
 
 /* 15.1 Scripts
@@ -525,7 +526,7 @@ ObjectBindingPattern:
     | LEFT_BRACE BindingPropertyList RIGHT_BRACE
     | LEFT_BRACE BindingPropertyList COMMA RIGHT_BRACE
     ;
-    
+
 ArrayBindingPattern:
     LEFT_BRACKET Elision BindingRestElement RIGHT_BRACKET
     | LEFT_BRACKET BindingElementList RIGHT_BRACKET
@@ -536,7 +537,7 @@ BindingPropertyList:
     BindingProperty
     | BindingPropertyList COMMA BindingProperty
     ;
-    
+
 BindingElementList:
     BindingElisionElement
     | BindingElementList COMMA BindingElisionElement
@@ -563,7 +564,7 @@ SingleNameBinding:
 BindingRestElement:
     ELLIPSIS BindingIdentifier
     ;
-    
+
 /*BindingRestElementOptional:
     BindingRestElement
     |
@@ -615,7 +616,7 @@ LexicalBinding:
  */
 
 BlockStatement:
-    Block
+    Block                                 { $$ = $1; }
     ;
 
 Block:
@@ -644,7 +645,7 @@ StatementListItem:
  */
 
 Statement:
-    BlockStatement
+    BlockStatement          { $$ = $1; }
     | VariableStatement
     | EmptyStatement
     | ExpressionStatement   { $$ = $1; }
@@ -702,15 +703,15 @@ AssignmentExpression:
     | YieldExpression
     | ArrowFunction
     | LeftHandSideExpression ASSIGNMENT AssignmentExpression {$$ = new AssignmentExpression($1, $3);}
-    | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    | LeftHandSideExpression AssignmentOperator AssignmentExpression  { $$ = new AssignmentExpression($1, $3, $2); }
     ;
 
 AssignmentOperator:
-    MULTIPLICATION_ASSIGNMENT
-    | DIVISION_ASSIGNMENT
-    | MODULUS_ASSIGNMENT
-    | ADDITION_ASSIGNMENT
-    | SUBTRACTION_ASSIGNMENT
+    MULTIPLICATION_ASSIGNMENT { $$ = '*'; }
+    | DIVISION_ASSIGNMENT { $$ = '/'; }
+    | MODULUS_ASSIGNMENT  { $$ = '%'; }
+    | ADDITION_ASSIGNMENT { $$ = '+'; }
+    | SUBTRACTION_ASSIGNMENT  { $$ = '-'; }
     | LEFT_SHIFT_ASSIGNMENT
     | SIGNED_RIGHT_SHIFT_ASSIGNMENT
     | UNSIGNED_RIGHT_SHIFT_ASSIGNMENT
@@ -801,8 +802,8 @@ ShiftExpression:
     AdditiveExpression	{$$ = $1;}
 	| ShiftExpression LEFT_SHIFT AdditiveExpression
 	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression
-	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
-    ; 
+	| ShiftExpression UNSIGNED_RIGHT_SHIFT
+    ;
 
 /* 12.7 Additive Operators
  * http://www.ecma-international.org/ecma-262/6.0/#sec-additive-operators
@@ -810,7 +811,7 @@ ShiftExpression:
 
 AdditiveExpression:
     MultiplicativeExpression								{$$ = $1;}
-    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new AdditiveBinaryExpression($1, $3); }	
+    | AdditiveExpression ADD MultiplicativeExpression		{$$ = new AdditiveBinaryExpression($1, $3); }
     | AdditiveExpression SUBTRACT MultiplicativeExpression	{$$ = new SubtractionBinaryExpression($1, $3); }
     ;
 
@@ -820,9 +821,9 @@ AdditiveExpression:
 
 MultiplicativeExpression:
     UnaryExpression
-	| MultiplicativeExpression MULTIPLY UnaryExpression 	{$$ = new MultiplicativeBinaryExpression($1, $3); }	
-	| MultiplicativeExpression DIVIDE UnaryExpression		{$$ = new DivisionBinaryExpression($1, $3); }		
-	| MultiplicativeExpression MODULO UnaryExpression			
+	| MultiplicativeExpression MULTIPLY UnaryExpression 	{$$ = new MultiplicativeBinaryExpression($1, $3); }
+	| MultiplicativeExpression DIVIDE UnaryExpression		{$$ = new DivisionBinaryExpression($1, $3); }
+	| MultiplicativeExpression MODULO UnaryExpression
     ;
 
 /* 12.6 Multiplicative Operators
@@ -843,7 +844,7 @@ UnaryExpression:
 	| VOID UnaryExpression
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
-	| UNARY_SUBTRACT UnaryExpression	
+	| UNARY_SUBTRACT UnaryExpression
 	| ADD UnaryExpression 				{ $$ = new UnaryExpression($2, '+'); }
 	| SUBTRACT UnaryExpression 			{ $$ = new UnaryExpression($2, '-'); }
 	| BITWISE_NOT UnaryExpression
@@ -891,7 +892,7 @@ Arguments:
 
 ArgumentList:
     AssignmentExpression    {
-        $$ = new std::vector<Expression*>; 
+        $$ = new std::vector<Expression*>;
         $$->push_back($1);
 
     }
@@ -913,7 +914,7 @@ PropertyName:
     ;
 
 LiteralPropertyName:
-    Identifier 			{IdentifierExpression* idExp = new IdentifierExpression($1); 
+    Identifier 			{IdentifierExpression* idExp = new IdentifierExpression($1);
     						$$ = new LiteralPropertyNameExpression(idExp);}
     | StringLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
     | NumericLiteral 	{$$ = new LiteralPropertyNameExpression($1);}
@@ -922,7 +923,7 @@ LiteralPropertyName:
 Initialiser:
     ASSIGNMENT AssignmentExpression
     ;
-    
+
 
 
 ObjectLiteral:
@@ -960,7 +961,7 @@ ElementList:
     | AssignmentExpression {$$ = new vector<Expression*>; $$->push_back($1);}
     | Elision SpreadElement
     | SpreadElement
-    | ElementList COMMA Elision AssignmentExpression 
+    | ElementList COMMA Elision AssignmentExpression
     | ElementList COMMA AssignmentExpression {$$ = $1; $$->push_back($3);}
     | ElementList COMMA Elision SpreadElement
     | ElementList COMMA SpreadElement
@@ -970,7 +971,7 @@ Elision:
     COMMA
     | Elision COMMA
     ;
-    
+
 SpreadElement:
     ELLIPSIS AssignmentExpression
     ;
@@ -981,7 +982,7 @@ SpreadElement:
 
 Literal:
     NullLiteral
-    | BooleanLiteral
+    | BooleanLiteral  { $$ = $1;}
     | NumericLiteral	{$$=$1;}
     | StringLiteral		{$$=$1;}
     ;
@@ -1055,7 +1056,7 @@ LabelIdentifier:
     ;
 
 Identifier:
-    IdentifierName 							{$$ = $1; }						
+    IdentifierName 							{$$ = $1; }
     ;
 
 /* 11.8.3 Numeric Literals

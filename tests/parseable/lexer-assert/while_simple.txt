@@ -1,15 +1,15 @@
-VAR
 IDENTIFIER (x)
 =
 VALUE_INTEGER (1)
 ;
 WHILE
 (
-true
+IDENTIFIER (x)
 )
 {
 IDENTIFIER (x)
-++
++=
+VALUE_INTEGER (1)
 ;
 BREAK
 ;
