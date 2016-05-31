@@ -1,5 +1,6 @@
-function test(a, b) {
-    c = a + b;
-    return c;
-}
+obj = {};
 
+obj = {
+	one: "1",
+	"two": 2
+};
