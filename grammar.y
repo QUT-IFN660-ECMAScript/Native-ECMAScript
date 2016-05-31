@@ -984,7 +984,7 @@ SpreadElement:
  */
 
 Literal:
-    NullLiteral
+    NullLiteral         {$$=$1;}
     | BooleanLiteral    {$$=$1;}
     | NumericLiteral	{$$=$1;}
     | StringLiteral		{$$=$1;}
@@ -999,7 +999,7 @@ ArrayLiteral:
     ;
 
 NullLiteral:
-    LITERAL_NULL
+    LITERAL_NULL    {$$ = new NullLiteralExpression(); }
     ;
 
 BooleanLiteral: 

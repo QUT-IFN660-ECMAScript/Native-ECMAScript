@@ -188,6 +188,37 @@ public:
 	};
 };
 
+class NullLiteralExpression: public Expression {
+private:
+	int val;
+public:
+	NullLiteralExpression() {
+		this->val = 0; // null evaluates as 0
+	};
+
+    bool getValue() {
+        return val;
+    }
+    
+    std::string getStringValue() {
+        return "NULL";
+    }
+    
+	void dump(int indent) {
+		label(indent, "NullLiteralExpression\n");
+	}
+
+    unsigned int genCode(FILE* file) 	{
+        return getNewRegister();
+    }
+
+	unsigned int genStoreCode(FILE* file) {
+		unsigned int registerNumber = getNewRegister();
+		emit(file, "\tESValue* r%d = new Reference(env, \"%s\");", registerNumber, this->getStringValue().c_str());
+		return registerNumber;
+	};
+};
+
 class AssignmentExpression:public Expression {
 private:
     Expression *lhs, *rhs;
