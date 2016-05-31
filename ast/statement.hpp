@@ -577,10 +577,8 @@ public:
 			emit(w);
 		}
 		codeScopeDepth--;
-
-		// TODO this code should go into function calling......
-//		unsigned int reg = getNewRegister();
-//		emit("\tESValue* r%d = %s();", reg, functionName->getReferencedName().c_str());
+		unsigned int reg = getNewRegister();
+		emit("\tESValue* r%d = %s();", reg, functionName->getReferencedName().c_str());
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
 		functionDefinitions.push_back("}");
@@ -615,14 +613,19 @@ public:
 	}
 
 	unsigned int genCode() {
-		// TODO parameters
+		std::string functionDeclaration = std::string("ESValue* (");
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
+			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
+		}
+		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
+		
+
 		codeScopeDepth++;
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
 			(*iter)->genCode();
 		}
 		std::vector<std::string> body = codeScope[codeScopeDepth];
 		for (std::vector<std::string>::iterator iter = body.begin(); iter != body.end(); ++iter) {
-			// get a char pointer out of the string
 			std::string s = (*iter);
 			char* w = new char[s.size() + 1];
 			std::copy(s.begin(), s.end(), w);
@@ -630,6 +633,8 @@ public:
 			emit(w);
 		}
 		codeScopeDepth--;
+		unsigned int reg = getNewRegister();
+		emit("\tESValue* r%d = ();", reg);
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
 		functionDefinitions.push_back("}");

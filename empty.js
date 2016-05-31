@@ -1,4 +1,4 @@
-function test(a, b) {
+function (a, b) {
     c = a + b;
     return c;
 }
