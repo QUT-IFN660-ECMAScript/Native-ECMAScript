@@ -29,23 +29,23 @@ public:
 class ExpressionStatement: public Statement {
 private:
   Expression* expr;
-  
+
 public:
   ExpressionStatement(Expression* expr):
     expr(expr) {};
-    
-    
+
+
 	void dump(int indent){
     	label(indent, "ExpressionStatement\n");
     	expr->dump(indent+1);
 	}
 
-	
+
 	unsigned int genCode() {
 		expr->genStoreCode();
  		return getNewRegister();
 	}
-	
+
 	unsigned int genStoreCode() {
 		return getNewRegister();
 	}
@@ -58,18 +58,18 @@ public:
   	StatementList(vector<Statement*> *stmts):
     stmts(stmts) {};
 
-    
+
 	void dump(int indent) {
     	label(indent, "StatementList\n");
     	for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
       		(*iter)->dump(indent+1);
   	}
-	
-	
+
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
-	
+
 	unsigned int genStoreCode() {return getNewRegister();};
 
 };
@@ -97,7 +97,7 @@ public:
 		}
 	}
 
-	
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
@@ -132,7 +132,7 @@ public:
 		}
 	}
 
-	
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
@@ -159,8 +159,8 @@ public:
 		statement->dump(indent);
 	}
 
-	
-	
+
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
@@ -172,7 +172,7 @@ public:
 class FinallyStatement : public Statement {
 private:
 	Statement *statement;
-	
+
 public:
 	FinallyStatement(Statement *statement) {
 		this->statement = statement;
@@ -184,8 +184,8 @@ public:
 		statement->dump(indent);
 	}
 
-	
-	
+
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
@@ -244,7 +244,7 @@ public:
 		emit("\treturn r%d;", reg - 2);
 		return reg;
 	}
-	
+
 	unsigned int genStoreCode() {return getNewRegister();};
 
 };
@@ -277,9 +277,9 @@ public:
 		// 	label(indent, "[Empty]\n");
 		// }
 	}
-	
-	
-	
+
+
+
 	unsigned int genCode() {
 		return getNewRegister();
 	}
@@ -372,14 +372,14 @@ class IterationStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
-		
+
 	public:
 	/* while expression statement */
 	IterationStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
-	
+
 	void dump(int indent) {
 		indent++;
 		label(indent, "WhileStatement\n");
@@ -387,12 +387,23 @@ class IterationStatement : public Statement {
 		statement->dump(indent + 2);
 	}
 
-	
-	unsigned int genStoreCode() {return getNewRegister();};
+
+	unsigned int genStoreCode() {
+		return getNewRegister();
+	};
 
 	unsigned int genCode() {
-		return getNewRegister();
-    }
+		unsigned int registerNumber = getNewRegister();
+		emit("\t// r%d", registerNumber);
+		unsigned int expressionRegister = expression->genCode();
+		emit("\t// r%d evaluate some boolean expression if true skip to register after all statements", expressionRegister);
+		unsigned int statementRegister = statement->genCode();
+		emit("\t// r%d jmp r%d", statementRegister, registerNumber);
+		registerNumber = getNewRegister();
+		emit("\t// r%d skip to here if expression is true", registerNumber);
+
+		return registerNumber;
+  }
 };
 
 
@@ -400,13 +411,13 @@ class DoWhileIterationStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
-		
+
 	public:
 	DoWhileIterationStatement(Statement *statement,Expression *expression) {
 		this->expression = expression;
 		this->statement = statement;
 	}
-	
+
 	void dump(int indent) {
 		indent++;
 		label(indent, "DoWhileStatement\n");
@@ -424,22 +435,22 @@ class WithStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
-		
+
 	public:
 	/* with expression statement */
 	WithStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
-	
+
 	void dump(int indent) {
 		indent++;
 		label(indent, "WithStatement\n");
 		expression->dump(indent+ 1);
 		statement->dump(indent+3);
 	}
-	
-	
+
+
 	unsigned int genStoreCode() {return getNewRegister();};
 
 	unsigned int genCode() {
@@ -453,13 +464,13 @@ class SwitchStatement : public Statement {
 private:
 	Expression *expression;
 	Statement *statement;
-	
+
 public:
 	SwitchStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
-	
+
 	void dump(int indent) {
 		label(indent++, "SwitchStatement\n");
 		expression->dump(indent++);
@@ -477,7 +488,7 @@ class CaseClauseStatement : public Statement {
 private:
 	Expression *expression;
 	StatementList *stmtList;
-	
+
 public:
 	CaseClauseStatement(vector<Statement*> *stmtList) {
 		this->stmtList = new StatementList(stmtList);
@@ -486,7 +497,7 @@ public:
 		this->expression = expression;
 		this->stmtList = new StatementList(stmtList);
 	}
-	
+
 	void dump(int indent) {
 		label(indent++, "CaseClauseStatement\n");
 		if(expression){
@@ -520,7 +531,7 @@ public:
     unsigned int genCode() {
         return getNewRegister();
     }
-	
+
 	unsigned int genStoreCode() {
 		return global_var;
 	};
@@ -557,11 +568,11 @@ public:
 	unsigned int genCode() {
 		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
 		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
-		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
+		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 		}
 		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
-		
+
 
 		codeScopeDepth++;
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {

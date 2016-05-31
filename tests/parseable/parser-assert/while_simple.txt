@@ -1,0 +1,15 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 1
+        WhileStatement
+            IdentifierExpression: x
+                ExpressionStatement
+                    + AssignmentExpression
+                        lhs:
+                            IdentifierExpression: x
+                        rhs:
+                            IntegerLiteralExpression: 1

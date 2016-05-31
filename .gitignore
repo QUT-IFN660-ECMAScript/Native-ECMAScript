@@ -17,4 +17,5 @@ compiler
 *.html
 *.xml
 *.js.il
-*.js
+./*.js
+*.js.c

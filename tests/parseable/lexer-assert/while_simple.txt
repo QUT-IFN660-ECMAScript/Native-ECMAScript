@@ -1,17 +1,17 @@
-VAR
 IDENTIFIER (x)
 =
 VALUE_INTEGER (1)
 ;
 WHILE
 (
-true
+IDENTIFIER (x)
+<
+VALUE_INTEGER (3)
 )
 {
 IDENTIFIER (x)
-++
-;
-BREAK
++=
+VALUE_INTEGER (1)
 ;
 }
 END_OF_FILE
