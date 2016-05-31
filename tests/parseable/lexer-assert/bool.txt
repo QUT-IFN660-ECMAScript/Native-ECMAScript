@@ -1,0 +1,5 @@
+IDENTIFIER (x)
+=
+true
+;
+END_OF_FILE

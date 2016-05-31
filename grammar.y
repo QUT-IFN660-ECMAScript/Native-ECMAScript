@@ -63,8 +63,8 @@ using namespace std;
 %token PROTECTED
 %token PUBLIC
 %token LITERAL_NULL                       // Null
-%token LITERAL_TRUE                       // true
-%token LITERAL_FALSE                      // false
+%token <bval> LITERAL_TRUE                // true
+%token <bval> LITERAL_FALSE               // false
 %token LITERAL_UNDEFINED                  // undefined
 %token LITERAL_NAN                        // NaN
 %token UNARY_ADD                          // ++
@@ -144,6 +144,7 @@ using namespace std;
     int ival;
     double dval;
     const char* sval;
+    bool bval;
 
     char cval;
 }
@@ -981,7 +982,7 @@ SpreadElement:
 
 Literal:
     NullLiteral
-    | BooleanLiteral
+    | BooleanLiteral    {$$=$1;}
     | NumericLiteral	{$$=$1;}
     | StringLiteral		{$$=$1;}
     ;
@@ -998,9 +999,9 @@ NullLiteral:
     LITERAL_NULL
     ;
 
-BooleanLiteral:
-    LITERAL_TRUE
-    | LITERAL_FALSE
+BooleanLiteral: 
+    LITERAL_TRUE        { $$ = new BooleanLiteralExpression($1); }
+    | LITERAL_FALSE     { $$ = new BooleanLiteralExpression($1); }
     ;
 
 StringLiteral:
