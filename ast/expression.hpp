@@ -9,9 +9,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <sstream>
+#include "narrations.h"
 
-
-#include "constants.h"
 
 #include "../type/type.hpp"
 
@@ -20,7 +19,7 @@ using namespace std;
 
 
 extern int global_var;
-
+extern int codeScopeDepth;
 
 inline unsigned int getNewRegister() {
 	return global_var++;

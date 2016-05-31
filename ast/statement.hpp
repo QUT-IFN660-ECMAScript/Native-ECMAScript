@@ -16,6 +16,7 @@ extern std::vector<std::string> functionDefinitions;
 
 using namespace std;
 
+
 class Statement: public Node {
 private:
 static String vinit[];

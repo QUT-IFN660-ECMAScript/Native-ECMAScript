@@ -5,6 +5,7 @@
 #include "node.hpp"
 #include "statement.hpp"
 
+
 using namespace std;
 
 class ScriptBody: public Node, public LexicalScope {

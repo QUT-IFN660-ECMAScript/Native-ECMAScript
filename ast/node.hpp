@@ -9,9 +9,9 @@
 // Created by Harry Scells on 18/04/2016.
 //
 
-extern int codeScopeDepth;
-extern std::map<int, std::vector<std::string> > codeScope;
 
+extern std::map<int, std::vector<std::string> > codeScope;
+extern int codeScopeDepth;
 using namespace std;
 
 class Node {
