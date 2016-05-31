@@ -5,6 +5,7 @@
 #include "node.hpp"
 #include "statement.hpp"
 
+
 using namespace std;
 
 class ScriptBody: public Node, public LexicalScope {
@@ -24,27 +25,16 @@ public:
       		(*iter)->dump(indent+1);
     	}
   	}
-  
-	void emit(FILE* outputfile, char* fmt, ...) {	
-		va_list args;
-		va_start(args, fmt);
-		vfprintf(outputfile, fmt, args);
-		fprintf(outputfile, "\n");
-		va_end(args);
-	}
 
-    unsigned int genCode(FILE* file) {
-		emit(file, "#include \"./runtime/core.hpp\"");
-		emit(file, "#include \"./runtime/console.hpp\"");
-		emit(file, "#include \"./scope/reference.hpp\"");
-		emit(file, "\nESObject* globalObj = new ESObject();\n");
-		emit(file, "int main() {");
+    unsigned int genCode() {
+		
+		emit("int main() {");
 		
 		for (std::vector<Statement*>::iterator child = stmts->begin(); child != stmts->end(); ++child) {
-			(*child)->genCode(file);
+			(*child)->genCode();
 		}
-		emit(file, "\treturn 0;");
-		emit(file, "}");
+		emit("\treturn 0;");
+		emit("}");
 		return getNewRegister();
 	}
 

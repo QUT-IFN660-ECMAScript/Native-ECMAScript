@@ -1,7 +1,8 @@
 %{
 #include <cstdio>
-#include "y.tab.h"
 #include "ast/ast.hpp"
+#include "y.tab.h"
+
 #include "lex.yy.h"
 
 
@@ -9,6 +10,9 @@ int yylex();
 
 ScriptBody *root;
 int global_var;
+std::map<int, vector<std::string> > codeScope;
+int codeScopeDepth;
+std::vector<std::string> functionDefinitions;
 unsigned int getNewRegister();
 
 //Initialise static member registerIndex of Node
@@ -63,8 +67,8 @@ using namespace std;
 %token PROTECTED
 %token PUBLIC
 %token LITERAL_NULL                       // Null
-%token LITERAL_TRUE                       // true
-%token LITERAL_FALSE                      // false
+%token <bval> LITERAL_TRUE                // true
+%token <bval> LITERAL_FALSE               // false
 %token LITERAL_UNDEFINED                  // undefined
 %token LITERAL_NAN                        // NaN
 %token UNARY_ADD                          // ++
@@ -132,19 +136,14 @@ using namespace std;
 
 %union {
     ScriptBody* scriptBody;
-    vector<Statement* >* statementList;
     Expression* expression;
     Statement* statement;
-    vector<Expression*>* propertyDefinitionList;
-
-    vector<Expression*>* argumentList;
-    vector<Expression*>* elementList;
-    vector<Statement*>* caseClauses;
-
+    vector<Statement* >* statementList;
+    vector<Expression*>* expressionList;
     int ival;
     double dval;
     const char* sval;
-
+    bool bval;
     char cval;
 }
 
@@ -156,9 +155,11 @@ using namespace std;
 %nonassoc NOT_EQUAL
 %nonassoc EXACTLY_EQUAL
 %nonassoc NOT_EXACTLY_EQUAL
+%nonassoc ASSIGNMENT
 
 %type <scriptBody> ScriptBody
-%type <statementList> StatementList
+%type <statementList> StatementList FunctionBody FunctionStatementList CaseClauses
+%type <expressionList> PropertyDefinitionList ElementList ArgumentList FormalParameterList FormalsList FormalParameters
 %type <statement> Statement StatementListItem ExpressionStatement Block Catch Finally TryStatement ThrowStatement
   ReturnStatement BreakStatement IfStatement IterationStatement Declaration BlockStatement VariableStatement
   EmptyStatement BreakableStatement ContinueStatement WithStatement LabelledStatement DebuggerStatement
@@ -172,15 +173,10 @@ using namespace std;
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
-  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall
+  CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
+  SingleNameBinding
 %type <sval> Identifier IdentifierName
-%type <propertyDefinitionList> PropertyDefinitionList
-%type <argumentList> ArgumentList
-
 %type <cval> MultiplicativeOperator, AssignmentOperator
-%type <caseClauses> CaseClauses
-%type <elementList> ElementList
-
 %%
 
 /* 15.1 Scripts
@@ -302,11 +298,14 @@ ConciseBody:
 
 /* 14.1 Function Definitions
  * http://www.ecma-international.org/ecma-262/6.0/#sec-function-definitions
+ * [Default] function { ( FormalParameters ) { FunctionBody }
  */
 
 FunctionDeclaration:
     FUNCTION BindingIdentifier LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+     { $$ = new FunctionDeclaration($2, $4, $7); }
     | FUNCTION LEFT_PAREN FormalParameters RIGHT_PAREN LEFT_BRACE FunctionBody RIGHT_BRACE
+     { $$ = new AnonymousFunctionDeclaration($3, $6); }
     ;
 
 
@@ -316,30 +315,30 @@ FunctionExpression:
 
 
 FormalParameters:
-    FormalParameterList
+    FormalParameterList                     { $$ = $1; }
     ;
 
 FormalParameterList:
     /* incomplete */
-    FormalsList
-    | FormalsList COMMA FormalParameter
+    FormalsList                             { $$ = $1; }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
     ;
 
 FormalsList:
-    FormalParameter
-    | FormalsList COMMA FormalParameter
+    FormalParameter                         { $$ = new vector<Expression*>; $$->push_back($1); }
+    | FormalsList COMMA FormalParameter     { $$ = $1; $$->push_back($3); }
     ;
 
 FormalParameter:
-    BindingElement
+    BindingElement                          { $$ = $1; }
     ;
 
 FunctionBody:
-    FunctionStatementList
+    FunctionStatementList                   { $$ = $1; }
     ;
 
 FunctionStatementList:
-    StatementList
+    StatementList                           { $$ = $1; }
     ;
 
 /* 13.16 The debugger Statement
@@ -392,6 +391,7 @@ LabelledItem:
     Statement                                { $$ = new LabelledItemStatement($1); }
     | FunctionDeclaration
     ;
+
 
 /* 13.12 The switch Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-switch-statement
@@ -553,12 +553,12 @@ BindingProperty:
     ;
 
 BindingElement:
-    SingleNameBinding
+    SingleNameBinding                   { $$ = $1; }
     | BindingPattern Initialiser
     ;
 
 SingleNameBinding:
-    BindingIdentifier Initialiser
+    BindingIdentifier                   { $$ = $1; }
     ;
 
 BindingRestElement:
