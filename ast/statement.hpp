@@ -319,14 +319,52 @@ public:
 		}
 	}
 
-
-
 	unsigned int genCode() {
 		return getNewRegister();
+		//emit("\t LabelledStatement genCode();");
 	}
 
 	unsigned int genStoreCode() {return getNewRegister();};
 
+	unsigned int fileEmit(const char* type, Expression* expr) {
+		if(expr != NULL){
+			expr->genStoreCode();
+			unsigned int reg = getNewRegister();
+			emit("\t%s r%d;", type, reg - 1);
+		}
+		else {
+			emit("\t%s;", type);
+			return getNewRegister();
+		}
+	}
+};
+
+class BreakStatement: public LabelledStatement {
+private:
+	Expression* expr;
+
+public:
+	BreakStatement(){
+		this->expr = NULL;
+	}
+	BreakStatement(Expression* expr){
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "BreakStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+
+	unsigned int genCode() {
+		return LabelledStatement::fileEmit(LABEL_BREAK, expr);
+	}
+
+	unsigned int genStoreCode() {return getNewRegister();};
 };
 
 /* 13.6 If Statement
