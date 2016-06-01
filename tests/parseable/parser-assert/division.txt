@@ -2,7 +2,13 @@ ScriptBody
 	ExpressionStatement
 		AssignmentExpression
 			lhs:
-				IdentifierExpression: x
+				IdentifierExpression: Y
+			rhs:
+				IntegerLiteralExpression:0
+	ExpressionStatement
+		AssignmentExpression
+			lhs:
+				IdentifierExpression
 			rhs:
 				DivisionBinaryExpression: /
 					lhs:
