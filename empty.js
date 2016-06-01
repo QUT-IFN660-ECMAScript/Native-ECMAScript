@@ -1,2 +1,4 @@
 /* Anthony Gough */
-x==y;
+function foo(a,b) {
+	d=a*b;
+}
