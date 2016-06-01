@@ -237,12 +237,17 @@ public:
 		}
 	}
 
-
-
 	unsigned int genCode() {
-		unsigned int reg = getNewRegister();
-		emit("\treturn r%d;", reg - 2);
-		return reg;
+		if (this->expr != NULL) {
+			this->expr->genStoreCode();
+			unsigned int reg = getNewRegister();
+			emit("\treturn r%d;", reg - 1);
+			return reg;
+		}
+		else{
+			emit("\treturn;");
+			return getNewRegister();
+		}
 	}
 
 	unsigned int genStoreCode() {return getNewRegister();};
