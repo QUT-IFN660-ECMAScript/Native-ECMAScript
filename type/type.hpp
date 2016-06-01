@@ -515,13 +515,13 @@ public:
 		
 	
 	/* 7.1.12.1 ToString Applied to the Number Type - Helper method for ToString(argument) */
-	static char* toStringOnNumber(ESValue* argument) {
+	static const char* toStringOnNumber(ESValue* argument) {
 		if (isnan(dynamic_cast<Number*>(argument)->getValue())) {
-			return "NaN";
+			return (const char*)"NaN";
 		} else if (dynamic_cast<Number*>(argument)->getValue()==0) {
-			return "0";
+			return (const char*)"0";
 		} else if isinf(dynamic_cast<Number*>(argument)->getValue()) {
-			return "Infinity";
+			return (const char*)"Infinity";
 		}
 		return "0";
 	}
