@@ -396,6 +396,46 @@ public:
 
 };
 
+class Unary_SubtractExpression : public Expression {
+
+
+private:
+	 char* operand;
+	 Expression *unary_subtractExpression;
+
+public:
+	Unary_SubtractExpression(Expression *unary_subtractExpression, char* operand) {
+		this->unary_subtractExpression = unary_subtractExpression;
+		this->operand = operand;
+	};
+
+	 void dump(int indent) {
+        label(indent, "Unary_SubtractExpression\n");
+        label(indent + 1, "op: %s\n", operand);
+        unary_subtractExpression->dump(++indent, "rhs");
+     }
+
+
+
+    unsigned int genCode() 	{
+        return getNewRegister();
+    }
+
+
+	unsigned int genStoreCode() {
+		unsigned int rhsRegisterNumber =  unary_subtractExpression->genStoreCode();
+		unsigned int registerNumber = getNewRegister();
+		if  (operand == "--") {
+        	emit("\tESValue* r%d = Core::unary_subtract(r%d);", registerNumber, rhsRegisterNumber);
+               
+          
+        }
+
+        return registerNumber;
+	};
+
+};
+
 /* To be removed - replace with BinaryExpression */
 class PlusAditiveExpression : public Expression {
 
@@ -433,6 +473,47 @@ private:
 		return registerNumber;
 
 	};
+};
+
+
+class Unary_AddExpression : public Expression {
+
+
+private:
+	 char* operand;
+	 Expression *unary_addExpression;
+
+public:
+	Unary_AddExpression(Expression *unary_addExpression, char* operand) {
+		this->unary_addExpression = unary_addExpression;
+		this->operand = operand;
+	};
+
+	 void dump(int indent) {
+        label(indent, "Unary_AddExpression\n");
+        label(indent + 1, "op: %s\n", operand);
+        unary_addExpression->dump(++indent, "rhs");
+     }
+
+
+
+    unsigned int genCode() 	{
+        return getNewRegister();
+    }
+
+
+	unsigned int genStoreCode() {
+		unsigned int rhsRegisterNumber =  unary_addExpression->genStoreCode();
+		unsigned int registerNumber = getNewRegister();
+		if  (operand == "++") {
+        	emit("\tESValue* r%d = Core::unary_add(r%d);", registerNumber, rhsRegisterNumber);
+               
+          
+        }
+
+        return registerNumber;
+	};
+
 };
 
 class Arguments : public Expression {

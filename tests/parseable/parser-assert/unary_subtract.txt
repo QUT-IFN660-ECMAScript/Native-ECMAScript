@@ -1,0 +1,6 @@
+ScriptBody
+    ExpressionStatement
+        Unary_SubtractExpression
+            op: --
+            rhs:
+                IdentifierExpression: x

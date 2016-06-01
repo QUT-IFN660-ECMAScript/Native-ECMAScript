@@ -166,7 +166,7 @@ using namespace std;
   HoistableDeclaration ClassDeclaration SwitchStatement FunctionDeclaration LabelledItem  CaseBlock CaseClause DefaultClause
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
-  PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
+  PostfixExpression UnaryExpression  MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
   BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
@@ -174,7 +174,7 @@ using namespace std;
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
   ArrayLiteral ClassExpression GeneratorExpression MethodDefinition CoverInitializedName
   CoverParenthesizedExpressionAndArrowParameterList FunctionExpression SuperCall BindingElement FormalParameter
-  SingleNameBinding
+  SingleNameBinding 
 %type <sval> Identifier IdentifierName
 %type <cval> MultiplicativeOperator AssignmentOperator
 %%
@@ -843,8 +843,8 @@ UnaryExpression:
 	| DELETE UnaryExpression
 	| VOID UnaryExpression
 	| TYPEOF UnaryExpression
-	| UNARY_ADD UnaryExpression
-	| UNARY_SUBTRACT UnaryExpression
+	| UNARY_ADD UnaryExpression			{ $$ = new Unary_AddExpression($2, "++"); }
+	| UNARY_SUBTRACT UnaryExpression		{ $$ = new Unary_SubtractExpression($2, "--"); }
 	| ADD UnaryExpression 				{ $$ = new UnaryExpression($2, '+'); }
 	| SUBTRACT UnaryExpression 			{ $$ = new UnaryExpression($2, '-'); }
 	| BITWISE_NOT UnaryExpression
