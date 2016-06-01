@@ -1,0 +1,8 @@
+IDENTIFIER (x)
+=
+VALUE_INTEGER (0)
+;
+-
+IDENTIFIER (x)
+;
+END_OF_FILE

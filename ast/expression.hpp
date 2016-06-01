@@ -313,44 +313,78 @@ class UnaryExpression : public Expression {
 
 
 private:
-	 char operand; 
 	 Expression *unaryExpression;
 	 
 public:
-	UnaryExpression(Expression *unaryExpression, char operand) {
+	UnaryExpression(Expression *unaryExpression) {
 		this->unaryExpression = unaryExpression;
-		this->operand = operand;
 	};
 	
-	
-	
-	 void dump(int indent) {
-        label(indent, "UnaryExpression\n");
-        label(indent + 1, "op: %c\n", operand);
-        unaryExpression->dump(indent + 1, "rhs");
-     }
-    
-    
-    unsigned int genCode() 	{
+	unsigned int genCode() {
         return getNewRegister();
     }
-	
-	
-	unsigned int genStoreCode() {
-		unsigned int rhsRegisterNumber =  unaryExpression->genStoreCode();
-		unsigned int registerNumber = getNewRegister();	
-		 switch(operand) {
-            case '+':
-                emit("\tESValue* r%d = Core::plus(r%d);", registerNumber, rhsRegisterNumber);
-                break;
-            case '-':
-                emit("\tESValue* r%d = Core::subtract(r%d, r%d);", registerNumber,  rhsRegisterNumber);
-                break;
-        }
 
+    unsigned int genStoreCode() {
+        return getNewRegister();
+    }
+        
+    void dump(int indent) {
+        unaryExpression->dump(indent + 1, "rhs");
+    }
+    
+    /* Called by all subclasses of UnaryExpression for file output of register operation
+     * Must call in explicit ordering to get correct file output - cannot call in emit(..)
+     * Operation defined in narrations.h
+     */
+    unsigned int fileEmit(const char* operation) {
+        unsigned int rhsRegister = unaryExpression->genStoreCode();
+        unsigned int registerNumber = getNewRegister();
+        emit("\tESValue* r%d = Core::%s(r%d);", registerNumber, operation,  rhsRegister);
         return registerNumber;
-	};
+    }
+};
 
+/* Add operator Unary Expression - Subclass Unary Expression*/
+class UnaryAddExpression : public UnaryExpression {
+
+private:
+    Expression* rhs;
+
+public:
+    UnaryAddExpression(Expression* rhs) : UnaryExpression(rhs) {
+        this->rhs = rhs;
+    }
+    
+    unsigned int genStoreCode() {
+        return fileEmit(ADDITION);
+    }
+    
+    void dump(int indent) {
+        label(indent, "AdditionUnaryExpression: +\n");
+        UnaryExpression::dump(indent);
+    }
+};
+
+
+/* Subtract operator Unary Expression - Subclass Unary Expression*/
+class UnarySubtractExpression : public UnaryExpression {
+
+private:
+    Expression* rhs;
+
+public:
+    UnarySubtractExpression(Expression* rhs) : UnaryExpression(rhs) {
+        this->rhs = rhs;
+    }
+    
+    unsigned int genStoreCode() {
+        return fileEmit(SUBTRACTION);
+    }
+    
+    void dump(int indent) {
+        label(indent, "SubtractionUnaryExpression: -\n");
+        UnaryExpression::dump(indent);
+    }
 };
 
 /* To be removed - replace with BinaryExpression */

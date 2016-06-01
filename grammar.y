@@ -847,8 +847,8 @@ UnaryExpression:
 	| TYPEOF UnaryExpression
 	| UNARY_ADD UnaryExpression
 	| UNARY_SUBTRACT UnaryExpression	
-	| ADD UnaryExpression 				{ $$ = new UnaryExpression($2, '+'); }
-	| SUBTRACT UnaryExpression 			{ $$ = new UnaryExpression($2, '-'); }
+	| ADD UnaryExpression 				{ $$ = new UnaryAddExpression($2); }
+	| SUBTRACT UnaryExpression 			{ $$ = new UnarySubtractExpression($2); }
 	| BITWISE_NOT UnaryExpression
 	| LOGICAL_NOT UnaryExpression
     ;

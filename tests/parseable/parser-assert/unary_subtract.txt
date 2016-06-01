@@ -1,0 +1,11 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 0
+    ExpressionStatement
+        SubtractionUnaryExpression: -
+            rhs:
+                IdentifierExpression: x
