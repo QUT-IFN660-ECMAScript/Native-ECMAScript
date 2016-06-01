@@ -771,7 +771,7 @@ BitwiseORExpression:
 EqualityExpression:
     RelationalExpression	{$$ = $1;}
     | EqualityExpression EQUAL RelationalExpression				{$$ = new EqualityEqualExpression($1,$3); }
-	| EqualityExpression NOT_EQUAL RelationalExpression
+	| EqualityExpression NOT_EQUAL RelationalExpression			{$$ = new EqualityNotEqualExpression($1,$3); }
 	| EqualityExpression EXACTLY_EQUAL RelationalExpression
 	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
     ;
@@ -782,8 +782,8 @@ EqualityExpression:
 
 RelationalExpression:
     ShiftExpression	{$$ = $1;}
-	| RelationalExpression LESS_THAN ShiftExpression
-	| RelationalExpression GREATER_THAN ShiftExpression
+	| RelationalExpression LESS_THAN ShiftExpression			{$$ = new EqualityLessThanExpression($1,$3); }
+	| RelationalExpression GREATER_THAN ShiftExpression			{$$ = new EqualityGreaterThanlExpression($1,$3); }
 	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
 	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
 	| RelationalExpression INSTANCEOF ShiftExpression

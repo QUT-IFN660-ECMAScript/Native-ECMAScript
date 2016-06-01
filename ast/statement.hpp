@@ -559,7 +559,6 @@ public:
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 		}
 		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
-		
 
 		codeScopeDepth++;
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
@@ -603,7 +602,7 @@ public:
 		label(indent, "FormalParameters\n");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
 			(*iter)->dump(indent + 1);
-		}
+		} 
 		label(indent, "FunctionBody\n");
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
 			(*iter)->dump(indent + 1);

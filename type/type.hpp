@@ -477,25 +477,25 @@ public:
      * http://www.ecma-international.org/ecma-262/6.0/#sec-tostring
      * The abstract operation ToString converts argument to a value of type String 
      */
-	static char* toString(ESValue* argument) {
+	static const char* toString(ESValue* argument) {
 		switch (argument->getType()) {
             case undefined:
-                return "undefined";
+                return (const char*)"undefined";
             case null:
-                return "null";
+                return (const char*)"null";
             case boolean:
                 if (dynamic_cast<Boolean*>(argument)->getValue()) {
-                	return "true";
+                	return (const char*)"true";
                 }
-                return "false";               
+                return (const char*)"false";               
             case number:
             	return toStringOnNumber(argument);
             case symbol:
             	//todo
-            	return "true";
+            	return (const char*)"true";
             case object:
             	//todo
-            	return "true";            		
+            	return (const char*)"true";            		
 		}
 	}
 	

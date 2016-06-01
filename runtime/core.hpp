@@ -143,6 +143,25 @@ public:
             throw ReferenceError;
         }
     }
+    
+   /* 12.10.3 Runtime Semantics: Evaluation EqualityExpression 
+    * EqualityExpression == RelationalExpression - Only valid for number type
+    */
+    static bool evalee(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) == TypeOps::toNumber(rhs);
+    }
+    
+    static bool evalne(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) != TypeOps::toNumber(rhs);
+    }
+    
+    static bool evalgt(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) > TypeOps::toNumber(rhs);
+    }
+    
+    static bool evallt(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) < TypeOps::toNumber(rhs);
+    }
 
 };
 

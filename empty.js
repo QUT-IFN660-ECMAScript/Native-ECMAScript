@@ -1,4 +1,4 @@
 /* Anthony Gough */
-function foo(a,b) {
-	d=a*b;
-}
+x = 0;
+y = 5;
+x > y;

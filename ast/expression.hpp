@@ -635,11 +635,11 @@ public:
      * Must call in explicit ordering to get correct file output - cannot call in emit(..)
      * Operation defined in narrations.h
      */
-    unsigned int fileEmit() {
+    unsigned int fileEmit(const char* evaluation) {
     	unsigned int lhsRegister = lhs->genStoreCode();
     	unsigned int rhsRegister = rhs->genStoreCode();
     	unsigned int registerNumber = getNewRegister();
-		emit("\tESValue* r%d = Core::%s(r%d, r%d);", registerNumber, EVALUATE,  lhsRegister, rhsRegister);
+		emit("\tbool r%d = Core::%s(r%d, r%d);", registerNumber, evaluation,  lhsRegister, rhsRegister);
 		return registerNumber;
 	}
     
@@ -659,7 +659,7 @@ public:
 	}
 	
 	unsigned int genStoreCode() {
-    	return fileEmit();
+    	return fileEmit(EVALUATE_EE);
 	}
 	
 	void dump(int indent) {
@@ -683,7 +683,7 @@ public:
 	}
 	
 	unsigned int genStoreCode() {
-    	return fileEmit();
+    	return fileEmit(EVALUATE_LT);
 	}
 	
 	void dump(int indent) {
@@ -707,7 +707,7 @@ public:
 	}
 	
 	unsigned int genStoreCode() {
-    	return fileEmit();
+    	return fileEmit(EVALUATE_GT);
 	}
 	
 	void dump(int indent) {
@@ -732,7 +732,7 @@ public:
 	}
 	
 	unsigned int genStoreCode() {
-    	return fileEmit();
+    	return fileEmit(EVALUATE_NE);
 	}
 	
 	void dump(int indent) {
