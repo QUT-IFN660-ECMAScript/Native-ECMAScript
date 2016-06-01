@@ -782,10 +782,10 @@ EqualityExpression:
 
 RelationalExpression:
     ShiftExpression	{$$ = $1;}
-	| RelationalExpression LESS_THAN ShiftExpression			{$$ = new EqualityLessThanExpression($1,$3); }
-	| RelationalExpression GREATER_THAN ShiftExpression			{$$ = new EqualityGreaterThanlExpression($1,$3); }
-	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression
-	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression
+	| RelationalExpression LESS_THAN ShiftExpression				{$$ = new EqualityLessThanExpression($1,$3); }
+	| RelationalExpression GREATER_THAN ShiftExpression				{$$ = new EqualityGreaterThanlExpression($1,$3); }
+	| RelationalExpression LESS_THAN_OR_EQUAL ShiftExpression		{$$ = new EqualityLessThanEqualToExpression($1,$3); }
+	| RelationalExpression GREATER_THAN_OR_EQUAL ShiftExpression	{$$ = new EqualityGreaterThanEqualToExpression($1,$3); }
 	| RelationalExpression INSTANCEOF ShiftExpression
 	| LEFT_BRACKET ADD IN RIGHT_BRACKET RelationalExpression IN ShiftExpression
     /*
