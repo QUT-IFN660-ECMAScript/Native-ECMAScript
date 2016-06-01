@@ -1,0 +1,8 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+ 		      lhs:
+ 			      IdentifierExpression: x
+ 		      rhs:
+				  IntegerLiteralExpression: 12
+

@@ -1,4 +1,3 @@
-/* Anthony Gough */
-function (a,b) {
-	x=a+b;
-}
+x=0;
+y=0;
+z = x-y;

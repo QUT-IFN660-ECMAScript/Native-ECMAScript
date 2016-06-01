@@ -4,8 +4,20 @@ ScriptBody
 			lhs:
 				IdentifierExpression: x
 			rhs:
+				IntegerLiteralExpression: 0
+	ExpressionStatement
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: y
+			rhs:
+				IntegerLiteralExpression: 0
+	ExpressionStatement
+		AssignmentExpression
+			lhs:
+				IdentifierExpression: z
+			rhs:
 				AdditiveBinaryExpression: +
 					lhs:
-						IntegerLiteralExpression: 42
+						IdentifierExpression: x
 					rhs:
-						IntegerLiteralExpression: 5
+						IdentifierExpression: y

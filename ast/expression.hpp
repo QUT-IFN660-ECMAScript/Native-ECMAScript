@@ -596,7 +596,7 @@ public:
 	}
 	
 	void dump(int indent) {
-		label(indent, "DivisionBinaryExpression: \\\n");
+		label(indent, "DivisionBinaryExpression: /\n");
 		BinaryExpression::dump(indent);
 	}
 };
