@@ -1,4 +1,4 @@
 /**
- * Handle comments
+ * Simple Assignment Anthony Gough
  */
-var x = 12;
+x = 12;

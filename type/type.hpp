@@ -523,6 +523,7 @@ public:
 		} else if isinf(dynamic_cast<Number*>(argument)->getValue()) {
 			return (const char*)"Infinity";
 		}
+		// to do correctly
 		return "0";
 	}
 		

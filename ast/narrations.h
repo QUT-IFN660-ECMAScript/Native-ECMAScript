@@ -6,3 +6,5 @@ static const char* EVALUATE_NE = "evalne";
 static const char* EVALUATE_EE = "evalee";
 static const char* EVALUATE_GT = "evalgt";
 static const char* EVALUATE_LT = "evallt";
+static const char* EVALUATE_LTET = "evalltet";
+static const char* EVALUATE_GTET = "evalgtet";

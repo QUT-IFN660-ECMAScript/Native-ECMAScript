@@ -610,7 +610,7 @@ public:
 	}
 
 	unsigned int genCode() {
-		std::string functionDeclaration = std::string("ESValue* (");
+		std::string functionDeclaration = std::string("ESValue* function(");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 		}

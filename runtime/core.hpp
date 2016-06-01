@@ -145,7 +145,7 @@ public:
     }
     
    /* 12.10.3 Runtime Semantics: Evaluation EqualityExpression 
-    * EqualityExpression == RelationalExpression - Only valid for number type
+    * EqualityExpression == =! < > RelationalExpression - Only valid for number type
     */
     static bool evalee(ESValue* lhs, ESValue* rhs) {
     	 return TypeOps::toNumber(lhs) == TypeOps::toNumber(rhs);
@@ -162,7 +162,18 @@ public:
     static bool evallt(ESValue* lhs, ESValue* rhs) {
     	 return TypeOps::toNumber(lhs) < TypeOps::toNumber(rhs);
     }
-
+    
+    /* 12.9.3 Runtime Semantics: Evaluation 
+    * RelationalExpression : RelationalExpression <= ShiftExpression
+    * RelationalExpression : RelationalExpression >= ShiftExpression
+    */
+    static bool evalltet(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+    }
+	
+	 static bool evalgtet(ESValue* lhs, ESValue* rhs) {
+    	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+    }
 };
 
 

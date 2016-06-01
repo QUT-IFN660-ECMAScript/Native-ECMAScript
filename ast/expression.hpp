@@ -742,4 +742,52 @@ public:
 
 };
 
+/* Equal equality expression <= */
+class EqualityLessThanEqualToExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityLessThanEqualToExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit(EVALUATE_LTET);
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: <=\n");
+		EqualityExpression::dump(indent);
+	}
+
+};
+
+/* Equal equality expression >= */
+class EqualityGreaterThanEqualToExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityGreaterThanEqualToExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit(EVALUATE_GTET);
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: >=\n");
+		EqualityExpression::dump(indent);
+	}
+
+};
+
 
