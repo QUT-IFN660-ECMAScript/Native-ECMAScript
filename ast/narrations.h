@@ -1,5 +1,7 @@
 static const char* ADDITION = "plus";
+static const char* ADDITION_U = "plus_u";
 static const char* SUBTRACTION = "subtract";
+static const char* SUBTRACTION_U = "subtract_u";
 static const char* MULTIPLICATION = "multiply";
 static const char* DIVISION = "divide";
 static const char* EVALUATE_NE = "evalne";

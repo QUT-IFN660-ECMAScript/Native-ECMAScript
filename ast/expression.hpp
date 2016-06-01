@@ -356,7 +356,7 @@ public:
     }
     
     unsigned int genStoreCode() {
-        return fileEmit(ADDITION);
+        return fileEmit(ADDITION_U);
     }
     
     void dump(int indent) {
@@ -378,7 +378,7 @@ public:
     }
     
     unsigned int genStoreCode() {
-        return fileEmit(SUBTRACTION);
+        return fileEmit(SUBTRACTION_U);
     }
     
     void dump(int indent) {

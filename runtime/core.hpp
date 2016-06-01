@@ -28,11 +28,42 @@ public:
         Number* rnum = TypeOps::toNumber(rref);
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+        if (lnum->isNan()->getValue() || rnum->isNan()->getValue()) {
             return new NaN();
         }
 
         return new Number(lnum->getValue() + rnum->getValue());
+    }
+
+    /** 12.5.9.1 Runtime Semantics: Evaluation
+     * The unary + operator converts its operand to Number type.
+     */
+    static ESValue* plus_u(ESValue* rref) {
+
+        Number* rnum = TypeOps::toNumber(rref);
+
+        // If operand is NaN, the result is NaN.
+        if (rnum->isNan()->getValue()) {
+            return new NaN();
+        }
+
+        return new Number(rnum->getValue());
+    }
+
+     /** 12.5.10.1 Runtime Semantics: Evaluation
+     * The unary - operator converts its operand to Number type and then negates it. 
+     * Negating +0 produces −0, and negating −0 produces +0.
+     */
+    static ESValue* subtract_u(ESValue* rref) {
+
+        Number* rnum = TypeOps::toNumber(rref);
+
+        // If operand is NaN, the result is NaN.
+        if (rnum->isNan()->getValue()) {
+            return new NaN();
+        }
+
+        return new Number(rnum->getValue());
     }
 
 
