@@ -324,7 +324,7 @@ public:
 	unsigned int genStoreCode() { return getNewRegister(); };
 
 	/* 
-	 * This method is called from subclass of LabelledStatement for file output of register operation
+	 * This method is called by subclasses of LabelledStatement for file output of register operation
 	 */
 	unsigned int fileEmit(const char* type) {
 		if(expr != NULL){
