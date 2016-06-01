@@ -10,7 +10,7 @@ addons:
  apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise
+      - llvm-toolchain-precise 
     packages:
 # ensure these match GCC_VERSION
       - gcc-5
@@ -25,6 +25,7 @@ before_script:
   - nvm --version
   - nvm install 5.1
   - node --version
+  - llvm-toolchain-precise --version
   - export CC=/usr/bin/gcc-${GCC_VERSION} CXX=/usr/bin/g++-${GCC_VERSION};
 script:
   - ${CC} --version ; ${CXX} --version;
