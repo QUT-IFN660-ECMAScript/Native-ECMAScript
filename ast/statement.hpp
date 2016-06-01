@@ -319,14 +319,14 @@ public:
 		}
 	}
 
-	unsigned int genCode() {
-		return getNewRegister();
-		//emit("\t LabelledStatement genCode();");
-	}
+	unsigned int genCode() { return getNewRegister(); }
 
-	unsigned int genStoreCode() {return getNewRegister();};
+	unsigned int genStoreCode() { return getNewRegister(); };
 
-	unsigned int fileEmit(const char* type, Expression* expr) {
+	/* 
+	 * This method is called from subclass of LabelledStatement for file output of register operation
+	 */
+	unsigned int fileEmit(const char* type) {
 		if(expr != NULL){
 			expr->genStoreCode();
 			unsigned int reg = getNewRegister();
@@ -347,7 +347,7 @@ public:
 	BreakStatement(){
 		this->expr = NULL;
 	}
-	BreakStatement(Expression* expr){
+	BreakStatement(Expression* expr) : LabelledStatement(expr) {
 		this->expr = expr;
 	}
 
@@ -361,11 +361,41 @@ public:
 	}
 
 	unsigned int genCode() {
-		return LabelledStatement::fileEmit(LABEL_BREAK, expr);
+		return LabelledStatement::fileEmit(LABEL_BREAK);
 	}
 
-	unsigned int genStoreCode() {return getNewRegister();};
+	unsigned int genStoreCode() { return getNewRegister(); };
 };
+
+
+class ContinueStatement: public LabelledStatement {
+private:
+	Expression* expr;
+
+public:
+	ContinueStatement(){
+		this->expr = NULL;
+	}
+	ContinueStatement(Expression* expr) : LabelledStatement(expr) {
+		this->expr = expr;
+	}
+
+	void dump(int indent) {
+		label(indent++, "ContinueStatement\n");
+		if(this->expr != NULL){
+			expr->dump(indent);
+		} else {
+			label(indent, "[Empty]\n");
+		}
+	}
+
+	unsigned int genCode() {
+		return LabelledStatement::fileEmit(LABEL_CONTINUE);
+	}
+
+	unsigned int genStoreCode() { return getNewRegister(); };
+};
+
 
 /* 13.6 If Statement
  * http://www.ecma-international.org/ecma-262/6.0/#sec-if-statement
