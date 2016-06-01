@@ -1,5 +1,3 @@
-function test(a, b) {
-    c = a + b;
-    return c;
-}
+x=x+1;
+y!=x;
 

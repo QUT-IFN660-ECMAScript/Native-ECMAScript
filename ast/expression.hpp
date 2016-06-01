@@ -371,8 +371,7 @@ private:
 	 
 	void dump(int indent) {
 		label(indent, "PlusAdditiveExpression\n");
-		lhs->dump(++indent);
-		
+		lhs->dump(++indent);		
 		rhs->dump(indent);   
     }
     
@@ -496,7 +495,7 @@ public:
     
     /* Called by all subclasses of BinaryExpression for file output of register operation
      * Must call in explicit ordering to get correct file output - cannot call in emit(..)
-     * Operation defined in constants.h
+     * Operation defined in narrations.h
      */
     unsigned int fileEmit(const char* operation) {
     	unsigned int lhsRegister = lhs->genStoreCode();
@@ -600,4 +599,145 @@ public:
 		label(indent, "DivisionBinaryExpression: \\\n");
 		BinaryExpression::dump(indent);
 	}
+};
+
+/* Each Equality Expression will inherit from EqualityExpression class
+ * Operators for Binary Expression -->'==', '<', '>', '!=' 
+ * Each operator will be implemented in subclass of BinaryExpression
+*/
+class EqualityExpression : public Expression {
+private:
+    Expression* lhs;
+    Expression* rhs;
+
+public:
+    EqualityExpression(Expression* lhs, Expression* rhs) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+    };
+    
+    unsigned int genCode() {
+		return getNewRegister();
+	}
+
+    unsigned int genStoreCode() {
+		return getNewRegister();
+	}
+        
+    void dump(int indent) {
+        lhs->dump(indent + 1, "lhs");
+        if(rhs != NULL){
+            rhs->dump(indent + 1, "rhs");
+        }
+    }
+    
+    /* Called by all subclasses of EqualityExpression for file output of register operation
+     * Must call in explicit ordering to get correct file output - cannot call in emit(..)
+     * Operation defined in narrations.h
+     */
+    unsigned int fileEmit() {
+    	unsigned int lhsRegister = lhs->genStoreCode();
+    	unsigned int rhsRegister = rhs->genStoreCode();
+    	unsigned int registerNumber = getNewRegister();
+		emit("\tESValue* r%d = Core::%s(r%d, r%d);", registerNumber, EVALUATE,  lhsRegister, rhsRegister);
+		return registerNumber;
+	}
+    
+};
+
+/* Equal equality expression == */
+class EqualityEqualExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityEqualExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit();
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: ==\n");
+		EqualityExpression::dump(indent);
+	}
+
+};
+
+/* Less than equality expression < */
+class EqualityLessThanExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityLessThanExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit();
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: <\n");
+		EqualityExpression::dump(indent);
+	}
+
+};
+
+/* Greater than equality expression > */
+class EqualityGreaterThanlExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityGreaterThanlExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit();
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: >\n");
+		EqualityExpression::dump(indent);
+	}
+
+};
+
+
+/* Not Equal equality expression != */
+class EqualityNotEqualExpression : public EqualityExpression {
+
+private:
+	Expression* lhs;
+	Expression* rhs;
+	
+public:
+	EqualityNotEqualExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	
+	unsigned int genStoreCode() {
+    	return fileEmit();
+	}
+	
+	void dump(int indent) {
+		label(indent, "EqualityExpression: !=\n");
+		EqualityExpression::dump(indent);
+	}
+
 };
