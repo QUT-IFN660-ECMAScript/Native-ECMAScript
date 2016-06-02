@@ -357,10 +357,53 @@ public:
 		}
 	}
 
-
-
 	unsigned int genCode() {
-		return getNewRegister();
+		//13.6.7 Runtime Semantics: Evaluation
+		int regConditionalExpression = expression->genStoreCode();
+		int regNum = getNewRegister();
+
+		//Convert the conditional expression to boolean
+		emit("\tBoolean r%d = TypeOps::toBoolean(r%d);", regNum, regConditionalExpression);
+
+		if(elseStatement != NULL) {
+			emit("//Simulate the jump if in assembly");
+			emit("\tif(!r%d.getValue())", regNum);
+
+			emit("\t\tgoto label_else_r%d;", regNum);
+
+			emit("\t//the code is executed if the conditional expression is true}");
+
+			//compiling .c file will throw error if not putting the code in {...}
+			emit("\t{");
+			statement->genCode();
+			emit("\t}");
+
+			emit("\tgoto label_end_if_r%d;", regNum);
+
+			emit("label_else_r%d:", regNum);
+			
+			//compiling .c file will throw error if not putting the code in {...}
+			emit("\t{");
+			elseStatement->genCode();
+			emit("\t}");
+
+
+			emit("label_end_if_r%d:");
+
+		} else {
+			emit("//Simulate the jump if in assembly");
+			emit("\tif(!r%d.getValue())", regNum);
+
+			emit("\t\tgoto label_end_if_r%d;", regNum);
+
+			emit("\t//the code is executed if the conditional expression is true}");
+			statement->genCode();
+
+			//emit the label
+			emit("label_end_if_r%d:", regNum);
+		}
+
+		return regNum;
 	}
 
 	unsigned int genStoreCode() {return getNewRegister();};
