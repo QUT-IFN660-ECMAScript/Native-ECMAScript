@@ -1,0 +1,23 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: radius
+            rhs:
+                IntegerLiteralExpression: 10
+        WithStatement
+            IdentifierExpression: Math
+                    ExpressionStatement
+                        AssignmentExpression
+                            lhs:
+                                IdentifierExpression: a
+                            rhs:
+                                AdditiveBinaryExpression: +
+                                    lhs:
+                                        AdditiveBinaryExpression: +
+                                            lhs:
+                                                IdentifierExpression: PI
+                                            rhs:
+                                                IdentifierExpression: radius
+                                    rhs:
+                                        IdentifierExpression: radius
