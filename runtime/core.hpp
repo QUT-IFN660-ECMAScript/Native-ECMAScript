@@ -202,9 +202,29 @@ public:
     	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
     }
 	
-	 static bool evalgtet(ESValue* lhs, ESValue* rhs) {
+    static bool evalgtet(ESValue* lhs, ESValue* rhs) {
     	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
     }
+
+    /* 9.2.1 [[Call]] ( thisArgument, argumentsList)
+     * The [[Call]] internal method for an ECMAScript function object F is called with parameters
+     * thisArgument and argumentsList, a List of ECMAScript language values.
+     */
+
+    static ESValue* function(ESObject* thisArgument, ESValue* declarative, ESValue* param1, ESValue* param2) {
+        Number* lnum = TypeOps::toNumber(param1);
+        Number* rnum = TypeOps::toNumber(param2);
+        Reference* ref;
+        if (declarative->getType() == reference) {
+            ref = dynamic_cast<Reference*>(declarative);
+        }
+        // If either operand is NaN, the result is NaN.
+        if (lnum->isNan()->getValue() || rnum->isNan()->getValue()) {
+            return new NaN();
+        }
+        globalObj->set(ref->getReferencedName(), thisArgument);
+        return new Number(lnum->getValue() + rnum->getValue());
+     }
 };
 
 

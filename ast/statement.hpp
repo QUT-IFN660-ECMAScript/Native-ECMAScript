@@ -579,7 +579,7 @@ public:
 		params = params.substr(0, params.size()-1);
 
 		/* 9.2.1 [[Call]] ( thisArgument, argumentsList) */
-		emit("\tESValue* r%d = new %s(%s, %s, %s);", reg, DECLARATIVE_FUNCTION, THIS_ARGUMENT, 
+		emit("\tESValue* r%d = Core::%s(%s, %s, %s);", reg, DECLARATIVE_FUNCTION, THIS_ARGUMENT, 
 			functionName->getReferencedName().c_str(), params.c_str());
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
