@@ -1,8 +1,0 @@
-{
-  "name": "ecma",
-  "version": "1.0.0",
-  "description": "",
-  "devDependencies": {
-    "babel-cli": "^6.7.5"
-  }
-}

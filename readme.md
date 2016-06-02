@@ -1,15 +1,21 @@
+[![Build Status](https://travis-ci.org/QUT-IFN660-ECMAScript/Native-ECMAScript.svg?branch=develop)](https://travis-ci.org/QUT-IFN660-ECMAScript/Native-ECMAScript)
+
 ## Dependencies
-- gcc/g++ 5+ on ubuntu, on OSX 4.2.1 is sufficient
+- gcc/g++ 5+ on ubuntu, on OSX 4.2.1 is sufficient (OSX 10.10+)
 - flex 2.5+
-- bison 2.3+ - 3.0 will still work but gives warnings
+- bison 2.3+ - 3.0 should work but there will be warnings when generating parser
 - babel-cli from npm, installed with -g - if you want to run JS validations
 
 ## Project Structure
 ```
 |-- ast                    # contains AST node classes
+|-- runtime                # contains classes
+|-- scope                  # contains classes
+|-- type                   # contains classes
 |-- tests            
 |   |-- parseable
 |   |   |-- lexer-assert   # contains expected lexer output for parseable/test tests
+|   |   |-- parser-assert  # contains expected AST output for parseable/test tests
 |   |   |-- test           # tests in this folder must be
 |   |                        valid javascript and passes all tests
 |   |-- unparseable
@@ -17,9 +23,15 @@
 |       |-- test           # tests in this folder must be
 |                            valid javascript, passes lexer tests,
 |                            but does not need to be parseable
-|-- .travis.yml            # travis ci build configuration
+|-- .travis.yml            # Travis CI build configuration
 |-- grammar.l              # lexer/flex grammar
 |-- grammar.y              # bison/parser grammar
+|-- Makefile               # GNU make configuration
+|-- main.cpp               # main compiler program
+|-- test_lex.c             # lexer test program
+|-- test_parser.cpp        # parser test program
+|-- utils.c                # helper utils
+|-- y.tab.h                # helper headers
 ...
 ```
 
@@ -54,7 +66,7 @@ Build compiler, and run parser tests only
 make test_parser
 ```
 
-Test compiler generates pseudo-code from input file - Will generate inputFile.js.il
+Test compiler generates pseudo-assembly code from input file - Will generate inputFile.js.c
 ```
 make
 ./compiler <inputFile.js>
