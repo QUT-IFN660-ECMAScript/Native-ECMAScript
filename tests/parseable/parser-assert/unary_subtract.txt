@@ -1,6 +1,16 @@
 ScriptBody
     ExpressionStatement
-        Unary_SubtractExpression
-            op: --
-            rhs:
+        AssignmentExpression
+            lhs:
                 IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 1
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: y
+            rhs:
+                Unary_SubtractExpression
+                    op: --
+                    rhs:
+                        IdentifierExpression: x
