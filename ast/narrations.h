@@ -10,3 +10,6 @@ static const char* EVALUATE_GT = "evalgt";
 static const char* EVALUATE_LT = "evallt";
 static const char* EVALUATE_LTET = "evalltet";
 static const char* EVALUATE_GTET = "evalgtet";
+static const char* DECLARATIVE_FUNCTION = "function";
+static const char* ANON_FUNCTION = "AnonFunction";
+static const char* THIS_ARGUMENT = "thisArgument";

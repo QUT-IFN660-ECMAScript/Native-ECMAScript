@@ -1,3 +1,4 @@
-/* Unary Add Expression */
-x=0;
-+x;
+/* Anonymous Declarative Function Statement  */
+function foo (x,y) {
+	a=x+y;
+}

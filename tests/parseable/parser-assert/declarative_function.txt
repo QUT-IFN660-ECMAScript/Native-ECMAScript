@@ -1,0 +1,17 @@
+ScriptBody
+    FunctionDeclaration
+        IdentifierExpression: foo
+        FormalParameters
+            IdentifierExpression: x
+            IdentifierExpression: y
+        FunctionBody
+            ExpressionStatement
+                AssignmentExpression
+                    lhs:
+                        IdentifierExpression: a
+                    rhs:
+                        AdditiveBinaryExpression: +
+                            lhs:
+                                IdentifierExpression: x
+                            rhs:
+                                IdentifierExpression: y

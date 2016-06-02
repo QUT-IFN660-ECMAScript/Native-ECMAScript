@@ -553,13 +553,14 @@ public:
 	}
 
 	unsigned int genCode() {
+		std::string params;
 		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
 		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
+			params = params + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 		}
 		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
-
 		codeScopeDepth++;
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
 			(*iter)->genCode();
@@ -575,7 +576,11 @@ public:
 		}
 		codeScopeDepth--;
 		unsigned int reg = getNewRegister();
-		emit("\tESValue* r%d = %s();", reg, functionName->getReferencedName().c_str());
+		params = params.substr(0, params.size()-1);
+
+		/* 9.2.1 [[Call]] ( thisArgument, argumentsList) */
+		emit("\tESValue* r%d = new %s(%s, %s, %s);", reg, DECLARATIVE_FUNCTION, THIS_ARGUMENT, 
+			functionName->getReferencedName().c_str(), params.c_str());
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
 		functionDefinitions.push_back("}");
@@ -601,7 +606,7 @@ public:
 		label(indent++, "FunctionDeclaration\n");
 		label(indent, "FormalParameters\n");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {
-			(*iter)->dump(indent + 1);
+			(*iter)->dump(indent + 1);			
 		} 
 		label(indent, "FunctionBody\n");
 		for (vector<Statement*>::iterator iter = functionBody->begin(); iter != functionBody->end(); ++iter) {
@@ -610,9 +615,11 @@ public:
 	}
 
 	unsigned int genCode() {
+		std::string params;
 		std::string functionDeclaration = std::string("ESValue* function(");
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
+			params = params + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 		}
 		functionDefinitions.push_back(functionDeclaration.substr(0, functionDeclaration.size()-1) + ") {");
 		
@@ -629,9 +636,12 @@ public:
 			w[s.size()] = '\0';
 			emit(w);
 		}
+		params = params.substr(0, params.size()-1);
 		codeScopeDepth--;
 		unsigned int reg = getNewRegister();
-		emit("\tESValue* r%d = ();", reg);
+		emit("\tESValue* r%d = new %s(%s, %s);", reg, ANON_FUNCTION, THIS_ARGUMENT, params.c_str());
+			
+
 
 		functionDefinitions.insert(functionDefinitions.end(), body.begin(), body.end());
 		functionDefinitions.push_back("}");
