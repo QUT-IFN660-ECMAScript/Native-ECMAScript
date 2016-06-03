@@ -169,7 +169,7 @@ using namespace std;
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
   ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
-  ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression
+  ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression ExpressionOptional
   BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
   ObjectBindingPattern ArrayBindingPattern YieldExpression ArrowFunction CallExpression NullLiteral BooleanLiteral
@@ -463,10 +463,11 @@ ReturnStatement:
 
 IterationStatement:
     // TODO Missing look-ahead checks, see 13.7 for more details
-    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			       { $$ = new DoWhileIterationStatement($2,$5); }
-    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						       { $$ = new WhileIterationStatement($3, $5); }
-    | WHILE LEFT_PAREN Expression RIGHT_PAREN LEFT_BRACE Statement RIGHT_BRACE     { $$ = new WhileIterationStatement($3, $6); }
+    DO Statement WHILE LEFT_PAREN Expression RIGHT_PAREN SEMICOLON			        { $$ = new DoWhileIterationStatement($2,$5); }
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN Statement						        { $$ = new WhileIterationStatement($3, $5); }
+    | WHILE LEFT_PAREN Expression RIGHT_PAREN LEFT_BRACE Statement RIGHT_BRACE      { $$ = new WhileIterationStatement($3, $6); }
     | FOR LEFT_PAREN ExpressionOptional SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
+                                                                                    {$$ = new ForLoopIterationStatement($3, $5, $7, $9);}
     | FOR LEFT_PAREN VAR VariableDeclarationList SEMICOLON ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LexicalDeclaration ExpressionOptional SEMICOLON ExpressionOptional RIGHT_PAREN Statement
     | FOR LEFT_PAREN LeftHandSideExpression IN Expression RIGHT_PAREN Statement  
@@ -804,7 +805,7 @@ ShiftExpression:
     AdditiveExpression	{$$ = $1;}
 	| ShiftExpression LEFT_SHIFT AdditiveExpression                 {$$ = new LeftShiftExpression($1, $3);}
 	| ShiftExpression SIGNED_RIGHT_SHIFT AdditiveExpression         {$$ = new RightShiftExpression($1, $3);}
-	| ShiftExpression UNSIGNED_RIGHT_SHIFT  
+	| ShiftExpression UNSIGNED_RIGHT_SHIFT AdditiveExpression       {$$ = new ZeroRightFillShiftExpression($1, $3);}
     ; 
 
 /* 12.7 Additive Operators

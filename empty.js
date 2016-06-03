@@ -1,4 +1,4 @@
 /* Anonymous Declarative Function Statement  */
-x = 5;
-y=3;
-x >> y;
+for (i=0; i < 10; i=i+1) 
+	return;
+

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
+#include <stdint.h>
 
 enum Exception {
     ReferenceError,
@@ -300,7 +301,8 @@ public:
         return new Number(lnum->getValue() + rnum->getValue());
      }
 
-     /* Evaluation method for the left shift operation lhs << rhs = x * 2^y
+     /* 12.8.3.1 Runtime Semantics: Evaluation
+      * Evaluation method for the left shift operation lhs << rhs = x * 2^y
       * For number operations - return the result of bit shift operation
       * precondition: lhs & rhs initialised
       * postcondition: operator shifts the first operand the specified number of bits to the left
@@ -312,10 +314,11 @@ public:
         if (validateNaN(lnum,rnum)) {
             return new NaN();
         }
-        return new Number((int)lnum->getValue() << (int)rnum->getValue()); 
+        return new Number((uint32_t)lnum->getValue() << (uint32_t)rnum->getValue()); 
     }
 
-     /* Evaluation method for the right shift operation lhs >> rhs 
+     /* 12.8.4.1 Runtime Semantics: Evaluation
+      * Evaluation method for the right shift operation lhs >> rhs 
       * For number operations - return the result of bit shift operation
       * precondition: lhs & rhs initialised
       * postcondition: operator shifts the first operand the specified number of bits to the left
@@ -327,7 +330,23 @@ public:
         if (validateNaN(lnum,rnum)) {
             return new NaN();
         }
-        return new Number((int)lnum->getValue() >> (int)rnum->getValue()); 
+        return new Number((uint32_t)lnum->getValue() >> (uint32_t)rnum->getValue()); 
+    }
+
+    /* 12.8.5.1 Runtime Semantics: Evaluation
+     * Evaluation method for the zero fill shift operation lhs >>> rhs 
+      * For number operations - return the result of bit shift operation
+      * precondition: lhs & rhs initialised
+      * postcondition: operator shifts the first operand the specified number of bits to the right.
+      */
+    static ESValue* shiftzr(ESValue* lhs, ESValue* rhs) {
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+
+        if (validateNaN(lnum,rnum)) {
+            return new NaN();
+        }
+        return new Number((uint32_t)lnum->getValue() >> (uint32_t)rnum->getValue()); 
     }
 
     /* Helper function - Evaluation of either value is NaN 

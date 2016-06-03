@@ -15,3 +15,4 @@ static const char* ANON_FUNCTION = "AnonFunction";
 static const char* THIS_ARGUMENT = "thisArgument";
 static const char* SHIFT_LEFT= "shiftl";
 static const char* SHIFT_RIGHT= "shiftr";
+static const char* ZERO_FILL_SHIFT_RIGHT= "shiftzr";

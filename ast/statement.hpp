@@ -671,3 +671,44 @@ public:
 		return getNewRegister();
 	};
 };
+
+class ForLoopIterationStatement : public Statement {
+
+private:
+	Expression* expression_one;
+	Expression* expression_two;
+	Expression* expression_three;
+	Statement* statement;
+
+public:
+	ForLoopIterationStatement(Expression* expression_one, Expression* expression_two, Expression* expression_three, Statement* statement) {
+		this->expression_one = expression_one;
+		this->expression_two = expression_two;
+		this->expression_three = expression_three;
+		this->statement = statement;
+	}
+
+
+	void dump(int indent) {
+		label(indent++, "ForLoopIterationStatement\n");
+		expression_one->dump(indent++);
+		expression_two->dump(indent++);
+		expression_three->dump(indent++);
+		statement->dump(indent);
+    	
+    }
+
+    unsigned int genCode() {
+        return getNewRegister();
+    }
+	
+	unsigned int genStoreCode() {
+		return global_var;
+	}
+
+
+
+
+
+
+};
