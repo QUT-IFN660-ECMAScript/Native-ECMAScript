@@ -17,7 +17,17 @@ enum Exception {
 extern ESObject* globalObj;
 
 class Core {
+
 public:
+    /**
+     * In simple evluation the Global Object is always thisArgument
+     */
+     static void assignGlobalObject() {
+        static ESObject* thisArgument;
+        ESObject* globalObj = new ESObject;
+        globalObj = thisArgument;
+     }
+
     /**
      * 12.7.3 The Addition operator ( + )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-addition-operator-plus
@@ -26,6 +36,7 @@ public:
 
         Number* lnum = TypeOps::toNumber(lref);
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
         if (lnum->isNan()->getValue() || rnum->isNan()->getValue()) {
@@ -41,6 +52,8 @@ public:
     static ESValue* plus_u(ESValue* rref) {
 
         Number* rnum = TypeOps::toNumber(rref);
+        static ESObject* thisArgument;
+        assignGlobalObject();
 
         // If operand is NaN, the result is NaN.
         if (rnum->isNan()->getValue()) {
@@ -57,6 +70,7 @@ public:
     static ESValue* subtract_u(ESValue* rref) {
 
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If operand is NaN, the result is NaN.
         if (rnum->isNan()->getValue()) {
@@ -75,6 +89,7 @@ public:
 
         Number* lnum = TypeOps::toNumber(lref);
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
         if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
@@ -93,6 +108,7 @@ public:
 
         Number* lnum = TypeOps::toNumber(lref);
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
         if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
@@ -111,6 +127,7 @@ public:
 
         Number* lnum = TypeOps::toNumber(lref);
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
         if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
@@ -131,6 +148,7 @@ public:
         Number* lnum = TypeOps::toNumber(lref);
         // rnum is the divisor
         Number* rnum = TypeOps::toNumber(rref);
+        assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
         if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
@@ -163,6 +181,7 @@ public:
     static ESValue* assign(ESValue* v, ESValue* w) {
         if (v->getType() == reference) {
             Reference* ref = dynamic_cast<Reference*>(v);
+            assignGlobalObject();
 
             if (ref != NULL) {
                 return globalObj->set(ref->getReferencedName(), w);
@@ -179,19 +198,23 @@ public:
     * EqualityExpression == =! < > RelationalExpression - Only valid for number type
     */
     static bool evalee(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) == TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) == TypeOps::toNumber(rhs);
     }
     
     static bool evalne(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) != TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) != TypeOps::toNumber(rhs);
     }
     
     static bool evalgt(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) > TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) > TypeOps::toNumber(rhs);
     }
     
     static bool evallt(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) < TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) < TypeOps::toNumber(rhs);
     }
     
     /* 12.9.3 Runtime Semantics: Evaluation 
@@ -199,11 +222,13 @@ public:
     * RelationalExpression : RelationalExpression >= ShiftExpression
     */
     static bool evalltet(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
     }
 	
     static bool evalgtet(ESValue* lhs, ESValue* rhs) {
-    	 return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+        assignGlobalObject();
+        return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
     }
 
     /* 9.2.1 [[Call]] ( thisArgument, argumentsList)
