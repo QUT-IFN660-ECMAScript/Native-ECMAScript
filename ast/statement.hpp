@@ -702,11 +702,21 @@ public:
     }
 
     unsigned int genCode() {
+    	unsigned int loop_label = global_var;
+    	emit("LABEL%d:", global_var);
+    	expression_one->genStoreCode();
+    	emit("\n\tifNot {");
+        expression_two->genStoreCode();
+        emit("\tgoto EXIT%d }\n", loop_label);
+        expression_three->genStoreCode();            
+		statement->genCode();
+		emit("\tgoto LABEL%d", loop_label);
+		emit("EXIT%d", loop_label);
         return getNewRegister();
     }
 	
 	unsigned int genStoreCode() {
-		return global_var;
+		return getNewRegister();
 	}
 
 
