@@ -1,0 +1,5 @@
+ScriptBody
+    ThrowStatement
+        StringLiteralExpression: "Hello"
+    ThrowStatement
+        IntegerLiteralExpression: 42
