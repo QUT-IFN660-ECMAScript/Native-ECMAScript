@@ -588,6 +588,7 @@ class CaseClauseStatement : public Statement {
 private:
 	Expression *expression;
 	StatementList *stmtList;
+	bool isDefaultClause;
 
 public:
 	CaseClauseStatement(vector<Statement*> *stmtList) {
@@ -600,6 +601,9 @@ public:
 	Expression* getCaseExpression() {
 		return expression;
 	}
+	void setDefaultClause (bool isDefaultClause) {
+		this->isDefaultClause = isDefaultClause;
+	}
 
 	void dump(int indent) {
 		label(indent++, "CaseClauseStatement\n");
@@ -611,8 +615,13 @@ public:
 
 	unsigned int genCode() {
 		unsigned int regNum = getNewRegister();
-		emit("LABEL%d:", regNum);
-		this->stmtList->genCode();
+		if(this->isDefaultClause) {
+			emit("DEFLABEL%d:", regNum);
+			this->stmtList->genCode();
+		} else {
+			emit("LABEL%d:", regNum);
+			this->stmtList->genCode();
+		}
 		return regNum;
 	}
 
@@ -625,37 +634,50 @@ public:
 class CaseBlockStatement : public Statement {
 private:
     vector<Statement*> *caseClauses;
-    vector<Statement*> *defaultCaseClauses;
+    vector<Statement*> *secondCaseClauses;
+    Statement *defaultCaseClauseStmt;
 	unsigned int endLabelNum;
 	std::map<unsigned int, Expression*> caseLabelMap;
+	bool defaultClause;
+	unsigned int labelRegNum;
 public:
     CaseBlockStatement(vector<Statement*> *caseClauses) {
         this->caseClauses = caseClauses;
+        defaultClause = false;
     };
-    // CaseBlockStatement(vector<Statement*> *caseClauses, vector<Statement*> *defaultCaseClauses) {
-    //     this->caseClauses = caseClauses;
-    //     this->defaultCaseClauses = defaultCaseClauses;
-    // };
+    CaseBlockStatement(vector<Statement*> *caseClauses, Statement *defaultCaseClauseStmt, vector<Statement*> *secondCaseClauses) {
+        this->caseClauses = caseClauses;
+        this->defaultCaseClauseStmt = defaultCaseClauseStmt;
+        defaultClause = true;
+        this->secondCaseClauses = secondCaseClauses;
+    };
 
 	void setEndLabelNum(unsigned int num) {
 		this->endLabelNum = num;
 	}
-
+	bool hasDefaultClause() {
+		return this->defaultClause;
+	}
+	unsigned int getLabelRegNum() {
+		return this->labelRegNum;
+	}
 	std::map<unsigned int, Expression*> getCaseLabelMap() {
 		return this->caseLabelMap;
 	}
 
     void dump(int indent) {
         label(indent, "CaseBlockStatement\n");
-
         if(caseClauses != NULL) {
             for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter)
                 (*iter)->dump(indent+1);
         }
-        // if(defaultCaseClauses != NULL) {
-        //     for (vector<Statement*>::iterator iter = defaultCaseClauses->begin(); iter != defaultCaseClauses->end(); ++iter)
-        //         (*iter)->dump(indent+1);
-        // }
+        if(defaultCaseClauseStmt != NULL) {
+            this->defaultCaseClauseStmt->dump(indent+1);
+        }
+        if(secondCaseClauses != NULL) {
+            for (vector<Statement*>::iterator iter = secondCaseClauses->begin(); iter != secondCaseClauses->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
     }
 
     unsigned int genCode() {
@@ -666,7 +688,27 @@ public:
 				CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>((*iter));
 				caseLabelMap[labelRegNum] = ccStmt->getCaseExpression();
 				caseLabelMap.insert(std::pair<unsigned int, Expression*>(labelRegNum, ccStmt->getCaseExpression()));
-				
+            }
+        }
+        if(defaultCaseClauseStmt != NULL) {
+        	CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>(defaultCaseClauseStmt);
+        	ccStmt->setDefaultClause(true);
+        	unsigned int labelRegNum = ccStmt->genCode();
+			ccStmt->setDefaultClause(false);
+			emit("\tgoto LABELEND%d;", endLabelNum);
+			this->labelRegNum = labelRegNum;
+
+			// CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>(defaultCaseClauseStmt);
+			// caseLabelMap[labelRegNum] = ccStmt->getCaseExpression();
+			// caseLabelMap.insert(std::pair<unsigned int, Expression*>(labelRegNum, ccStmt->getCaseExpression()));
+        }
+        if(secondCaseClauses != NULL) {
+            for (vector<Statement*>::iterator iter = secondCaseClauses->begin(); iter != secondCaseClauses->end(); ++iter) {
+            	unsigned int labelRegNum = (*iter)->genCode();
+				emit("\tgoto LABELEND%d;", endLabelNum);
+				CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>((*iter));
+				caseLabelMap[labelRegNum] = ccStmt->getCaseExpression();
+				caseLabelMap.insert(std::pair<unsigned int, Expression*>(labelRegNum, ccStmt->getCaseExpression()));
             }
         }
         return getNewRegister();
@@ -715,6 +757,9 @@ public:
 			// emit("\t//If these two have the same value, Core::zeroFlag will be true");
 			emit("\tCore::strictEqualityComparison(r%d, r%d);", switchRegNum, caseLabelNum);
 			emit("\tif(Core::zeroFlag) goto LABEL%d;", iter->first);
+		}
+		if(cbStmt->hasDefaultClause()) {
+			emit("\tgoto DEFLABEL%d;", cbStmt->getLabelRegNum());
 		}
 
 		emit("LABELEND%d:", reservedForEnd);
