@@ -824,4 +824,79 @@ public:
 
 };
 
+/* Bit Shifting operation x << y = x * 2^y 
+ * This operator shifts the first operand the specified number of bits to the left. 
+ * Excess bits shifted off to the left are discarded. 
+ * Zero bits are shifted in from the right.*/
+class LeftShiftExpression : public Expression {
 
+private:
+    Expression* lhs;
+    Expression* rhs;
+
+public:
+    LeftShiftExpression(Expression* lhs, Expression* rhs) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+    }
+
+    void dump (int indent) {
+        label(indent, "BitwiseShiftExpression\n");
+        label(++indent, "LeftShiftOperation: <<\n");
+        label(++indent, "lhs:\n");
+        lhs->dump(++indent);
+        label(--indent, "rhs:\n");
+        rhs->dump(++indent);
+    }
+
+    unsigned int genCode() {
+        return getNewRegister();
+    }
+    
+    unsigned int genStoreCode() {
+        unsigned int lhsRegister = lhs->genStoreCode();
+        unsigned int rhsRegister = rhs->genStoreCode();
+        unsigned int registerNumber = getNewRegister();
+        emit("\tESValue* r%d = Core::%s(r%d, r%d);", registerNumber, SHIFT_LEFT,  lhsRegister, rhsRegister);
+        return registerNumber;
+    };
+};
+
+
+/* Bit Shifting operation x >> y 
+ * This operator shifts the first operand the specified number of bits to the right. 
+ * Excess bits shifted off to the right are discarded. 
+ * Copies of the leftmost bit are shifted in from the left.  */
+class RightShiftExpression : public Expression {
+
+private:
+    Expression* lhs;
+    Expression* rhs;
+
+public:
+    RightShiftExpression(Expression* lhs, Expression* rhs) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+    }
+
+    void dump (int indent) {
+        label(indent, "BitwiseShiftExpression\n");
+        label(++indent, "RightShiftOperation: >>\n");
+        label(++indent, "lhs:\n");
+        lhs->dump(++indent);
+        label(--indent, "rhs:\n");
+        rhs->dump(++indent);
+    }
+
+    unsigned int genCode() {
+        return getNewRegister();
+    }
+    
+    unsigned int genStoreCode() {
+        unsigned int lhsRegister = lhs->genStoreCode();
+        unsigned int rhsRegister = rhs->genStoreCode();
+        unsigned int registerNumber = getNewRegister();
+        emit("\tESValue* r%d = Core::%s(r%d, r%d);", registerNumber, SHIFT_RIGHT,  lhsRegister, rhsRegister);
+        return registerNumber;
+    };
+};

@@ -24,6 +24,8 @@ private:
     ESValue* base;
     String* referencedName;
     Boolean* strict;
+
+
 public:
 
     Reference(String* referencedName) {
@@ -77,8 +79,11 @@ public:
     }
 
 
-    // TODO:
-    // IsSuperReference(V). Returns true if this reference has a thisValue component.
+    /* Returns true if this reference has a thisValue component. */
+    Boolean IsSuperReference() {   
+        String valstr("thisValue");     
+        return new Boolean((base->toString())==&valstr);
+    }
     
     /* Returns true if either the base value is an object or HasPrimitiveBase(V) is true; otherwise returns false. */
     Boolean* IsPropertyReference() {

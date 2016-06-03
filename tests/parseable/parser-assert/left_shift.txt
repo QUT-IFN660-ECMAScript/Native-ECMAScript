@@ -1,0 +1,20 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 5
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: y
+            rhs:
+                IntegerLiteralExpression: 3
+    ExpressionStatement
+        BitwiseShiftExpression
+            LeftShiftOperation: <<
+                lhs:
+                    IdentifierExpression: x
+                rhs:
+                    IdentifierExpression: y

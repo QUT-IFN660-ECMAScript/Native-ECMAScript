@@ -10,7 +10,7 @@
 #include "node.hpp"
 #include "expression.hpp"
 
-
+/* Map & Vector used to store the parameter lists and the function body for functions */
 extern std::map<int, std::vector<std::string> > codeScope;
 extern std::vector<std::string> functionDefinitions;
 
@@ -25,7 +25,7 @@ public:
 	virtual unsigned int genStoreCode()=0;
 };
 
-
+/* Class for simple ExpressionStatement */
 class ExpressionStatement: public Statement {
 private:
   Expression* expr;
@@ -367,15 +367,19 @@ public:
 
 };
 
-
-class IterationStatement : public Statement {
+/* Class for While iteration statements 
+ * To be extended for all iteration statements with Base class
+ * with subclass of repitition statements inheriting from
+ * base IterationStatement class
+ */
+class WhileIterationStatement : public Statement {
 	private:
 		Expression *expression;
 		Statement *statement;
 		
 	public:
 	/* while expression statement */
-	IterationStatement(Expression *expression, Statement *statement) {
+	WhileIterationStatement(Expression *expression, Statement *statement) {
 		this->expression = expression;
 		this->statement = statement;
 	}
@@ -394,7 +398,9 @@ class IterationStatement : public Statement {
     }
 };
 
-
+/* DoWhile iteration statement - to do -> extend from a base Iteration
+ * statement class
+ */
 class DoWhileIterationStatement : public Statement {
 	private:
 		Expression *expression;
@@ -525,6 +531,11 @@ public:
 
 };
 
+/* FunctionDeclation class - Incorporate the thisValue component
+ * In the global code, this value is always the global object itself. 
+ * Parameter list and function body store in Map/Vector respectively
+ * Class for declarative functions 
+ */
 class FunctionDeclaration : public Statement {
 private:
 	Expression* bindingIdentifier;
@@ -555,7 +566,9 @@ public:
 	unsigned int genCode() {
 		std::string params;
 		IdentifierExpression* functionName = dynamic_cast<IdentifierExpression*>(bindingIdentifier);
+		/* Function Declaration */
 		std::string functionDeclaration = std::string("ESValue* " + functionName->getReferencedName() + "(");
+		/* Parameter List */
 		for (vector<Expression*>::iterator iter = formalParameters->begin(); iter != formalParameters->end(); ++iter) {	
 			functionDeclaration = functionDeclaration + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
 			params = params + dynamic_cast<IdentifierExpression*>(*iter)->getReferencedName() + ",";
@@ -578,7 +591,7 @@ public:
 		unsigned int reg = getNewRegister();
 		params = params.substr(0, params.size()-1);
 
-		/* 9.2.1 [[Call]] ( thisArgument, argumentsList) */
+		/* ECMA Specifications 9.2.1 [[Call]] ( thisArgument, argumentsList) */
 		emit("\tESValue* r%d = Core::%s(%s, %s, %s);", reg, DECLARATIVE_FUNCTION, THIS_ARGUMENT, 
 			functionName->getReferencedName().c_str(), params.c_str());
 
@@ -591,6 +604,12 @@ public:
 		return getNewRegister();
 	};
 };
+
+/* Anonymous FunctionDeclation class - Incorporate the thisValue component
+ * In the global code, this value is always the global object itself. 
+ * Parameter list and function body store in Map/Vector respectively
+ * Class for anonymous declarative functions 
+ */
 
 class AnonymousFunctionDeclaration : public Statement {
 private:
