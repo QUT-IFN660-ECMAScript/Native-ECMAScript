@@ -605,8 +605,7 @@ public:
 		stmtList->dump(indent);
 	}
 
-	unsigned int genCode() { 
-		// emit("");
+	unsigned int genCode() {
 		unsigned int regNum = getNewRegister();
 		emit("LABEL%d:", regNum);
 		this->stmtList->genCode();
@@ -620,25 +619,16 @@ class CaseBlockStatement : public Statement {
 private:
     vector<Statement*> *caseClauses;
 	unsigned int endLabelNum;
-	// vector<Expression*> *caseExpression;
-	// vector<int> *labelRegNum;
 	std::map<unsigned int, Expression*> caseLabelMap;
 public:
     CaseBlockStatement(vector<Statement*> *caseClauses) {
         this->caseClauses = caseClauses;
-        // this->caseExpression = new vector<Expression*>;
-        // this->labelRegNum = new vector<int>;
     };
 
 	void setEndLabelNum(unsigned int num) {
 		this->endLabelNum = num;
 	}
-	// vector<Expression*>* getCaseExpression() {
-	// 	return this->caseExpression;
-	// }
-	// vector<int>* getLabelRegNum() {
-	// 	return this->labelRegNum;
-	// }
+
 	std::map<unsigned int, Expression*> getCaseLabelMap() {
 		return this->caseLabelMap;
 	}
@@ -655,11 +645,9 @@ public:
     unsigned int genCode() {
         if(caseClauses != NULL) {
             for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter) {
-				// unsigned int regNum = getNewRegister();
             	unsigned int labelRegNum = (*iter)->genCode();
 				emit("\tgoto LABELEND%d;", endLabelNum);
 				CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>((*iter));
-				// this->caseExpression.push_back(ccStmt->getCaseExpression());
 				caseLabelMap[labelRegNum] = ccStmt->getCaseExpression();
 				caseLabelMap.insert(std::pair<unsigned int, Expression*>(labelRegNum, ccStmt->getCaseExpression()));
 				
@@ -703,18 +691,12 @@ public:
 		emit("LABEL%d:", reservedForStart);
 		unsigned int switchRegNum = this->expression->genStoreCode();
 		
-		// emit("\t//These are values of case labels. (e.g. case 1:, case 2:, ...)");
-		// vector<Expression*> *caseExpression = cbStmt->getCaseExpression();
-		// for (vector<Expression*>::iterator iter = caseExpression->begin(); iter != caseExpression->end(); ++iter) {
 		std::map<unsigned int, Expression*> caseLabelMap = cbStmt->getCaseLabelMap();
 		for (std::map<unsigned int, Expression*>::iterator iter = caseLabelMap.begin(); iter != caseLabelMap.end(); ++iter) {
-
-			// unsigned int caseLabelNum = (*iter)->genStoreCode();
 			unsigned int caseLabelNum = (iter->second)->genStoreCode();
 			// emit("\t//If these two have the same value, Core::zeroFlag will be true");
 			emit("\tCore::compare(r%d, r%d);", switchRegNum, caseLabelNum);
 			emit("\tif(Core::zeroFlag) goto LABEL%d;", iter->first);
-			// if(r2 == 1) goto SWTLAB6;
 		}
 
 		emit("LABELEND%d:", reservedForEnd);
