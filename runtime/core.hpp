@@ -18,6 +18,7 @@ extern ESObject* globalObj;
 
 class Core {
 public:
+    static bool zeroFlag;
     /**
      * 12.7.3 The Addition operator ( + )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-addition-operator-plus
@@ -142,6 +143,29 @@ public:
         } else {
             throw ReferenceError;
         }
+    }
+
+
+    static void compare(ESValue* left, ESValue* right) {
+        //TODO: implement this...
+        // // Number comparison
+        // if (left->getType() == number ) {
+        //     Number* lnum = TypeOps::toNumber(left);
+        //     Number* rnum = TypeOps::toNumber(right);
+        //     // if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+        //     //     return new NaN();
+        //     // }
+        //     return new Boolean(lnum->getValue() == rnum->getValue());
+        // }
+
+        // String comparison
+        if (left->getType() == string_ && right->getType() == string_) {
+            String* lnum = TypeOps::toString(left);
+            String* rnum = TypeOps::toString(right);
+            zeroFlag = lnum->getValue() == rnum->getValue() ? true : false;
+        }
+        
+        
     }
 
 };

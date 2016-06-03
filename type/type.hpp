@@ -452,4 +452,15 @@ public:
         }
     }
 
+    //TODO: implement this method.
+    static String* toString(ESValue* argument) {
+        switch (argument->getType()) {
+            case string_:
+                return toString(toPrimitive(argument));
+
+            default:
+                return NULL;
+        }
+    }
+
 };
