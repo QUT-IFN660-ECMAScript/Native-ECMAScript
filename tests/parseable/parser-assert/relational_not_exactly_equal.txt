@@ -1,0 +1,19 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IntegerLiteralExpression: 0
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: y
+            rhs:
+                IntegerLiteralExpression: 0
+    ExpressionStatement
+        EqualityExpression: !==
+            lhs:
+                IdentifierExpression: x
+            rhs:
+                IdentifierExpression: y
