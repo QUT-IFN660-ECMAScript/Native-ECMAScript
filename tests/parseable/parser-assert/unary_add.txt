@@ -6,6 +6,6 @@ ScriptBody
             rhs:
                 IntegerLiteralExpression: 0
     ExpressionStatement
-        AdditiveUnaryExpression: +
+        AdditionUnaryExpression: +
             rhs:
                 IdentifierExpression: x
