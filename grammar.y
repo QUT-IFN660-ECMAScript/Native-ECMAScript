@@ -404,7 +404,7 @@ SwitchStatement:
 
 CaseBlock:
     LEFT_BRACE CaseClauses RIGHT_BRACE                              {$$ = new CaseBlockStatement($2);}
-    | LEFT_BRACE CaseClauses DefaultClause CaseClauses RIGHT_BRACE
+    | LEFT_BRACE CaseClauses DefaultClause CaseClauses RIGHT_BRACE  {$$ = new CaseBlockStatement($2, $3, $4);}
     ;
 
 CaseClauses:
@@ -417,7 +417,7 @@ CaseClause:
     ;
 
 DefaultClause:
-    DEFAULT COLON StatementList
+    DEFAULT COLON StatementList  { $$ = new CaseClauseStatement($3); }
     ;
 
 /* 13.11 The with Statement
