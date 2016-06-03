@@ -67,6 +67,10 @@ public:
 
 
 	unsigned int genCode() {
+		if(stmts != NULL) {
+			for (vector<Statement*>::iterator iter = stmts->begin(); iter != stmts->end(); ++iter)
+                (*iter)->genCode();
+		}
 		return getNewRegister();
 	}
 
@@ -331,8 +335,7 @@ public:
 			expr->genStoreCode();
 			unsigned int reg = getNewRegister();
 			emit("\t%s r%d;", type, reg - 1);
-		}
-		else {
+		} else {
 			emit("\t%s;", type);
 			return getNewRegister();
 		}
@@ -361,6 +364,7 @@ public:
 	}
 
 	unsigned int genCode() {
+		//TODO: program has to jump to a label to break out of a loop...
 		return LabelledStatement::fileEmit(LABEL_BREAK);
 	}
 
@@ -390,6 +394,7 @@ public:
 	}
 
 	unsigned int genCode() {
+		//TODO: program has to jump to a label to continue a loop...
 		return LabelledStatement::fileEmit(LABEL_CONTINUE);
 	}
 
@@ -576,6 +581,106 @@ class WithStatement : public Statement {
 };
 
 
+/*
+ * 13.12 The switch Statement: Case Clauses
+ */
+class CaseClauseStatement : public Statement {
+private:
+	Expression *expression;
+	StatementList *stmtList;
+
+public:
+	CaseClauseStatement(vector<Statement*> *stmtList) {
+		this->stmtList = new StatementList(stmtList);
+	}
+	CaseClauseStatement(Expression *expression, vector<Statement*> *stmtList) {
+		this->expression = expression;
+		this->stmtList = new StatementList(stmtList);
+	}
+	Expression* getCaseExpression() {
+		return expression;
+	}
+
+	void dump(int indent) {
+		label(indent++, "CaseClauseStatement\n");
+		if(expression){
+			expression->dump(indent++);
+		}
+		stmtList->dump(indent);
+	}
+
+	unsigned int genCode() {
+		unsigned int regNum = getNewRegister();
+		emit("LABEL%d:", regNum);
+		this->stmtList->genCode();
+		return regNum;
+	}
+
+	unsigned int genStoreCode() {	return getNewRegister(); }
+};
+
+/*
+ * 13.12 The switch Statement: Case block
+ */
+class CaseBlockStatement : public Statement {
+private:
+    vector<Statement*> *caseClauses;
+    vector<Statement*> *defaultCaseClauses;
+	unsigned int endLabelNum;
+	std::map<unsigned int, Expression*> caseLabelMap;
+public:
+    CaseBlockStatement(vector<Statement*> *caseClauses) {
+        this->caseClauses = caseClauses;
+    };
+    // CaseBlockStatement(vector<Statement*> *caseClauses, vector<Statement*> *defaultCaseClauses) {
+    //     this->caseClauses = caseClauses;
+    //     this->defaultCaseClauses = defaultCaseClauses;
+    // };
+
+	void setEndLabelNum(unsigned int num) {
+		this->endLabelNum = num;
+	}
+
+	std::map<unsigned int, Expression*> getCaseLabelMap() {
+		return this->caseLabelMap;
+	}
+
+    void dump(int indent) {
+        label(indent, "CaseBlockStatement\n");
+
+        if(caseClauses != NULL) {
+            for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter)
+                (*iter)->dump(indent+1);
+        }
+        // if(defaultCaseClauses != NULL) {
+        //     for (vector<Statement*>::iterator iter = defaultCaseClauses->begin(); iter != defaultCaseClauses->end(); ++iter)
+        //         (*iter)->dump(indent+1);
+        // }
+    }
+
+    unsigned int genCode() {
+        if(caseClauses != NULL) {
+            for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter) {
+            	unsigned int labelRegNum = (*iter)->genCode();
+				emit("\tgoto LABELEND%d;", endLabelNum);
+				CaseClauseStatement *ccStmt = dynamic_cast<CaseClauseStatement*>((*iter));
+				caseLabelMap[labelRegNum] = ccStmt->getCaseExpression();
+				caseLabelMap.insert(std::pair<unsigned int, Expression*>(labelRegNum, ccStmt->getCaseExpression()));
+				
+            }
+        }
+        return getNewRegister();
+    }
+
+	unsigned int genStoreCode() {
+		return global_var;
+	};
+
+};
+
+/*
+ * 13.12 The switch Statement
+ */
 class SwitchStatement : public Statement {
 private:
 	Expression *expression;
@@ -593,66 +698,36 @@ public:
 		statement->dump(indent);
 	}
 
-	unsigned int genCode() { return getNewRegister(); }
+	unsigned int genCode() { 
+		unsigned int reservedForStart = getNewRegister();
+		unsigned int reservedForEnd = getNewRegister();
+		emit("\tgoto LABEL%d;", reservedForStart);
 
-	unsigned int genStoreCode() {	return getNewRegister(); }
-};
-
-
-
-class CaseClauseStatement : public Statement {
-private:
-	Expression *expression;
-	StatementList *stmtList;
-
-public:
-	CaseClauseStatement(vector<Statement*> *stmtList) {
-		this->stmtList = new StatementList(stmtList);
-	}
-	CaseClauseStatement(Expression *expression, vector<Statement*> *stmtList) {
-		this->expression = expression;
-		this->stmtList = new StatementList(stmtList);
-	}
-
-	void dump(int indent) {
-		label(indent++, "CaseClauseStatement\n");
-		if(expression){
-			expression->dump(indent++);
+		CaseBlockStatement *cbStmt = dynamic_cast<CaseBlockStatement*>(statement);
+		cbStmt->setEndLabelNum(reservedForEnd);
+		cbStmt->genCode();
+		emit("LABEL%d:", reservedForStart);
+		unsigned int switchRegNum = this->expression->genStoreCode();
+		
+		std::map<unsigned int, Expression*> caseLabelMap = cbStmt->getCaseLabelMap();
+		for (std::map<unsigned int, Expression*>::iterator iter = caseLabelMap.begin(); iter != caseLabelMap.end(); ++iter) {
+			unsigned int caseLabelNum = (iter->second)->genStoreCode();
+			// emit("\t//If these two have the same value, Core::zeroFlag will be true");
+			emit("\tCore::strictEqualityComparison(r%d, r%d);", switchRegNum, caseLabelNum);
+			emit("\tif(Core::zeroFlag) goto LABEL%d;", iter->first);
 		}
-		stmtList->dump(indent);
+
+		emit("LABELEND%d:", reservedForEnd);
+
+
+		return getNewRegister();
 	}
 
-	unsigned int genCode() { return getNewRegister(); }
-
-	unsigned int genStoreCode() {	return getNewRegister(); }
+	unsigned int genStoreCode() { return getNewRegister(); }
 };
 
-class CaseBlockStatement : public Statement {
-private:
-    vector<Statement*> *caseClauses;
-public:
-    CaseBlockStatement(vector<Statement*> *caseClauses) {
-        this->caseClauses = caseClauses;
-    };
 
-    void dump(int indent) {
-        label(indent, "CaseBlockStatement\n");
 
-        if(caseClauses != NULL) {
-            for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter)
-                (*iter)->dump(indent+1);
-        }
-    }
-
-    unsigned int genCode() {
-        return getNewRegister();
-    }
-
-	unsigned int genStoreCode() {
-		return global_var;
-	};
-
-};
 
 class FunctionDeclaration : public Statement {
 private:

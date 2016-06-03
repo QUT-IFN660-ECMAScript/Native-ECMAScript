@@ -18,6 +18,7 @@ extern ESObject* globalObj;
 
 class Core {
 public:
+    static bool zeroFlag;
     /**
      * 12.7.3 The Addition operator ( + )
      * http://www.ecma-international.org/ecma-262/6.0/#sec-addition-operator-plus
@@ -142,6 +143,119 @@ public:
         } else {
             throw ReferenceError;
         }
+    }
+
+    /*
+     * Strict Equality Comparison
+     * http://www.ecma-international.org/ecma-262/6.0/#sec-strict-equality-comparison
+     */
+    static Boolean strictEqualityComparison(ESValue* left, ESValue* right) {
+        Type leftType = left->getType();
+        Type rightType = right->getType();
+
+        if(leftType != rightType) {
+            zeroFlag = false;
+            return new Boolean(false);
+        }
+        switch (leftType) {
+            case undefined: {
+                zeroFlag = true;
+                return new Boolean(true);
+            }
+            case null: {
+                zeroFlag = true;
+                return new Boolean(true);
+            }
+            case boolean: {
+                if (rightType != boolean) {
+                    zeroFlag = false;
+                    return new Boolean(true);
+                } else {
+                    Boolean* leftBool = dynamic_cast<Boolean*>(left);
+                    Boolean* rightBool = dynamic_cast<Boolean*>(right);                    
+                    if (leftBool->getValue() && rightBool->getValue()
+                    || !leftBool->getValue() && !rightBool->getValue()) {
+                        zeroFlag = true;
+                        return new Boolean(true);
+                    }
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+            }
+            case string_: {
+                if (rightType != string_) {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+                String* leftStr = dynamic_cast<String*>(left);
+                String* rightStr = dynamic_cast<String*>(right);
+                if(leftStr->getValue() == rightStr->getValue()) {
+                    zeroFlag = true;
+                    return new Boolean(true);
+                } else {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+            }
+                
+            case symbol: {
+                if (rightType != symbol) {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                } else {
+                    Symbol* leftSymbol = dynamic_cast<Symbol*>(left);
+                    Symbol* rightSymbol = dynamic_cast<Symbol*>(right);                    
+                    if (leftSymbol->getValue() == rightSymbol->getValue()) {
+                        zeroFlag = true;
+                        return new Boolean(true);
+                    }
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+            }
+            case number: {
+                //TODO: Implement this... 
+                // If x is +0 and y is −0, return true.
+                // If x is −0 and y is +0, return true.
+                Number* leftNum = dynamic_cast<Number*>(left);
+                if(leftNum->isNan()) {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+                if (rightType != number) {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+                Number* rightNum = dynamic_cast<Number*>(right);
+                if(rightNum->isNan()){
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+                if (leftNum->getValue() == rightNum->getValue()) {
+                    zeroFlag = true;
+                    return new Boolean(true);
+                }
+                zeroFlag = false;
+                return new Boolean(false);
+            }
+            case object: {
+                if (rightType != object) {
+                    zeroFlag = false;
+                    return new Boolean(false);
+                } else {
+                    Symbol* leftObj = dynamic_cast<Symbol*>(left);
+                    Symbol* rightObj = dynamic_cast<Symbol*>(right);                    
+                    if (leftObj->getValue() == rightObj->getValue()) {
+                        zeroFlag = true;
+                        return new Boolean(true);
+                    }
+                    zeroFlag = false;
+                    return new Boolean(false);
+                }
+            }
+
+        }// end of switch (leftType) 
+        
     }
 
 };

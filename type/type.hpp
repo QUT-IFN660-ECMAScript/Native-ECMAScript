@@ -452,4 +452,49 @@ public:
         }
     }
 
+    
+    /**
+     * 7.1.12 ToString ( argument )
+     * http://www.ecma-international.org/ecma-262/6.0/#sec-tostring
+     * The abstract operation ToNumber converts argument to a value of type Number
+     */
+    static String* toString(ESValue* argument) {
+        switch (argument->getType()) {
+            case undefined:
+                return new String("Undefined");
+            case null:
+                return new String("null");
+            case boolean:
+                if (dynamic_cast<Boolean*>(argument)->getValue()) {
+                    return new String("true");
+                }
+                return new String("false");
+
+            case string_:
+                return toString(toPrimitive(argument));
+            case symbol:
+                // TODO: Throw a TypeError exception.
+                return new String("Undefined");
+            case object:
+                return toString(toPrimitive(argument));
+            case reference:
+                return NULL;
+            case number:
+                /*
+                 * 7.1.12.1 ToString Applied to the Number Type
+                 * TODO: implement this properly.
+                 */ 
+                Number *num = dynamic_cast<Number*>(argument);
+                if(num->isInfinity()) {
+                    return new String("Infinity");
+                }
+                if(num->isNan()) {
+                    return new String("NaN");
+                } else {
+                    return num->toString();
+                }
+        }
+    }
+
+    
 };
