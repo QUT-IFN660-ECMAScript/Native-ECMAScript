@@ -284,7 +284,7 @@ public:
         assignGlobalObject();
         Number* lnum = TypeOps::toNumber(lhs);
         Number* rnum = TypeOps::toNumber(rhs);
-        return ((lnum == rnum) && (lnum->getType()==rnum->getType());
+        return ((lnum == rnum) && (lnum->getType()==rnum->getType()));
     }
 
     /* Evaluate that lhs >= rhs
@@ -295,7 +295,7 @@ public:
         assignGlobalObject();
         Number* lnum = TypeOps::toNumber(lhs);
         Number* rnum = TypeOps::toNumber(rhs);
-        return ((lnum != rnum) && (lnum->getType() != run->getType());
+        return ((lnum != rnum) && (lnum->getType() != rnum->getType()));
     }
 
     /* 9.2.1 [[Call]] ( thisArgument, argumentsList)
