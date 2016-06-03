@@ -842,7 +842,7 @@ public:
     }
     
     void dump(int indent) {
-        label(indent, "EqualityExpression: <=\n");
+        label(indent, "EqualityExpression: ===\n");
         EqualityExpression::dump(indent);
     }
 
@@ -866,7 +866,7 @@ public:
     }
     
     void dump(int indent) {
-        label(indent, "EqualityExpression: <=\n");
+        label(indent, "EqualityExpression: !==\n");
         EqualityExpression::dump(indent);
     }
 
