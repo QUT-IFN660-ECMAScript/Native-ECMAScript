@@ -20,7 +20,9 @@ class Core {
 
 public:
     /**
-     * In simple evluation the Global Object is always thisArgument
+     * Helper method - In simple evluation the Global Object is always thisArgument
+     * precondition: global object exists
+     * postcondition: global object assigned to thisValue
      */
      static void assignGlobalObject() {
         static ESObject* thisArgument;
@@ -39,7 +41,7 @@ public:
         assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || rnum->isNan()->getValue()) {
+        if (validateNaN(lnum, rnum)) {
             return new NaN();
         }
 
@@ -48,6 +50,8 @@ public:
 
     /** 12.5.9.1 Runtime Semantics: Evaluation
      * The unary + operator converts its operand to Number type.
+     * precondition: rref initialised
+     * postcondition: plus operation applied
      */
     static ESValue* plus_u(ESValue* rref) {
 
@@ -66,6 +70,8 @@ public:
      /** 12.5.10.1 Runtime Semantics: Evaluation
      * The unary - operator converts its operand to Number type and then negates it. 
      * Negating +0 produces −0, and negating −0 produces +0.
+     * precondition: rref initialised
+     * postcondition: subtract operation applied
      */
     static ESValue* subtract_u(ESValue* rref) {
 
@@ -92,7 +98,7 @@ public:
         assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+       if (validateNaN(lnum, rnum)) {
             return new NaN();
         }
 
@@ -111,7 +117,7 @@ public:
         assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+        if (validateNaN(lnum, rnum)) {
             return new NaN();
         }
 
@@ -130,7 +136,7 @@ public:
         assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+        if (validateNaN(lnum, rnum)) {
             return new NaN();
         }
 
@@ -151,7 +157,7 @@ public:
         assignGlobalObject();
 
         // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || lnum->isNan()->getValue()) {
+        if (validateNaN(lnum, rnum)) {
             return new NaN();
         }
 
@@ -197,38 +203,76 @@ public:
    /* 12.10.3 Runtime Semantics: Evaluation EqualityExpression 
     * EqualityExpression == =! < > RelationalExpression - Only valid for number type
     */
+
+    /* Evaluate that both lhs and rhs are exactly equal
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if both values equal else false
+     */
     static bool evalee(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) == TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum == rnum;
     }
     
+    /* Evaluate that both lhs and rhs are not equal
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if both values not equal else false
+     */
     static bool evalne(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) != TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum != rnum;
     }
     
+    /* Evaluate that lhs > rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs > rhs else false
+     */
     static bool evalgt(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) > TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum > rnum;
     }
     
+    /* Evaluate that lhs < rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs < rhs else false
+     */
     static bool evallt(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) < TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum < rnum;
     }
     
     /* 12.9.3 Runtime Semantics: Evaluation 
     * RelationalExpression : RelationalExpression <= ShiftExpression
     * RelationalExpression : RelationalExpression >= ShiftExpression
     */
+
+    /* Evaluate that lhs <= rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs <= rhs else false
+     */
     static bool evalltet(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum <= rnum;
     }
 	
+    /* Evaluate that lhs >= rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs >= rhs else false
+     */
     static bool evalgtet(ESValue* lhs, ESValue* rhs) {
         assignGlobalObject();
-        return TypeOps::toNumber(lhs) <= TypeOps::toNumber(rhs);
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return lnum >= rnum;
     }
 
     /* 9.2.1 [[Call]] ( thisArgument, argumentsList)
@@ -236,6 +280,10 @@ public:
      * thisArgument and argumentsList, a List of ECMAScript language values.
      */
 
+     /* Evaluate function operation
+     * precondition: thisArgument, function declaration, parameter list (todo) initialised, function body initialised
+     * postcondition: result of function body evaluated 
+     */
     static ESValue* function(ESObject* thisArgument, ESValue* declarative, ESValue* param1, ESValue* param2) {
         Number* lnum = TypeOps::toNumber(param1);
         Number* rnum = TypeOps::toNumber(param2);
@@ -243,13 +291,52 @@ public:
         if (declarative->getType() == reference) {
             ref = dynamic_cast<Reference*>(declarative);
         }
-        // If either operand is NaN, the result is NaN.
-        if (lnum->isNan()->getValue() || rnum->isNan()->getValue()) {
+
+        if (validateNaN(lnum,rnum)) {
             return new NaN();
         }
+
         globalObj->set(ref->getReferencedName(), thisArgument);
         return new Number(lnum->getValue() + rnum->getValue());
      }
+
+     /* Evaluation method for the left shift operation lhs << rhs = x * 2^y
+      * For number operations - return the result of bit shift operation
+      * precondition: lhs & rhs initialised
+      * postcondition: operator shifts the first operand the specified number of bits to the left
+      */
+    static ESValue* shiftl(ESValue* lhs, ESValue* rhs) {
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+
+        if (validateNaN(lnum,rnum)) {
+            return new NaN();
+        }
+        return new Number((int)lnum->getValue() << (int)rnum->getValue()); 
+    }
+
+     /* Evaluation method for the right shift operation lhs >> rhs 
+      * For number operations - return the result of bit shift operation
+      * precondition: lhs & rhs initialised
+      * postcondition: operator shifts the first operand the specified number of bits to the left
+      */
+    static ESValue* shiftr(ESValue* lhs, ESValue* rhs) {
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+
+        if (validateNaN(lnum,rnum)) {
+            return new NaN();
+        }
+        return new Number((int)lnum->getValue() >> (int)rnum->getValue()); 
+    }
+
+    /* Helper function - Evaluation of either value is NaN 
+     * precondition: ref1 & ref2 initialised
+     * postconditions: returns NaN if either value is Nan
+     */
+    static bool validateNaN(Number* ref1, Number* ref2) {
+        return (ref1->isNan()->getValue() || ref2->isNan()->getValue());
+    }
 };
 
 
