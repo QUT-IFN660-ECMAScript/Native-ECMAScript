@@ -276,6 +276,28 @@ public:
         return lnum >= rnum;
     }
 
+    /* Evaluate that lhs === rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs == rhs (type/value) else false
+     */
+    static bool evaleee(ESValue* lhs, ESValue* rhs) {
+        assignGlobalObject();
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return ((lnum == rnum) && (lnum->getType()==rnum->getType());
+    }
+
+    /* Evaluate that lhs >= rhs
+     * precondition: lhs & rhs initialised
+     * postcondition: return true if lhs != rhs (value/type) else false
+     */
+    static bool evalnee(ESValue* lhs, ESValue* rhs) {
+        assignGlobalObject();
+        Number* lnum = TypeOps::toNumber(lhs);
+        Number* rnum = TypeOps::toNumber(rhs);
+        return ((lnum != rnum) && (lnum->getType() != run->getType());
+    }
+
     /* 9.2.1 [[Call]] ( thisArgument, argumentsList)
      * The [[Call]] internal method for an ECMAScript function object F is called with parameters
      * thisArgument and argumentsList, a List of ECMAScript language values.

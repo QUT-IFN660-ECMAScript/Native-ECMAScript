@@ -168,7 +168,7 @@ using namespace std;
 %type <expression> Expression DecimalIntegerLiteral DecimalLiteral NumericLiteral
   Literal PrimaryExpression MemberExpression NewExpression LeftHandSideExpression
   PostfixExpression UnaryExpression MultiplicativeExpression AdditiveExpression
-  ShiftExpression RelationalExpression EqualityExpression AssignmentExpression
+  ShiftExpression RelationalExpression EqualityExpression AssignmentExpression EqualityNotExactlyEqualExpression EqualityExactlyEqualExpression
   ConditionalExpression LogicalANDExpression LogicalORExpression BitwiseORExpression ExpressionOptional
   BitwiseANDExpression BitwiseXORExpression IdentifierReference BindingIdentifier LabelIdentifier StringLiteral
   CatchParameter LiteralPropertyName ComputedPropertyName PropertyName PropertyDefinition ObjectLiteral BindingPattern
@@ -773,8 +773,8 @@ EqualityExpression:
     RelationalExpression	{$$ = $1;}
     | EqualityExpression EQUAL RelationalExpression				{$$ = new EqualityEqualExpression($1,$3); }
 	| EqualityExpression NOT_EQUAL RelationalExpression			{$$ = new EqualityNotEqualExpression($1,$3); }
-	| EqualityExpression EXACTLY_EQUAL RelationalExpression
-	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression
+	| EqualityExpression EXACTLY_EQUAL RelationalExpression     {$$ = new EqualityExactlyEqualExpression($1,$3); }
+	| EqualityExpression NOT_EXACTLY_EQUAL RelationalExpression {$$ = new EqualityNotExactlyEqualExpression($1,$3); }
     ;
 
 /* 12.9 Relational Operators

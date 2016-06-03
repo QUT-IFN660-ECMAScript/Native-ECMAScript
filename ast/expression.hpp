@@ -824,6 +824,55 @@ public:
 
 };
 
+/* Equal equality expression === */
+class EqualityExactlyEqualExpression : public EqualityExpression {
+
+private:
+    Expression* lhs;
+    Expression* rhs;
+    
+public:
+    EqualityExactlyEqualExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+    }
+    
+    unsigned int genStoreCode() {
+        return fileEmit(EVALUATE_EEE);
+    }
+    
+    void dump(int indent) {
+        label(indent, "EqualityExpression: <=\n");
+        EqualityExpression::dump(indent);
+    }
+
+};
+
+/* Equal equality expression !== */
+class EqualityNotExactlyEqualExpression : public EqualityExpression {
+
+private:
+    Expression* lhs;
+    Expression* rhs;
+    
+public:
+    EqualityNotExactlyEqualExpression(Expression* lhs, Expression* rhs) : EqualityExpression(lhs, rhs) {
+        this->lhs = lhs;
+        this->rhs = rhs;
+    }
+    
+    unsigned int genStoreCode() {
+        return fileEmit(EVALUATE_NEE);
+    }
+    
+    void dump(int indent) {
+        label(indent, "EqualityExpression: <=\n");
+        EqualityExpression::dump(indent);
+    }
+
+};
+
+
 /* Bit Shifting operation x << y = x * 2^y 
  * This operator shifts the first operand the specified number of bits to the left. 
  * Excess bits shifted off to the left are discarded. 
