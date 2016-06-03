@@ -1,0 +1,23 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: a
+            rhs:
+                IntegerLiteralExpression: 10
+    DoWhileStatement
+        EqualityExpression: <
+            lhs:
+                IdentifierExpression: a
+            rhs:
+                IntegerLiteralExpression: 20
+            ExpressionStatement
+                AssignmentExpression
+                    lhs:
+                        IdentifierExpression: a
+                    rhs:
+                        AdditiveBinaryExpression: +
+                            lhs:
+                                IdentifierExpression: a
+                            rhs:
+                                IntegerLiteralExpression: 1

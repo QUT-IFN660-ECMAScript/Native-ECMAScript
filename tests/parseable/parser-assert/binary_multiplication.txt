@@ -4,13 +4,13 @@ ScriptBody
             lhs:
                 IdentifierExpression: x
             rhs:
-                IntegerLiteralExpression: 0
+                IntegerLiteralExpression: 10
     ExpressionStatement
         AssignmentExpression
             lhs:
                 IdentifierExpression: y
             rhs:
-                IntegerLiteralExpression: 0
+                IntegerLiteralExpression: 10
     ExpressionStatement
         AssignmentExpression
             lhs:

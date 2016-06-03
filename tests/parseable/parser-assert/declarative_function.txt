@@ -2,16 +2,16 @@ ScriptBody
     FunctionDeclaration
         IdentifierExpression: foo
         FormalParameters
-            IdentifierExpression: x
-            IdentifierExpression: y
+            IdentifierExpression: a
+            IdentifierExpression: b
         FunctionBody
             ExpressionStatement
                 AssignmentExpression
                     lhs:
-                        IdentifierExpression: a
+                        IdentifierExpression: z
                     rhs:
                         AdditiveBinaryExpression: +
                             lhs:
-                                IdentifierExpression: x
+                                IdentifierExpression: a
                             rhs:
-                                IdentifierExpression: y
+                                IdentifierExpression: b

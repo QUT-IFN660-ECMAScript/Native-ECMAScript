@@ -371,6 +371,7 @@ public:
  * To be extended for all iteration statements with Base class
  * with subclass of repitition statements inheriting from
  * base IterationStatement class
+ * ECMA Specifications 13.7 Iteration Statements
  */
 class WhileIterationStatement : public Statement {
 	private:
@@ -394,12 +395,21 @@ class WhileIterationStatement : public Statement {
 	unsigned int genStoreCode() {return getNewRegister();};
 
 	unsigned int genCode() {
-		return getNewRegister();
+		unsigned int loop_label = global_var;
+    	emit("LABEL%d:", global_var);
+    	emit("\tifNot {");
+    	expression->genStoreCode();
+        emit("\tgoto EXIT%d }", loop_label);      
+		statement->genCode();
+		emit("\tgoto LABEL%d", loop_label);
+		emit("EXIT%d", loop_label);
+        return getNewRegister();
     }
 };
 
-/* DoWhile iteration statement - to do -> extend from a base Iteration
- * statement class
+/* DoWhile iteration statement - Evaluation implemented in runtime
+ * Add jumps and exits to generated code
+ * ECMA Specifications 13.7 Iteration Statements
  */
 class DoWhileIterationStatement : public Statement {
 	private:
@@ -418,7 +428,17 @@ class DoWhileIterationStatement : public Statement {
 		statement->dump(++indent);
 	}
 
-	unsigned int genCode() { return getNewRegister(); }
+	unsigned int genCode() { 
+		unsigned int loop_label = global_var;
+    	emit("LABEL%d:", global_var);
+    	emit("\tifNot {");
+    	expression->genStoreCode();
+        emit("\tgoto EXIT%d }", loop_label);      
+		statement->genCode();
+		emit("\tgoto LABEL%d", loop_label);
+		emit("EXIT%d", loop_label);
+		return getNewRegister(); 
+	}
 
 	unsigned int genStoreCode() {	return getNewRegister(); }
 };
@@ -535,6 +555,7 @@ public:
  * In the global code, this value is always the global object itself. 
  * Parameter list and function body store in Map/Vector respectively
  * Class for declarative functions 
+ * 9.2.1 [[Call]] ( thisArgument, argumentsList)
  */
 class FunctionDeclaration : public Statement {
 private:
@@ -609,6 +630,7 @@ public:
  * In the global code, this value is always the global object itself. 
  * Parameter list and function body store in Map/Vector respectively
  * Class for anonymous declarative functions 
+ * 9.2.1 [[Call]] ( thisArgument, argumentsList)
  */
 
 class AnonymousFunctionDeclaration : public Statement {
@@ -672,8 +694,8 @@ public:
 	};
 };
 
-/* Class For loop iteration statement - code generation to
- * be implemented for this class
+/* Class For loop iteration statement - Implemented jump labels
+ * and exit labels based on loop invariant evaluation
  */
 class ForLoopIterationStatement : public Statement {
 
@@ -718,10 +740,5 @@ public:
 	unsigned int genStoreCode() {
 		return getNewRegister();
 	}
-
-
-
-
-
 
 };
