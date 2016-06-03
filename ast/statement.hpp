@@ -364,6 +364,7 @@ public:
 	}
 
 	unsigned int genCode() {
+		//TODO: program has to jump to a label to break out of a loop...
 		return LabelledStatement::fileEmit(LABEL_BREAK);
 	}
 
@@ -393,6 +394,7 @@ public:
 	}
 
 	unsigned int genCode() {
+		//TODO: program has to jump to a label to continue a loop...
 		return LabelledStatement::fileEmit(LABEL_CONTINUE);
 	}
 
@@ -579,7 +581,9 @@ class WithStatement : public Statement {
 };
 
 
-
+/*
+ * 13.12 The switch Statement: Case Clauses
+ */
 class CaseClauseStatement : public Statement {
 private:
 	Expression *expression;
@@ -615,15 +619,23 @@ public:
 	unsigned int genStoreCode() {	return getNewRegister(); }
 };
 
+/*
+ * 13.12 The switch Statement: Case block
+ */
 class CaseBlockStatement : public Statement {
 private:
     vector<Statement*> *caseClauses;
+    vector<Statement*> *defaultCaseClauses;
 	unsigned int endLabelNum;
 	std::map<unsigned int, Expression*> caseLabelMap;
 public:
     CaseBlockStatement(vector<Statement*> *caseClauses) {
         this->caseClauses = caseClauses;
     };
+    // CaseBlockStatement(vector<Statement*> *caseClauses, vector<Statement*> *defaultCaseClauses) {
+    //     this->caseClauses = caseClauses;
+    //     this->defaultCaseClauses = defaultCaseClauses;
+    // };
 
 	void setEndLabelNum(unsigned int num) {
 		this->endLabelNum = num;
@@ -640,6 +652,10 @@ public:
             for (vector<Statement*>::iterator iter = caseClauses->begin(); iter != caseClauses->end(); ++iter)
                 (*iter)->dump(indent+1);
         }
+        // if(defaultCaseClauses != NULL) {
+        //     for (vector<Statement*>::iterator iter = defaultCaseClauses->begin(); iter != defaultCaseClauses->end(); ++iter)
+        //         (*iter)->dump(indent+1);
+        // }
     }
 
     unsigned int genCode() {
@@ -662,7 +678,9 @@ public:
 
 };
 
-
+/*
+ * 13.12 The switch Statement
+ */
 class SwitchStatement : public Statement {
 private:
 	Expression *expression;
@@ -695,7 +713,7 @@ public:
 		for (std::map<unsigned int, Expression*>::iterator iter = caseLabelMap.begin(); iter != caseLabelMap.end(); ++iter) {
 			unsigned int caseLabelNum = (iter->second)->genStoreCode();
 			// emit("\t//If these two have the same value, Core::zeroFlag will be true");
-			emit("\tCore::compare(r%d, r%d);", switchRegNum, caseLabelNum);
+			emit("\tCore::strictEqualityComparison(r%d, r%d);", switchRegNum, caseLabelNum);
 			emit("\tif(Core::zeroFlag) goto LABEL%d;", iter->first);
 		}
 
