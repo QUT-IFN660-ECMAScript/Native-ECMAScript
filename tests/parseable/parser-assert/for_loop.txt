@@ -1,0 +1,37 @@
+ScriptBody
+    ExpressionStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: a
+            rhs:
+                IntegerLiteralExpression: 0
+    ForLoopIterationStatement
+        AssignmentExpression
+            lhs:
+                IdentifierExpression: i
+            rhs:
+                IntegerLiteralExpression: 0
+            EqualityExpression: <
+                lhs:
+                    IdentifierExpression: i
+                rhs:
+                    IntegerLiteralExpression: 10
+                AssignmentExpression
+                    lhs:
+                        IdentifierExpression: i
+                    rhs:
+                        AdditiveBinaryExpression: +
+                            lhs:
+                                IdentifierExpression: i
+                            rhs:
+                                IntegerLiteralExpression: 1
+                    ExpressionStatement
+                        AssignmentExpression
+                            lhs:
+                                IdentifierExpression: a
+                            rhs:
+                                AdditiveBinaryExpression: +
+                                    lhs:
+                                        IdentifierExpression: a
+                                    rhs:
+                                        IntegerLiteralExpression: 1

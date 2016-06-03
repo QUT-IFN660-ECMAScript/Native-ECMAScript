@@ -672,6 +672,9 @@ public:
 	};
 };
 
+/* Class For loop iteration statement - code generation to
+ * be implemented for this class
+ */
 class ForLoopIterationStatement : public Statement {
 
 private:
